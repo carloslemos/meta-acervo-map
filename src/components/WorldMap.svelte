@@ -29,7 +29,7 @@
   };
 
   onMount(async () => {
-    const topo = await d3.json('/countries-110m.json');
+    const topo = await d3.json('countries-110m.json');
     countriesFeature = topojson.feature(topo, topo.objects.countries);
   });
 

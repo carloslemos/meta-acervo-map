@@ -7,7 +7,7 @@ import * as d3 from 'd3';
  * @returns {Promise<Array<{id: string, creator: string, lat: number, lon: number, type: 'birth'|'death', place: string, acervo: string, score: number}>>}
  */
 export async function loadData() {
-  const rows = await d3.csv('/resultado_geolocalizado.csv');
+  const rows = await d3.csv('resultado_geolocalizado.csv');
   const bubbles = [];
 
   rows.forEach((row, i) => {
