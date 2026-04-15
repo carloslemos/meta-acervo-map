@@ -1,0 +1,40 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #ffffff;
+  --bg-l: #dddddd;
+  --bg-hl: #aaaaaa;
+  --txt: #202020;
+  --txt-l: #404040;
+  --txt-hl: #808080;
+  --birth-color: #2563eb;
+  --death-color: #dc2626;
+  --edu-color: #16a34a;
+  --menu-height: 52px;
+  font-size: 13px;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg);
+  color: var(--txt);
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
