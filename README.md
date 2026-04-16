@@ -1,4 +1,4 @@
-# Mapeando Meta-Acervo
+# Atlas dos acervos digitais do Brasil
 
 Mapa interativo de criadores vinculados à base de dados do **Meta-Acervos**, desenvolvido como parte do [Projeto Temático Acervos Digitais e Pesquisa](https://www.acervosdigitais.fau.usp.br/) da FAU-USP.
 

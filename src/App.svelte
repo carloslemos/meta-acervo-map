@@ -77,7 +77,7 @@
 <div class="layout">
   <header class="header">
     <div class="header__brand">
-      <span class="header__title">Meta-Acervo</span>
+      <span class="header__title">Atlas dos acervos digitais</span>
       <span class="header__sep">—</span>
       <span class="header__subtitle">Mapa de Criadores</span>
     </div>
