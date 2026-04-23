@@ -8,7 +8,7 @@
   const FILTERS = [
     { type: 'birth',     label: 'Nascimento', color: '#2563eb', disabled: false },
     { type: 'death',     label: 'Morte',      color: '#dc2626', disabled: false },
-    { type: 'education', label: 'Estudo',     color: '#16a34a', disabled: true  },
+    { type: 'education', label: 'Estudo',     color: '#16a34a', disabled: false },
   ];
 
   function toggle(type) {

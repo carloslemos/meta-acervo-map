@@ -3,11 +3,14 @@
   import WorldMap from './components/WorldMap.svelte';
   import Tooltip from './components/Tooltip.svelte';
   import FilterControls from './components/FilterControls.svelte';
+  import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import { loadData } from './lib/dataUtils.js';
 
   let bubbles = [];
+  let trajectories = [];
   let activeTypes = new Set(['birth', 'death']);
+  let projectionType = '2d';
   let activeAcervos = new Set();
   let allAcervos = [];
   let selectedSchool = null;
@@ -25,7 +28,9 @@
 
   onMount(async () => {
     try {
-      bubbles = await loadData();
+      const data = await loadData();
+      bubbles = data.bubbles;
+      trajectories = data.trajectories;
       allAcervos = [...new Set(bubbles.map(b => b.acervo).filter(Boolean))].sort();
       activeAcervos = new Set(allAcervos);
       allSchools = [...new Set(bubbles.flatMap(b => b.educatedAt))].sort();
@@ -39,6 +44,10 @@
 
   function handleFilterChange(event) {
     activeTypes = event.detail;
+  }
+
+  function handleProjectionChange(event) {
+    projectionType = event.detail;
   }
 
   function handleAcervoChange(event) {
@@ -70,6 +79,14 @@
     (!selectedSchool || b.educatedAt.includes(selectedSchool)) &&
     (!selectedNationality || b.nationality === selectedNationality)
   );
+  // Segments visible only when both endpoints pass current filters (sidebar + header)
+  $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
+  $: trajectoriesForMap = trajectories
+    .map(t => ({
+      creator: t.creator,
+      segments: t.segments.filter(s => visibleBubbleIds.has(s.from.id) && visibleBubbleIds.has(s.to.id)),
+    }))
+    .filter(t => t.segments.length > 0);
   $: birthCount = bubblesForMap.filter(b => b.type === 'birth').length;
   $: deathCount = bubblesForMap.filter(b => b.type === 'death').length;
 </script>
@@ -84,6 +101,7 @@
 
     <div class="header__controls">
       <FilterControls {activeTypes} on:change={handleFilterChange} />
+      <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
     </div>
 
     <div class="header__stats">
@@ -113,7 +131,9 @@
       {:else}
         <WorldMap
           bubbles={bubblesForMap}
+          trajectories={trajectoriesForMap}
           {activeTypes}
+          {projectionType}
           on:bubblehover={handleBubbleHover}
           on:bubbleleave={handleBubbleLeave}
         />
@@ -185,6 +205,10 @@
 
   .header__controls {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: nowrap;
   }
 
   .header__stats {

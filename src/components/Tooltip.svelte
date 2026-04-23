@@ -40,6 +40,10 @@
       <p class="tooltip__place">{bubble.place}</p>
     {/if}
 
+    {#if bubble.type === 'education' && bubble.schoolName}
+      <p class="tooltip__place">{bubble.schoolName}</p>
+    {/if}
+
     {#if bubble.acervo}
       <p class="tooltip__acervo">Acervo: {bubble.acervo}</p>
     {/if}
