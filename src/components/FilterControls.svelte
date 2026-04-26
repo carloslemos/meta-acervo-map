@@ -1,14 +1,14 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let activeTypes = new Set(['birth', 'death']);
+  export let activeTypes = new Set(['birth', 'education', 'death']);
 
   const dispatch = createEventDispatcher();
 
   const FILTERS = [
     { type: 'birth',     label: 'Nascimento', color: '#2563eb', disabled: false },
-    { type: 'death',     label: 'Morte',      color: '#dc2626', disabled: false },
     { type: 'education', label: 'Estudo',     color: '#16a34a', disabled: false },
+    { type: 'death',     label: 'Morte',      color: '#dc2626', disabled: false },
   ];
 
   function toggle(type) {
@@ -70,7 +70,7 @@
       display: none;
     }
 
-    &:hover {
+    &:not(.pill--active):hover {
       border-color: var(--bg, #fff);
       color: var(--bg, #fff);
     }
@@ -83,6 +83,12 @@
 
     .pill__dot {
       background: #fff;
+    }
+
+    &:hover {
+      color: #fff;
+      background-color: color-mix(in srgb, var(--accent) 75%, #000);
+      border-color: color-mix(in srgb, var(--accent) 75%, #000);
     }
   }
 

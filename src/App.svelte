@@ -9,7 +9,7 @@
 
   let bubbles = [];
   let trajectories = [];
-  let activeTypes = new Set(['birth', 'death']);
+  let activeTypes = new Set(['birth', 'education', 'death']);
   let projectionType = '2d';
   let activeAcervos = new Set();
   let allAcervos = [];
@@ -19,6 +19,9 @@
   let allNationalities = [];
   let loading = true;
   let error = null;
+
+  // Sidebar state (mobile)
+  let sidebarOpen = false;
 
   // Tooltip state
   let tooltipVisible = false;
@@ -74,6 +77,14 @@
     tooltipVisible = false;
   }
 
+  function handleToggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+  }
+
+  function handleCloseSidebar() {
+    sidebarOpen = false;
+  }
+
   $: bubblesForMap = bubbles.filter(b =>
     (!b.acervo || activeAcervos.has(b.acervo)) &&
     (!selectedSchool || b.educatedAt.includes(selectedSchool)) &&
@@ -93,6 +104,10 @@
 
 <div class="layout">
   <header class="header">
+    <button class="menu-toggle" on:click={handleToggleSidebar} aria-label="Menu">
+      <span class="menu-toggle__icon">☰</span>
+    </button>
+
     <div class="header__brand">
       <span class="header__title">Atlas dos acervos digitais</span>
       <span class="header__sep">—</span>
@@ -110,8 +125,24 @@
     </div>
   </header>
 
+  <div class="subheader">
+    <FilterControls {activeTypes} on:change={handleFilterChange} />
+    <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
+  </div>
+
   <div class="content">
+    {#if sidebarOpen}
+      <div 
+        class="sidebar-backdrop" 
+        role="presentation" 
+        on:click={handleCloseSidebar}
+        on:keydown={(e) => e.key === 'Escape' && handleCloseSidebar()}
+      ></div>
+    {/if}
+    
     <Sidebar
+      isOpen={sidebarOpen}
+      onClose={handleCloseSidebar}
       acervos={allAcervos}
       {activeAcervos}
       {allSchools}
@@ -227,6 +258,19 @@
     color: var(--bg-hl);
   }
 
+  /* ─── Subheader para filtros (mobile) ──────────────────────────────── */
+  .subheader {
+    display: none;
+    background: var(--txt);
+    color: var(--bg);
+    border-bottom: 1px solid var(--bg-hl);
+    padding: 0.75rem 1.5rem;
+    gap: 16px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
   .content {
     display: flex;
     flex-direction: row;
@@ -252,5 +296,63 @@
 
   .state-message--error {
     color: #e44;
+  }
+
+  /* ─── Menu toggle (hamburger button) ─────────────────────────────────── */
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--bg);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 1rem;
+    flex-shrink: 0;
+  }
+
+  .menu-toggle:hover {
+    opacity: 0.8;
+  }
+
+  .menu-toggle__icon {
+    display: block;
+    line-height: 1;
+  }
+
+  /* ─── Sidebar backdrop (overlay quando sidebar aberta em mobile) ─────── */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    top: var(--menu-height);
+  }
+
+  /* ─── Responsive: mobile (<1024px) ────────────────────────────────────── */
+  @media (max-width: 1023px) {
+    .header {
+      padding: 0 1.5rem 0 0;
+    }
+    
+    .menu-toggle {
+      display: block;
+    }
+
+    .sidebar-backdrop {
+      display: block;
+    }
+
+    .content {
+      position: relative;
+    }
+
+    .header__controls {
+      display: none;
+    }
+
+    .subheader {
+      display: flex;
+    }
   }
 </style>

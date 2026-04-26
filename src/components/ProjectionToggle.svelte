@@ -53,7 +53,7 @@
     white-space: nowrap;
     transition: background 0.12s, color 0.12s, border-color 0.12s;
 
-    &:hover {
+    &:not(.pill--active):hover {
       border-color: var(--bg, #fff);
       color: var(--bg, #fff);
     }
@@ -63,5 +63,11 @@
     background-color: var(--bg, #fff);
     color: var(--txt, #202020);
     border-color: var(--bg, #fff);
+
+    &:hover {
+      background-color: var(--bg-l, #ddd);
+      border-color: var(--bg-l, #ddd);
+      color: var(--txt, #202020);
+    }
   }
 </style>

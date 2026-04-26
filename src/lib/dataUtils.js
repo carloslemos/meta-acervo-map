@@ -12,7 +12,7 @@ import * as d3 from 'd3';
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
  */
 export async function loadData() {
-  const rows = await d3.csv('resultado_geolocalizado.csv');
+  const rows = await d3.dsv(";", "atlas_ma_0426_v1.csv");
   const bubbles = [];
   /** Map<rowIndex, { creator, birth?, education?, death? }> */
   const byRow = new Map();
@@ -70,14 +70,14 @@ export async function loadData() {
       byRow.get(i).death = b;
     }
 
-    const latEstudou = parseFloat(row['lat_estudou']);
-    const lonEstudou = parseFloat(row['lon_estudou']);
-    if (!isNaN(latEstudou) && !isNaN(lonEstudou)) {
+    const latEducatedAt = parseFloat(row['lat_educated_at']);
+    const lonEducatedAt = parseFloat(row['lon_educated_at']);
+    if (!isNaN(latEducatedAt) && !isNaN(lonEducatedAt)) {
       const b = {
         id: `education-${i}`,
         creator,
-        lat: latEstudou,
-        lon: lonEstudou,
+        lat: latEducatedAt,
+        lon: lonEducatedAt,
         type: 'education',
         place: row['onde estudou']?.trim() || row['educated at']?.trim() || '',
         schoolName: row['nome da escola']?.trim() ?? '',
@@ -101,6 +101,45 @@ export async function loadData() {
     if (education && death) segments.push({ from: education, to: death, kind: 'education-death' });
     if (birth && !education && death) segments.push({ from: birth, to: death, kind: 'birth-death' });
     if (segments.length) trajectories.push({ creator, segments });
+  }
+
+  // Pré-computa offset de descolisão (dxBase/dyBase) por bubble usando uma
+  // projeção de referência fixa. Em runtime, a posição final fica:
+  //   x = projected.x + dxBase / k    (em 2D; k = zoom)
+  //   y = projected.y + dyBase / k
+  // Em 3D, o offset é aplicado direto (boa aproximação fora das bordas do globo).
+  // Roda forceCollide uma única vez aqui, evitando recomputo a cada pan/zoom.
+  const REF_W = 960;
+  const REF_H = 500;
+  const REF_ROTATION = [54, 0, 0]; // mesmo CENTRAL_ROTATION usado em WorldMap
+  const refProj = d3.geoEqualEarth()
+    .rotate(REF_ROTATION)
+    .fitSize([Infinity, REF_H], { type: 'Sphere' })
+    .translate([REF_W / 2, REF_H / 2]);
+
+  const RADIUS = 2.5; // mesmo BUBBLE_RADIUS de WorldMap
+  const nodes = [];
+  const projected = new Array(bubbles.length);
+  for (let i = 0; i < bubbles.length; i++) {
+    const b = bubbles[i];
+    const pt = refProj([b.lon, b.lat]);
+    if (!pt) {
+      b.dxBase = 0;
+      b.dyBase = 0;
+      projected[i] = null;
+      continue;
+    }
+    projected[i] = { x: pt[0], y: pt[1] };
+    nodes.push({ index: i, x: pt[0], y: pt[1] });
+  }
+  const collide = d3.forceCollide(RADIUS + 0.5).strength(0.7);
+  collide.initialize(nodes, () => Math.random());
+  // Mais iterações aqui — roda só uma vez, pode pagar o custo.
+  for (let it = 0; it < 8; it++) collide(1);
+  for (const n of nodes) {
+    const p = projected[n.index];
+    bubbles[n.index].dxBase = n.x - p.x;
+    bubbles[n.index].dyBase = n.y - p.y;
   }
 
   return { bubbles, trajectories };
