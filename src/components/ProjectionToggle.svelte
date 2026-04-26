@@ -10,6 +10,7 @@
     { value: '3d', label: 'Globo' },
   ];
 
+  /** Despacha mudança de projeção se o valor for diferente do atual. */
   function select(value) {
     if (value !== projectionType) {
       dispatch('change', value);

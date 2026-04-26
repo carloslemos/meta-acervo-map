@@ -16,12 +16,14 @@
     ? options
     : options.filter(o => o.toLowerCase().includes(query.toLowerCase()));
 
+  /** Atualiza a query de busca; entrada vazia limpa o filtro. */
   function onInput(e) {
     query = e.target.value;
     open = true;
     if (query === '') clear();
   }
 
+  /** Seleciona uma opção e despacha o evento `select`. */
   function select(option) {
     value = option;
     query = '';
@@ -29,6 +31,7 @@
     dispatch('select', option);
   }
 
+  /** Limpa o valor selecionado e despacha `select` com `null`. */
   function clear() {
     value = null;
     query = '';
@@ -36,10 +39,12 @@
     dispatch('select', null);
   }
 
+  /** Abre a lista ao focar no input. */
   function onFocus() {
     open = true;
   }
 
+  /** Fecha a lista quando o clique acontece fora do componente. */
   function onWindowClick(e) {
     if (inputEl && !inputEl.closest('.autocomplete')?.contains(e.target)) {
       open = false;

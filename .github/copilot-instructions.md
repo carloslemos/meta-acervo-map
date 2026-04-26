@@ -46,7 +46,7 @@ src/
   lon: number,
   type: 'birth' | 'death' | 'education',
   place: string,
-  acervo: string,
+  acervos: string[],
   educatedAt: string[],
   nationality: string,
   score: number,

@@ -11,6 +11,7 @@
     { type: 'death',     label: 'Morte',      color: '#dc2626', disabled: false },
   ];
 
+  /** Alterna a presença de um tipo de bubble (nascimento/estudo/morte) no conjunto ativo. */
   function toggle(type) {
     const next = new Set(activeTypes);
     if (next.has(type)) {

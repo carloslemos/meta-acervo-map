@@ -6,6 +6,7 @@
 
   const dispatch = createEventDispatcher();
 
+  /** Alterna a presença de um acervo no conjunto ativo. */
   function toggle(acervo) {
     const next = new Set(activeAcervos);
     if (next.has(acervo)) {
@@ -16,10 +17,12 @@
     dispatch('change', next);
   }
 
+  /** Seleciona todos os acervos. */
   function selectAll() {
     dispatch('change', new Set(acervos));
   }
 
+  /** Limpa a seleção de acervos. */
   function selectNone() {
     dispatch('change', new Set());
   }

@@ -20,10 +20,10 @@
   let loading = true;
   let error = null;
 
-  // Sidebar state (mobile)
+  // Estado da sidebar (mobile)
   let sidebarOpen = false;
 
-  // Tooltip state
+  // Estado do tooltip
   let tooltipVisible = false;
   let tooltipBubble = null;
   let tooltipX = 0;
@@ -34,7 +34,7 @@
       const data = await loadData();
       bubbles = data.bubbles;
       trajectories = data.trajectories;
-      allAcervos = [...new Set(bubbles.map(b => b.acervo).filter(Boolean))].sort();
+      allAcervos = [...new Set(bubbles.flatMap(b => b.acervos).filter(Boolean))].sort();
       activeAcervos = new Set(allAcervos);
       allSchools = [...new Set(bubbles.flatMap(b => b.educatedAt))].sort();
       allNationalities = [...new Set(bubbles.map(b => b.nationality).filter(Boolean))].sort();
@@ -45,26 +45,32 @@
     }
   });
 
+  /** Atualiza o conjunto de tipos ativos (nascimento/estudo/morte). */
   function handleFilterChange(event) {
     activeTypes = event.detail;
   }
 
+  /** Alterna a projeção entre 2D e Globo. */
   function handleProjectionChange(event) {
     projectionType = event.detail;
   }
 
+  /** Atualiza o conjunto de acervos ativos. */
   function handleAcervoChange(event) {
     activeAcervos = event.detail;
   }
 
+  /** Define a escola selecionada para o filtro (ou `null`). */
   function handleSchoolSelect(event) {
     selectedSchool = event.detail;
   }
 
+  /** Define a nacionalidade selecionada para o filtro (ou `null`). */
   function handleNationalitySelect(event) {
     selectedNationality = event.detail;
   }
 
+  /** Mostra o tooltip da bubble sob o cursor. */
   function handleBubbleHover(event) {
     const { bubble, x, y } = event.detail;
     tooltipBubble = bubble;
@@ -73,24 +79,27 @@
     tooltipVisible = true;
   }
 
+  /** Esconde o tooltip ao sair de uma bubble. */
   function handleBubbleLeave() {
     tooltipVisible = false;
   }
 
+  /** Alterna a sidebar (mobile). */
   function handleToggleSidebar() {
     sidebarOpen = !sidebarOpen;
   }
 
+  /** Fecha a sidebar (mobile). */
   function handleCloseSidebar() {
     sidebarOpen = false;
   }
 
   $: bubblesForMap = bubbles.filter(b =>
-    (!b.acervo || activeAcervos.has(b.acervo)) &&
+    (b.acervos.length === 0 || b.acervos.some(a => activeAcervos.has(a))) &&
     (!selectedSchool || b.educatedAt.includes(selectedSchool)) &&
     (!selectedNationality || b.nationality === selectedNationality)
   );
-  // Segments visible only when both endpoints pass current filters (sidebar + header)
+  // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
   $: trajectoriesForMap = trajectories
     .map(t => ({
@@ -178,6 +187,7 @@
   x={tooltipX}
   y={tooltipY}
   visible={tooltipVisible}
+  on:close={() => (tooltipVisible = false)}
 />
 
 <style lang="scss">

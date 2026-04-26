@@ -14,6 +14,7 @@
 
   const dispatch = createEventDispatcher();
 
+  /** Aciona o callback de fechamento da sidebar (mobile). */
   function handleClose() {
     if (onClose) onClose();
   }
@@ -61,7 +62,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--bg-hl) transparent;
 
-    /* ─── Mobile drawer styling ────────────────────────────────────────── */
+    /* ─── Sidebar como drawer no mobile ──────────────────────────────── */
     /* Em <1024px, torna-se um drawer overlay fixo */
     @media (max-width: 1023px) {
       position: fixed;

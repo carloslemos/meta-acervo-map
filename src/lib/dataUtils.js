@@ -1,20 +1,65 @@
 import * as d3 from 'd3';
 
+// Aliases para unificar grafias diferentes do mesmo acervo.
+// Exemplo: "MAC USP" e "MAC" referem-se à mesma coleção.
+const ACERVO_ALIASES = { 'MAC USP': 'MAC' };
+
 /**
- * Loads and transforms creator data from the CSV.
+ * Normaliza valores de confiança do CSV para um formato canônico.
  *
- * Returns:
- *  - bubbles: array of marker objects (birth/death/education) for the map
- *  - trajectories: array of { creator, segments: [{from, to, kind}] } where
- *    `from`/`to` are references to bubbles of the same CSV row, ordered
- *    birth → education → death (segments only created when both endpoints exist).
+ * @param {string|null|undefined} value — valor bruto da coluna de confiança
+ * @returns {('alta'|'médio'|'baixo'|null)} valor normalizado, ou `null` se vazio/desconhecido
+ */
+function normalizeConfidence(value) {
+  if (!value) return null;
+  const val = value.toLowerCase().trim();
+  if (val === 'alta') return 'alta';
+  if (val === 'médio' || val === 'media') return 'médio';
+  if (val === 'baixo') return 'baixo';
+  return null;
+}
+
+/**
+ * Quebra um campo separado por `|` em lista de strings limpas.
+ *
+ * @param {string|null|undefined} val
+ * @returns {string[]}
+ */
+function splitPipe(val) {
+  return (val ?? '').split('|').map(s => s.trim()).filter(Boolean);
+}
+
+/**
+ * Quebra um campo de acervos separado por `;`, aplica aliases e remove duplicatas.
+ *
+ * @param {string|null|undefined} val
+ * @returns {string[]} lista de acervos únicos já normalizados
+ */
+function splitSemicolon(val) {
+  return [...new Set(
+    (val ?? '').split(';').map(s => s.trim()).filter(Boolean)
+      .map(s => ACERVO_ALIASES[s] ?? s)
+  )];
+}
+
+/**
+ * Carrega e transforma os dados de criadores a partir do CSV-fonte.
+ *
+ * Para cada linha do CSV, gera até três bubbles (nascimento, estudo, morte)
+ * desde que existam coordenadas válidas. Em seguida, deriva as trajetórias
+ * encadeando os pontos do mesmo criador na ordem nascimento → estudo → morte
+ * (segmentos só são criados quando ambos os extremos existem).
+ *
+ * Também pré-calcula offsets de descolisão (`dxBase`/`dyBase`) por bubble,
+ * usando uma projeção de referência fixa, para que `forceCollide` não rode a
+ * cada pan/zoom em runtime.
  *
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
  */
 export async function loadData() {
   const rows = await d3.dsv(";", "atlas_ma_0426_v1.csv");
   const bubbles = [];
-  /** Map<rowIndex, { creator, birth?, education?, death? }> */
+  /** @type {Map<number, { creator: string, birth?: object, education?: object, death?: object }>} */
   const byRow = new Map();
 
   rows.forEach((row, i) => {
@@ -23,8 +68,6 @@ export async function loadData() {
     const museum_json = row['museum_json']?.trim() ?? '';
     const nationality = row['country of citizenship']?.trim() ?? '';
 
-    const splitPipe = (val) =>
-      (val ?? '').split('|').map(s => s.trim()).filter(Boolean);
     const educatedAt = [...new Set([
       ...splitPipe(row['educated at']),
       ...splitPipe(row['onde estudou']),
@@ -40,10 +83,11 @@ export async function loadData() {
         lon: lonBirth,
         type: 'birth',
         place: row['place of birth']?.trim() ?? '',
-        acervo: museum_json || acervo,
+        acervos: splitSemicolon(museum_json || acervo),
         educatedAt,
         nationality,
         score: parseFloat(row['score_birth']) || 0,
+        confidence: normalizeConfidence(row['confianca_place_of_birth']),
       };
       bubbles.push(b);
       if (!byRow.has(i)) byRow.set(i, { creator });
@@ -60,10 +104,11 @@ export async function loadData() {
         lon: lonDeath,
         type: 'death',
         place: row['place of death']?.trim() ?? '',
-        acervo,
+        acervos: splitSemicolon(acervo),
         educatedAt,
         nationality,
         score: parseFloat(row['score_death']) || 0,
+        confidence: normalizeConfidence(row['confianca_preenchimento']),
       };
       bubbles.push(b);
       if (!byRow.has(i)) byRow.set(i, { creator });
@@ -81,10 +126,11 @@ export async function loadData() {
         type: 'education',
         place: row['onde estudou']?.trim() || row['educated at']?.trim() || '',
         schoolName: row['nome da escola']?.trim() ?? '',
-        acervo: museum_json || acervo,
+        acervos: splitSemicolon(museum_json || acervo),
         educatedAt,
         nationality,
         score: parseFloat(row['score_estudou']) || 0,
+        confidence: normalizeConfidence(row['confianca_educated_at']),
       };
       bubbles.push(b);
       if (!byRow.has(i)) byRow.set(i, { creator });
@@ -92,7 +138,7 @@ export async function loadData() {
     }
   });
 
-  // Build trajectories: birth → education → death (skip missing endpoints)
+  // Constrói trajetórias: nascimento → estudo → morte (pula extremos faltantes)
   const trajectories = [];
   for (const [, group] of byRow) {
     const { creator, birth, education, death } = group;

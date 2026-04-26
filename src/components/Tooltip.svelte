@@ -1,8 +1,16 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
+
   export let bubble = null;
   export let x = 0;
   export let y = 0;
   export let visible = false;
+
+  const dispatch = createEventDispatcher();
+
+  let tooltipEl;
+  let tooltipWidth = 0;
+  let tooltipHeight = 0;
 
   const TYPE_LABEL = {
     birth: 'Nascimento',
@@ -16,17 +24,70 @@
     education: '#16a34a',
   };
 
-  // Offset from cursor so it doesn't obstruct the bubble
+  const CONFIDENCE_COLOR = {
+    alta: '#16a34a',      // verde
+    médio: '#eab308',    // amarelo/ouro
+    baixo: '#ef4444',     // vermelho
+  };
+
+  const CONFIDENCE_LABEL = {
+    alta: 'Alta',
+    médio: 'Médio',
+    baixo: 'Baixo',
+  };
+
+  // Deslocamento em relação ao cursor para não cobrir a bubble.
+  // OFFSET_Y > 0 faz o tooltip aparecer abaixo do cursor.
   const OFFSET_X = 14;
-  const OFFSET_Y = -10;
+  const OFFSET_Y = 20;
+  const MARGIN = 8; // margem mínima até as bordas da viewport
+
+  $: if (tooltipEl) {
+    tooltipWidth = tooltipEl.offsetWidth;
+    tooltipHeight = tooltipEl.offsetHeight;
+  }
+
+  // Posição X final: tenta lado direito do cursor; se não couber, lado
+  // esquerdo; em último caso, força dentro da viewport com `MARGIN`.
+  $: adjustedX = (() => {
+    let posX = x + OFFSET_X;
+    if (posX + tooltipWidth > window.innerWidth - MARGIN) {
+      posX = x - tooltipWidth - OFFSET_X;
+    }
+    return Math.max(MARGIN, Math.min(posX, window.innerWidth - tooltipWidth - MARGIN));
+  })();
+
+  // Posição Y final: mesma estratégia, abaixo → acima → clamp.
+  $: adjustedY = (() => {
+    let posY = y + OFFSET_Y;
+    if (posY + tooltipHeight > window.innerHeight - MARGIN) {
+      posY = y - tooltipHeight - OFFSET_Y;
+    }
+    return Math.max(MARGIN, Math.min(posY, window.innerHeight - tooltipHeight - MARGIN));
+  })();
+
+  /** Despacha o evento de fechamento (usado pelo botão X em mobile). */
+  function closeTooltip() {
+    dispatch('close');
+  }
 </script>
 
 {#if visible && bubble}
   <div
+    bind:this={tooltipEl}
     class="tooltip"
-    style="left: {x + OFFSET_X}px; top: {y + OFFSET_Y}px;"
+    style="left: {adjustedX}px; top: {adjustedY}px;"
     role="tooltip"
   >
+    <button
+      class="tooltip__close"
+      on:click={closeTooltip}
+      aria-label="Fechar informações"
+      type="button"
+    >
+      ×
+    </button>
+
     <span
       class="tooltip__badge"
       style="background: {TYPE_COLOR[bubble.type]}"
@@ -44,8 +105,17 @@
       <p class="tooltip__place">{bubble.schoolName}</p>
     {/if}
 
-    {#if bubble.acervo}
-      <p class="tooltip__acervo">Acervo: {bubble.acervo}</p>
+    {#if bubble.acervos?.length}
+      <p class="tooltip__acervo">Acervo: {bubble.acervos.join('; ')}</p>
+    {/if}
+
+    {#if bubble.confidence}
+      <span
+        class="tooltip__badge tooltip__badge--confidence"
+        style="background: {CONFIDENCE_COLOR[bubble.confidence]}"
+      >
+        Confiança do dado: {CONFIDENCE_LABEL[bubble.confidence]}
+      </span>
     {/if}
   </div>
 {/if}
@@ -62,6 +132,44 @@
     max-width: 260px;
     font-family: 'Roboto Mono', monospace;
     text-transform: uppercase;
+
+    @media (max-width: 1023px) {
+      pointer-events: auto;
+      padding: 8px 32px 8px 8px;
+    }
+  }
+
+  .tooltip__close {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: var(--txt, #202020);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 1023px) {
+      display: flex;
+    }
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .tooltip__badges {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 6px;
   }
 
   .tooltip__badge {
@@ -71,8 +179,15 @@
     letter-spacing: 0.08em;
     color: #fff;
     padding: 2px 6px;
-    margin-bottom: 6px;
     border-radius: 2px;
+    width: fit-content;
+    margin-bottom: 6px;
+  }
+
+  .tooltip__badge--confidence {
+    font-size: 0.6rem;
+    margin-bottom: 0;
+    margin-top: 6px;
   }
 
   .tooltip__creator {

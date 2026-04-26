@@ -13,6 +13,17 @@
   const BUBBLE_RADIUS = 2.5;
   const TAU = 2 * Math.PI;
 
+  // ─── Animação de fluxo nas trajetórias ───────────────────────────────────
+  // Pontos animados percorrendo cada segmento (estilo "pulso de fibra óptica")
+  // indicando a direção do percurso de cada criador (from → to). Toggle único:
+  // basta trocar para `false` para desativar — zero overhead, nenhum rAF agendado.
+  // No futuro pode virar `export let` + botão em Sidebar.svelte sem refator.
+  const TRAJECTORY_FLOW_ENABLED = true;
+  const FLOW_SPEED_PX = 0.06;       // pixels por ms (~60 px/s) — velocidade constante
+  const FLOW_DOT_RADIUS = 1;
+  const FLOW_COLOR_NORMAL = '#f4f6f8';   // branco-gelo
+  const FLOW_COLOR_HIGHLIGHT = '#e68d0c'; // amber (mesmo do hover)
+
   // Dimensões do canvas — atualizadas dinamicamente via ResizeObserver
   let width = 960;
   let height = 500;
@@ -29,10 +40,31 @@
   // Meridiano central ~-54°W — Brasil no centro do mundo (estilo IBGE, abr/2024).
   const CENTRAL_ROTATION = [54, 0, 0];
 
-  // Per-projection state — preserved when switching back
-  // 2D: zoom transform {k, x, y}. 3D: rotation + zoom factor k
+  // Estado por projeção — preservado ao alternar de volta.
+  // 2D: transform de zoom {k, x, y}. 3D: rotação + fator de zoom k.
   const state2d = { k: 1, x: 0, y: 0 };
   const state3d = { rotate: [CENTRAL_ROTATION[0], -10, 0], k: 1 };
+
+  // ─── Morph entre projeções (2D ↔ 3D) ─────────────────────────
+  // Interpolação por raw function (técnica do Bostock): mistura linear de
+  // geoEqualEarthRaw e geoOrthographicRaw em t∈[0,1]. Tween rAF de ~700ms.
+  // Flag global para ligar/desligar a animação. Quando false, a troca é
+  // instantânea (mesmo comportamento de antes da animação).
+  const MORPH_ENABLED = false;
+  const MORPH_DURATION = 700;
+  let morphing = false;
+  let morphT = 0;            // 0 = pose `morphFrom`, 1 = pose `morphTo`
+  let morphFrom = '2d';
+  let morphTo = '3d';
+  let morphStartTime = 0;
+  let morphRaf = 0;
+  let morphTick = 0;          // força reatividade no $: projection
+  let currentProjection = projectionType;
+  let prefersReducedMotion = false;
+  // Estado do clipping da projeção-morph corrente — usado também no
+  // culling manual das bubbles (geoPath já usa via .clipAngle).
+  let morphClipAngleRad = Math.PI;          // π = sem clip
+  let morphRotateCenter = [-CENTRAL_ROTATION[0], -CENTRAL_ROTATION[1]];
 
   // Parâmetros base proporcionais ao tamanho atual do canvas.
   // 2D: "content-fit" pela altura — o mapa preenche toda a altura do canvas
@@ -57,15 +89,85 @@
     return d3.geoPath().projection(baseProj).bounds(SPHERE);
   })();
 
-  // Reactive projection: rebuilt when projectionType (or its state, or dims) changes
+  // Projeção reativa: reconstruída quando projectionType (ou seu estado, ou as dimensões) muda.
   let projection;
   let projectionUnclipped;
   let dragTick = 0;
 
+  /**
+   * Constrói a projeção-morph para um t∈[0,1] entre `morphFrom` e `morphTo`.
+   *
+   * Estratégia: combinação linear ponderada das raw functions (já com a
+   * escala-alvo de cada modo aplicada *dentro* do raw, pois as duas raws
+   * produzem ranges diferentes). Translate e rotate sofrem lerp comum.
+   *
+   * @param {number} t
+   * @returns {d3.GeoProjection}
+   */
+  function makeMorphProjection(t) {
+    const tx2d = BASE_2D.translate[0] * state2d.k + state2d.x;
+    const ty2d = BASE_2D.translate[1] * state2d.k + state2d.y;
+    const s2d = BASE_2D.scale * state2d.k;
+    const s3d = BASE_3D.scale * state3d.k;
+
+    const txFrom = morphFrom === '2d' ? tx2d : width / 2;
+    const tyFrom = morphFrom === '2d' ? ty2d : height / 2;
+    const txTo   = morphTo   === '2d' ? tx2d : width / 2;
+    const tyTo   = morphTo   === '2d' ? ty2d : height / 2;
+    const rotFrom = morphFrom === '2d' ? CENTRAL_ROTATION : state3d.rotate;
+    const rotTo   = morphTo   === '2d' ? CENTRAL_ROTATION : state3d.rotate;
+
+    // Peso da componente equal-earth (w2d) e ortho (w3d) — soma = 1.
+    const w2d = morphFrom === '2d' ? (1 - t) : t;
+    const w3d = 1 - w2d;
+
+    const eeRaw = d3.geoEqualEarthRaw;
+    const orRaw = d3.geoOrthographicRaw;
+    const raw = (lambda, phi) => {
+      const a = eeRaw(lambda, phi);
+      const b = orRaw(lambda, phi);
+      return [
+        a[0] * s2d * w2d + b[0] * s3d * w3d,
+        a[1] * s2d * w2d + b[1] * s3d * w3d,
+      ];
+    };
+
+    const lerp = (a, b) => a + (b - a) * t;
+    const lerpAng = (a, b) => {
+      let d = b - a;
+      if (d > 180) d -= 360;
+      if (d < -180) d += 360;
+      return a + d * t;
+    };
+    const tx = lerp(txFrom, txTo);
+    const ty = lerp(tyFrom, tyTo);
+    const rot = [
+      lerpAng(rotFrom[0], rotTo[0]),
+      lerpAng(rotFrom[1], rotTo[1]),
+      lerpAng(rotFrom[2], rotTo[2]),
+    ];
+
+    // ClipAngle interpolado: 180° (sem clip) em w3d=0 → 90° (hemisfério) em w3d=1.
+    // Mantém a face oculta do globo invisível à medida que a esfericidade aumenta
+    // e casa exatamente com a projeção ortográfica final (clipAngle=90).
+    const clipAngDeg = 180 - 90 * w3d;
+    morphClipAngleRad = clipAngDeg * Math.PI / 180;
+    morphRotateCenter = [-rot[0], -rot[1]];
+
+    return d3.geoProjection(raw)
+      .scale(1)
+      .translate([tx, ty])
+      .rotate(rot)
+      .clipAngle(clipAngDeg);
+  }
+
   $: {
-    dragTick;
+    dragTick; morphTick;
     void width; void height;
-    if (projectionType === '3d') {
+    if (morphing) {
+      projection = makeMorphProjection(morphT);
+      projectionUnclipped = projection;
+    } else if (projectionType === '3d') {
       projection = d3.geoOrthographic()
         .scale(BASE_3D.scale * state3d.k)
         .translate([width / 2, height / 2])
@@ -86,6 +188,50 @@
     }
   }
 
+  /**
+   * Inicia o tween de transição entre duas projeções.
+   *
+   * @param {'2d'|'3d'} from
+   * @param {'2d'|'3d'} to
+   */
+  function startMorph(from, to) {
+    if (!MORPH_ENABLED || prefersReducedMotion || from === to) return;
+    if (morphRaf) cancelAnimationFrame(morphRaf);
+    morphFrom = from;
+    morphTo = to;
+    morphing = true;
+    morphT = 0;
+    morphStartTime = performance.now();
+    attachedKey = null; // detach drag/zoom durante o tween
+    stepMorph();
+  }
+
+  /** Avança um frame do tween de morph. */
+  function stepMorph() {
+    const elapsed = performance.now() - morphStartTime;
+    const u = Math.min(1, elapsed / MORPH_DURATION);
+    morphT = d3.easeCubicInOut(u);
+    morphTick++;
+    markStaticDirty();
+    markDynamicDirty();
+    if (u < 1) {
+      morphRaf = requestAnimationFrame(stepMorph);
+    } else {
+      morphRaf = 0;
+      morphing = false;
+      morphTick++; // garante reatividade do $: projection no estado final
+      markStaticDirty();
+      markDynamicDirty();
+    }
+  }
+
+  // Detecta mudança de projectionType vinda do parent.
+  $: if (projectionType !== currentProjection) {
+    const from = currentProjection;
+    currentProjection = projectionType;
+    if (canvasEl && ctx) startMorph(from, projectionType);
+  }
+
   const SPHERE = { type: 'Sphere' };
 
   const TYPE_COLOR = {
@@ -94,6 +240,7 @@
     education: '#16a34a',
   };
 
+  /** Ajusta as dimensões internas dos canvases (foreground e background) ao DPR atual. */
   function applyCanvasDims() {
     if (canvasEl) {
       canvasEl.width = Math.max(1, Math.round(width * dpr));
@@ -107,6 +254,13 @@
 
   onMount(async () => {
     dpr = window.devicePixelRatio || 1;
+
+    // prefers-reduced-motion: troca instantânea sem tween.
+    if (typeof window.matchMedia === 'function') {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      prefersReducedMotion = mq.matches;
+      mq.addEventListener?.('change', (e) => { prefersReducedMotion = e.matches; });
+    }
 
     // Tamanho inicial a partir do container
     if (containerEl) {
@@ -141,11 +295,19 @@
     countriesFeature = topojson.feature(topo, topo.objects.countries);
     countriesMesh = topojson.mesh(topo, topo.objects.countries, (a, b) => a !== b);
     markStaticDirty();
+
+    // Inicia animação de fluxo se habilitada e respeitando reduced-motion.
+    if (TRAJECTORY_FLOW_ENABLED && !prefersReducedMotion) {
+      flowLastTs = 0;
+      flowRaf = requestAnimationFrame(tickFlow);
+    }
   });
 
   onDestroy(() => {
     resizeObserver?.disconnect();
     if (rafHandle) cancelAnimationFrame(rafHandle);
+    if (morphRaf) cancelAnimationFrame(morphRaf);
+    if (flowRaf) cancelAnimationFrame(flowRaf);
   });
 
   // ─── rAF scheduler ────────────────────────────────────────────────────────
@@ -156,15 +318,51 @@
   let staticDirty = false;
   let dynamicDirty = false;
 
+  // ─── Estado da animação de fluxo ─────────────────────────────────────────
+  // flowPhase = distância acumulada (px) — cada segmento usa o módulo do seu
+  // próprio comprimento, garantindo velocidade visual constante em todos.
+  let flowPhase = 0;
+  let flowRaf = 0;
+  let flowLastTs = 0;
+
+  /**
+   * Hash determinístico string → [0,1). Usado para desfasar cada segmento e
+   * produzir efeito orgânico (cada trajetória pulsa em fase distinta).
+   *
+   * @param {string} id
+   * @returns {number}
+   */
+  function flowOffsetFor(id) {
+    let h = 2166136261;
+    for (let i = 0; i < id.length; i++) {
+      h ^= id.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return ((h >>> 0) % 1000) / 1000;
+  }
+
+  /** Tick do rAF para atualizar a fase do fluxo das trajetórias. */
+  function tickFlow(ts) {
+    if (flowLastTs) {
+      flowPhase += (ts - flowLastTs) * FLOW_SPEED_PX;
+    }
+    flowLastTs = ts;
+    markDynamicDirty();
+    flowRaf = requestAnimationFrame(tickFlow);
+  }
+
+  /** Marca a camada estática (basemap) e a dinâmica como sujas e agenda redraw. */
   function markStaticDirty() {
     staticDirty = true;
     dynamicDirty = true; // mudanças de projeção/dim afetam ambos
     scheduleDraw();
   }
+  /** Marca apenas a camada dinâmica como suja e agenda redraw. */
   function markDynamicDirty() {
     dynamicDirty = true;
     scheduleDraw();
   }
+  /** Coalesce múltiplas marcações no mesmo frame em um único redraw. */
   function scheduleDraw() {
     if (rafHandle) return;
     rafHandle = requestAnimationFrame(() => {
@@ -180,17 +378,22 @@
     });
   }
 
-  // Attach drag & zoom — re-runs when projection mode OR dimensions change
+  // Anexa drag & zoom — reexecuta quando o modo de projeção OU as dimensões mudam.
+  // Durante o morph, handlers ficam desanexados (cursor neutro, sem interação).
   let attachedKey = null;
   $: if (canvasEl && ctx) {
-    const key = `${projectionType}|${Math.round(width)}x${Math.round(height)}`;
+    const key = morphing
+      ? 'morph'
+      : `${projectionType}|${Math.round(width)}x${Math.round(height)}`;
     if (attachedKey !== key) {
       attachedKey = key;
       const sel = d3.select(canvasEl);
       sel.on('.drag', null);
       sel.on('.zoom', null);
 
-      if (projectionType === '3d') {
+      if (morphing) {
+        sel.style('cursor', 'progress');
+      } else if (projectionType === '3d') {
         const zoom = d3.zoom()
           .scaleExtent([0.5, 5])
           .filter((e) => {
@@ -245,7 +448,19 @@
     }
   }
 
+  /**
+   * Verifica se uma coordenada (lon, lat) está na face visível do globo.
+   * Em 2D, sempre retorna `true`.
+   *
+   * @param {number} lon
+   * @param {number} lat
+   * @returns {boolean}
+   */
   function isVisibleOnGlobe(lon, lat) {
+    if (morphing) {
+      // Usa o clipAngle e o centro de rotação atual interpolados.
+      return d3.geoDistance(morphRotateCenter, [lon, lat]) < morphClipAngleRad;
+    }
     if (projectionType !== '3d') return true;
     const [λ, φ] = state3d.rotate;
     const center = [-λ, -φ];
@@ -258,18 +473,24 @@
   // em loadData() — sem rodar forceCollide a cada pan/zoom.
   // Em 2D o offset é dividido por k (zoom) para preservar a aparência visual.
   $: positionedBubbles = (() => {
-    void projection; void dragTick;
+    void projection; void dragTick; void morphTick;
     const isGlobe = projectionType === '3d';
     const k2d = state2d.k || 1;
     const out = [];
     for (const b of visibleBubbles) {
+      // Durante o morph o culling usa o clipAngle interpolado;
+      // em 3D fixo, usa o hemisfério padrão.
+      if (morphing) {
+        if (!isVisibleOnGlobe(b.lon, b.lat)) continue;
+      } else if (isGlobe && !isVisibleOnGlobe(b.lon, b.lat)) continue;
       const pt = projection([b.lon, b.lat]);
       if (!pt) continue;
-      if (isGlobe && !isVisibleOnGlobe(b.lon, b.lat)) continue;
       const dx = b.dxBase || 0;
       const dy = b.dyBase || 0;
-      const x = isGlobe ? pt[0] + dx : pt[0] + dx / k2d;
-      const y = isGlobe ? pt[1] + dy : pt[1] + dy / k2d;
+      // Durante o morph, ignoramos offsets de descolisão (não escalam bem na
+      // projeção interpolada). Voltam no estado final.
+      const x = morphing ? pt[0] : (isGlobe ? pt[0] + dx : pt[0] + dx / k2d);
+      const y = morphing ? pt[1] : (isGlobe ? pt[1] + dy : pt[1] + dy / k2d);
       out.push({ bubble: b, x, y });
     }
     return out;
@@ -285,8 +506,8 @@
   })();
 
   $: positionedTrajectories = (() => {
-    void projection; void dragTick;
-    const isGlobe = projectionType === '3d';
+    void projection; void dragTick; void morphTick;
+    const isGlobe = morphing || projectionType === '3d';
     const proj = projectionUnclipped;
     const out = [];
     for (const t of trajectories) {
@@ -299,11 +520,25 @@
           const fromVisible = isVisibleOnGlobe(seg.from.lon, seg.from.lat);
           const toVisible = isVisibleOnGlobe(seg.to.lon, seg.to.lat);
           if (!fromVisible && !toVisible) continue;
+          // Comprimento aproximado em pixels: distância entre extremos
+          // projetados (sem clip) — dá length consistente mesmo se um lado
+          // estiver na face oculta do globo.
+          const apU = proj([seg.from.lon, seg.from.lat]);
+          const bpU = proj([seg.to.lon, seg.to.lat]);
+          const length = (apU && bpU)
+            ? Math.hypot(bpU[0] - apU[0], bpU[1] - apU[1])
+            : 0;
           out.push({
             id,
             kind: seg.kind,
             fromId: seg.from.id,
             toId: seg.to.id,
+            fromLon: seg.from.lon,
+            fromLat: seg.from.lat,
+            toLon: seg.to.lon,
+            toLat: seg.to.lat,
+            flowOffset: flowOffsetFor(id),
+            length,
             geo: {
               type: 'LineString',
               coordinates: [
@@ -332,6 +567,8 @@
             kind: seg.kind,
             fromId: seg.from.id,
             toId: seg.to.id,
+            flowOffset: flowOffsetFor(id),
+            length: dist,
             ax, ay, cpx, cpy, bx, by,
           });
         }
@@ -369,10 +606,13 @@
     return ids;
   })();
 
-  // ─── Canvas redraw — camada estática (basemap) ───────────────────────────
+  // ─── Canvas redraw — camada estática (basemap) ────────────────────────
+  /** Repinta o basemap (sphere + países + bordas). */
   function redrawStatic() {
     if (!bgCtx || !projection) return;
-    const isGlobe = projectionType === '3d';
+    // Durante o morph: trata como globo (sphere fill consistente) e
+    // pula o mesh de bordas para reduzir custo por frame.
+    const isGlobe = morphing || projectionType === '3d';
     const geoPath = d3.geoPath().projection(projection).context(bgCtx);
 
     bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -399,6 +639,8 @@
       bgCtx.fill();
 
       // Bordas via mesh interno (cada borda compartilhada desenhada uma vez).
+      // Durante o morph, o mesh também é desenhado: o clipping da projeção
+      // garante que apenas a face visível apareça.
       if (countriesMesh) {
         bgCtx.beginPath();
         geoPath(countriesMesh);
@@ -410,6 +652,7 @@
   }
 
   // ─── Canvas redraw — camada dinâmica (trajetórias + bubbles) ─────────────
+  /** Repinta as trajetórias, fluxo e bubbles. */
   function redrawDynamic() {
     if (!ctx || !projection) return;
 
@@ -499,6 +742,62 @@
       }
     }
 
+    // Dots de fluxo — pulso percorrendo cada segmento (from → to). Acumulamos
+    // em dois Path2D (normal/highlight) para reduzir o número de chamadas.
+    if (TRAJECTORY_FLOW_ENABLED && positionedTrajectories.length) {
+      const normalPath = new Path2D();
+      const highlightPath = new Path2D();
+      let hasNormal = false;
+      let hasHighlight = false;
+      // Em 3D/morph as trajetórias têm `geo`; em 2D têm Bézier.
+      const useGeo = morphing || projectionType === '3d';
+      const r = FLOW_DOT_RADIUS;
+      const rH = FLOW_DOT_RADIUS * 1.6;
+
+      for (const seg of positionedTrajectories) {
+        if (!seg.length) continue;
+        // flowPhase em px; offset desfasado proporcional ao length do seg.
+        const t = ((flowPhase + seg.flowOffset * seg.length) % seg.length) / seg.length;
+        let x, y;
+        if (useGeo) {
+          const ll = d3.geoInterpolate(
+            [seg.fromLon, seg.fromLat],
+            [seg.toLon, seg.toLat]
+          )(t);
+          if (!isVisibleOnGlobe(ll[0], ll[1])) continue;
+          const pt = projection(ll);
+          if (!pt) continue;
+          x = pt[0]; y = pt[1];
+        } else {
+          const mt = 1 - t;
+          x = mt * mt * seg.ax + 2 * mt * t * seg.cpx + t * t * seg.bx;
+          y = mt * mt * seg.ay + 2 * mt * t * seg.cpy + t * t * seg.by;
+        }
+        const isHighlightSeg = highlightedSegmentIds && highlightedSegmentIds.has(seg.id);
+        if (isHovering && isHighlightSeg) {
+          highlightPath.moveTo(x + rH, y);
+          highlightPath.arc(x, y, rH, 0, TAU);
+          hasHighlight = true;
+        } else {
+          normalPath.moveTo(x + r, y);
+          normalPath.arc(x, y, r, 0, TAU);
+          hasNormal = true;
+        }
+      }
+
+      if (hasNormal) {
+        ctx.globalAlpha = isHovering ? 0.15 : 0.95;
+        ctx.fillStyle = FLOW_COLOR_NORMAL;
+        ctx.fill(normalPath);
+      }
+      if (hasHighlight) {
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = FLOW_COLOR_HIGHLIGHT;
+        ctx.fill(highlightPath);
+      }
+      ctx.globalAlpha = 1;
+    }
+
     // Bubbles — agrupadas por cor (3 paths em vez de N).
     // Quando há hover, separamos também as destacadas.
     const fillByColor = new Map(); // color → Path2D
@@ -557,17 +856,20 @@
   // Atualiza cursor quando entra/sai do hover de uma bubble
   $: if (canvasEl) {
     const sel = d3.select(canvasEl);
-    if (hoveredBubbleId) {
+    if (morphing) {
+      sel.style('cursor', 'progress');
+    } else if (hoveredBubbleId) {
       sel.style('cursor', 'pointer');
     } else {
       sel.style('cursor', 'grab');
     }
   }
 
-  // ─── Mouse interaction (hit-test) ─────────────────────────────────────────
+  // ─── Interação do mouse (hit-test) ───────────────────────────────
   // Throttled via rAF: no máximo uma checagem por frame.
   let pendingMouse = null;
   let mouseRaf = 0;
+  /** Hit-test em quadtree para detectar bubble sob o cursor. */
   function onMouseMove(e) {
     if (!canvasEl) return;
     pendingMouse = { clientX: e.clientX, clientY: e.clientY };
@@ -602,6 +904,7 @@
     });
   }
 
+  /** Limpa estado de hover ao sair do canvas. */
   function onMouseLeave() {
     if (mouseRaf) { cancelAnimationFrame(mouseRaf); mouseRaf = 0; }
     pendingMouse = null;
