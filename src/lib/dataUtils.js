@@ -107,6 +107,7 @@ export async function loadData() {
     const acervo = row['acervo']?.trim() ?? '';
     const museum_json = row['museum_json']?.trim() ?? '';
     const nationality = row['country of citizenship']?.trim() ?? '';
+    const gender = row['sex or gender']?.trim() || 'unknown';
 
     const educatedAt = [...new Set([
       ...splitInstitutions(row['educated at']),
@@ -126,6 +127,7 @@ export async function loadData() {
         acervos: splitSemicolon(museum_json || acervo),
         educatedAt,
         nationality,
+        gender,
         score: parseFloat(row['score_birth']) || 0,
         confidence: normalizeConfidence(row['confianca_place_of_birth']),
       };
@@ -147,6 +149,7 @@ export async function loadData() {
         acervos: splitSemicolon(acervo),
         educatedAt,
         nationality,
+        gender,
         score: parseFloat(row['score_death']) || 0,
         confidence: normalizeConfidence(row['confianca_preenchimento']),
       };
@@ -185,6 +188,7 @@ export async function loadData() {
           acervos: educationAcervos,
           educatedAt,
           nationality,
+          gender,
           score: educationScore,
           confidence: educationConfidence,
         });
@@ -206,6 +210,7 @@ export async function loadData() {
           acervos: educationAcervos,
           educatedAt,
           nationality,
+          gender,
           score: educationScore,
           confidence: educationConfidence,
           isFallback: true,
@@ -224,6 +229,7 @@ export async function loadData() {
           acervos: educationAcervos,
           educatedAt,
           nationality,
+          gender,
           score: educationScore,
           confidence: educationConfidence,
           isFallback: true,

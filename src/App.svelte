@@ -13,8 +13,12 @@
   let projectionType = '3d';
   let activeAcervos = new Set();
   let allAcervos = [];
+  let allGenders = [];
+  let activeGenders = new Set();
+  let selectedCreator = null;
   let selectedSchool = null;
   let selectedNationality = null;
+  let allCreators = [];
   let allSchools = [];
   let allNationalities = [];
   let loading = true;
@@ -36,6 +40,9 @@
       trajectories = data.trajectories;
       allAcervos = [...new Set(bubbles.flatMap(b => b.acervos).filter(Boolean))].sort();
       activeAcervos = new Set(allAcervos);
+      allGenders = [...new Set(bubbles.map(b => b.gender).filter(Boolean))].sort();
+      activeGenders = new Set(allGenders);
+      allCreators = [...new Set(bubbles.map(b => b.creator).filter(Boolean))].sort();
       allSchools = [...new Set(bubbles.flatMap(b => b.educatedAt))].sort();
       allNationalities = [...new Set(bubbles.map(b => b.nationality).filter(Boolean))].sort();
     } catch (err) {
@@ -58,6 +65,16 @@
   /** Atualiza o conjunto de acervos ativos. */
   function handleAcervoChange(event) {
     activeAcervos = event.detail;
+  }
+
+  /** Atualiza o conjunto de gêneros ativos. */
+  function handleGenderChange(event) {
+    activeGenders = event.detail;
+  }
+
+  /** Define o artista selecionado para o filtro (ou `null`). */
+  function handleCreatorSelect(event) {
+    selectedCreator = event.detail;
   }
 
   /** Define a escola selecionada para o filtro (ou `null`). */
@@ -96,6 +113,8 @@
 
   $: bubblesForMap = bubbles.filter(b =>
     (b.acervos.length === 0 || b.acervos.some(a => activeAcervos.has(a))) &&
+    (activeGenders.size === 0 || activeGenders.has(b.gender)) &&
+    (!selectedCreator || b.creator === selectedCreator) &&
     (!selectedSchool || b.educatedAt.includes(selectedSchool)) &&
     (!selectedNationality || b.nationality === selectedNationality)
   );
@@ -154,11 +173,17 @@
       onClose={handleCloseSidebar}
       acervos={allAcervos}
       {activeAcervos}
+      {allGenders}
+      {activeGenders}
+      {allCreators}
+      {selectedCreator}
       {allSchools}
       {selectedSchool}
       {allNationalities}
       {selectedNationality}
       on:acervochange={handleAcervoChange}
+      on:genderchange={handleGenderChange}
+      on:creatorselect={handleCreatorSelect}
       on:schoolselect={handleSchoolSelect}
       on:nationalityselect={handleNationalitySelect}
     />

@@ -2,9 +2,14 @@
   import { createEventDispatcher } from 'svelte';
   import AcervoFilter from './AcervoFilter.svelte';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
+  import GenderFilter from './GenderFilter.svelte';
 
   export let acervos = [];
   export let activeAcervos = new Set();
+  export let allGenders = [];
+  export let activeGenders = new Set();
+  export let allCreators = [];
+  export let selectedCreator = null;
   export let allSchools = [];
   export let selectedSchool = null;
   export let allNationalities = [];
@@ -28,6 +33,19 @@
   </div>
 
   <div class="sidebar__content">
+    <AutocompleteSelect
+      label="Artista"
+      options={allCreators}
+      value={selectedCreator}
+      on:select={e => dispatch('creatorselect', e.detail)}
+    />
+
+    <GenderFilter
+      genders={allGenders}
+      {activeGenders}
+      on:change={e => dispatch('genderchange', e.detail)}
+    />
+
     <AutocompleteSelect
       label="Escola"
       options={allSchools}
