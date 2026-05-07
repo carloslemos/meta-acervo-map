@@ -30,6 +30,43 @@ function splitPipe(val) {
 }
 
 /**
+ * Quebra um campo de instituições aceitando `|` ou `;` como separador.
+ *
+ * @param {string|null|undefined} val
+ * @returns {string[]}
+ */
+function splitInstitutions(val) {
+  return (val ?? '').split(/[|;]/).map(s => s.trim()).filter(Boolean);
+}
+
+/** Normaliza nome de instituição para chave de lookup (trim + lowercase). */
+function normalizeInstitutionKey(name) {
+  return (name ?? '').trim().toLowerCase();
+}
+
+/**
+ * Carrega o CSV de geolocalização de instituições e retorna um Map
+ * `nomeNormalizado -> { lat, lon }`. Linhas sem coordenadas são ignoradas.
+ *
+ * @returns {Promise<Map<string, { lat: number, lon: number }>>}
+ */
+async function loadEducatedAtIndex() {
+  const rows = await d3.csv('educated_at_geolocated.csv');
+  const index = new Map();
+  for (const row of rows) {
+    const name = row['educated at'];
+    const coord = row['coordinate location'];
+    if (!name || !coord) continue;
+    const [latStr, lonStr] = String(coord).split(',').map(s => s.trim());
+    const lat = parseFloat(latStr);
+    const lon = parseFloat(lonStr);
+    if (isNaN(lat) || isNaN(lon)) continue;
+    index.set(normalizeInstitutionKey(name), { lat, lon });
+  }
+  return index;
+}
+
+/**
  * Quebra um campo de acervos separado por `;`, aplica aliases e remove duplicatas.
  *
  * @param {string|null|undefined} val
@@ -57,9 +94,12 @@ function splitSemicolon(val) {
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
  */
 export async function loadData() {
-  const rows = await d3.dsv(";", "atlas_ma_0501_v2.csv");
+  const [rows, educatedAtIndex] = await Promise.all([
+    d3.dsv(';', 'atlas_ma_0501_v2.csv'),
+    loadEducatedAtIndex(),
+  ]);
   const bubbles = [];
-  /** @type {Map<number, { creator: string, birth?: object, education?: object, death?: object }>} */
+  /** @type {Map<number, { creator: string, birth?: object, educations?: object[], death?: object }>} */
   const byRow = new Map();
 
   rows.forEach((row, i) => {
@@ -69,8 +109,8 @@ export async function loadData() {
     const nationality = row['country of citizenship']?.trim() ?? '';
 
     const educatedAt = [...new Set([
-      ...splitPipe(row['educated at']),
-      ...splitPipe(row['onde estudou']),
+      ...splitInstitutions(row['educated at']),
+      ...splitInstitutions(row['onde estudou']),
     ])];
 
     const latBirth = parseFloat(row['lat_birth']);
@@ -115,37 +155,101 @@ export async function loadData() {
       byRow.get(i).death = b;
     }
 
-    const latEducatedAt = parseFloat(row['lat_educated_at']);
-    const lonEducatedAt = parseFloat(row['lon_educated_at']);
-    if (!isNaN(latEducatedAt) && !isNaN(lonEducatedAt)) {
-      const b = {
-        id: `education-${i}`,
-        creator,
-        lat: latEducatedAt,
-        lon: lonEducatedAt,
-        type: 'education',
-        place: row['onde estudou']?.trim() || row['educated at']?.trim() || '',
-        schoolName: row['nome da escola']?.trim() ?? '',
-        acervos: splitSemicolon(museum_json || acervo),
-        educatedAt,
-        nationality,
-        score: parseFloat(row['score_estudou']) || 0,
-        confidence: normalizeConfidence(row['confianca_educated_at']),
-      };
-      bubbles.push(b);
+    // Múltiplas bolhas de educação, uma por instituição com coordenada no
+    // lookup. Instituições sem match são agrupadas em uma única bolha de
+    // fallback usando lat_educated_at/lon_educated_at do CSV principal.
+    const fallbackLat = parseFloat(row['lat_educated_at']);
+    const fallbackLon = parseFloat(row['lon_educated_at']);
+    const hasFallbackCoord = !isNaN(fallbackLat) && !isNaN(fallbackLon);
+    const educationAcervos = splitSemicolon(museum_json || acervo);
+    const educationScore = parseFloat(row['score_estudou']) || 0;
+    const educationConfidence = normalizeConfidence(row['confianca_educated_at']);
+    const educationPlace = row['onde estudou']?.trim() || row['educated at']?.trim() || '';
+    const baseSchoolName = row['nome da escola']?.trim() ?? '';
+
+    const educations = [];
+    const unmatched = [];
+
+    for (let j = 0; j < educatedAt.length; j++) {
+      const institution = educatedAt[j];
+      const hit = educatedAtIndex.get(normalizeInstitutionKey(institution));
+      if (hit) {
+        educations.push({
+          id: `education-${i}-${j}`,
+          creator,
+          lat: hit.lat,
+          lon: hit.lon,
+          type: 'education',
+          place: '',
+          schoolName: institution,
+          acervos: educationAcervos,
+          educatedAt,
+          nationality,
+          score: educationScore,
+          confidence: educationConfidence,
+        });
+      } else {
+        unmatched.push(institution);
+      }
+    }
+
+    if (hasFallbackCoord) {
+      if (unmatched.length > 0) {
+        educations.push({
+          id: `education-${i}-fallback`,
+          creator,
+          lat: fallbackLat,
+          lon: fallbackLon,
+          type: 'education',
+          place: '',
+          schoolName: unmatched.join(' / '),
+          acervos: educationAcervos,
+          educatedAt,
+          nationality,
+          score: educationScore,
+          confidence: educationConfidence,
+          isFallback: true,
+        });
+      } else if (educations.length === 0) {
+        // Sem instituições parseadas, mas o CSV tem coord — preserva
+        // comportamento antigo de uma bolha com `nome da escola`.
+        educations.push({
+          id: `education-${i}-fallback`,
+          creator,
+          lat: fallbackLat,
+          lon: fallbackLon,
+          type: 'education',
+          place: educationPlace,
+          schoolName: baseSchoolName,
+          acervos: educationAcervos,
+          educatedAt,
+          nationality,
+          score: educationScore,
+          confidence: educationConfidence,
+          isFallback: true,
+        });
+      }
+    }
+
+    if (educations.length > 0) {
+      for (const b of educations) bubbles.push(b);
       if (!byRow.has(i)) byRow.set(i, { creator });
-      byRow.get(i).education = b;
+      byRow.get(i).educations = educations;
     }
   });
 
-  // Constrói trajetórias: nascimento → estudo → morte (pula extremos faltantes)
+  // Constrói trajetórias: nascimento → estudo₁ → estudo₂ → … → morte
+  // (pula extremos faltantes; cria segmento direto birth→death se não houver estudos).
   const trajectories = [];
   for (const [, group] of byRow) {
-    const { creator, birth, education, death } = group;
+    const { creator, birth, educations, death } = group;
+    const points = [birth, ...(educations ?? []), death].filter(Boolean);
     const segments = [];
-    if (birth && education) segments.push({ from: birth, to: education, kind: 'birth-education' });
-    if (education && death) segments.push({ from: education, to: death, kind: 'education-death' });
-    if (birth && !education && death) segments.push({ from: birth, to: death, kind: 'birth-death' });
+    for (let p = 0; p < points.length - 1; p++) {
+      const from = points[p];
+      const to = points[p + 1];
+      segments.push({ from, to, kind: `${from.type}-${to.type}` });
+    }
     if (segments.length) trajectories.push({ creator, segments });
   }
 
