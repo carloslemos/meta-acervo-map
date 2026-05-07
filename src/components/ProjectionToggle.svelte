@@ -6,8 +6,8 @@
   const dispatch = createEventDispatcher();
 
   const OPTIONS = [
+    { value: '3d', label: '3D' },
     { value: '2d', label: '2D' },
-    { value: '3d', label: 'Globo' },
   ];
 
   /** Despacha mudança de projeção se o valor for diferente do atual. */

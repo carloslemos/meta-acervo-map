@@ -57,7 +57,7 @@ function splitSemicolon(val) {
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
  */
 export async function loadData() {
-  const rows = await d3.dsv(";", "atlas_ma_0426_v1.csv");
+  const rows = await d3.dsv(";", "atlas_ma_0501_v2.csv");
   const bubbles = [];
   /** @type {Map<number, { creator: string, birth?: object, education?: object, death?: object }>} */
   const byRow = new Map();

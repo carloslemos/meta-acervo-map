@@ -10,7 +10,7 @@
   let bubbles = [];
   let trajectories = [];
   let activeTypes = new Set(['birth', 'education', 'death']);
-  let projectionType = '2d';
+  let projectionType = '3d';
   let activeAcervos = new Set();
   let allAcervos = [];
   let selectedSchool = null;
@@ -50,7 +50,7 @@
     activeTypes = event.detail;
   }
 
-  /** Alterna a projeção entre 2D e Globo. */
+  /** Alterna a projeção entre 2D e 3D. */
   function handleProjectionChange(event) {
     projectionType = event.detail;
   }
