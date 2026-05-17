@@ -332,8 +332,8 @@
     gap: 24px;
     padding: 0 1.5rem;
     height: var(--menu-height);
-    background: var(--txt);
-    color: var(--bg);
+    background: var(--bg);
+    color: var(--txt);
     border-bottom: 1px solid var(--bg-hl);
     flex-shrink: 0;
     flex-wrap: nowrap;
@@ -361,12 +361,12 @@
   }
 
   .header__sep {
-    color: var(--bg-hl);
+    color: var(--txt-hl);
   }
 
   .header__subtitle {
     font-size: 0.8rem;
-    color: var(--bg-l);
+    color: var(--txt-l);
     letter-spacing: 0.04em;
   }
 
@@ -439,7 +439,7 @@
     display: none;
     background: none;
     border: none;
-    color: var(--bg);
+    color: var(--txt);
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0 1rem;

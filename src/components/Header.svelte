@@ -114,7 +114,7 @@
       margin-bottom: 4px;
     }
     :global(.section-title) {
-      color: var(--bg);
+      color: var(--txt);
     }
   }
 
@@ -126,8 +126,8 @@
     gap: 6px;
     padding: 0.3rem 0.75rem;
     border-radius: 0.3rem;
-    border: 1px solid var(--bg-l, #ddd);
-    color: var(--bg-l, #ddd);
+    border: 1px solid var(--bg-hl);
+    color: var(--txt-l);
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     cursor: pointer;
@@ -136,18 +136,18 @@
     box-sizing: border-box;
 
     &:not(.pill--active):hover {
-      border-color: var(--bg, #fff);
-      color: var(--bg, #fff);
+      border-color: var(--txt-l);
+      color: var(--txt);
     }
   }
 
   .pill--active {
     background-color: var(--accent);
     border-color: var(--accent);
-    color: #fff;
+    color: var(--bg);
 
     .pill__dot {
-      background: #fff;
+      background: var(--bg);
     }
   }
 
@@ -168,8 +168,8 @@
     gap: 8px;
     padding: 0.3rem 0.75rem;
     border-radius: 0.3rem;
-    border: 1px solid var(--bg-l, #ddd);
-    color: var(--bg-l, #ddd);
+    border: 1px solid var(--bg-hl);
+    color: var(--txt-l);
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     cursor: pointer;
@@ -178,19 +178,19 @@
     flex-shrink: 0;
 
     &:hover {
-      border-color: var(--bg, #fff);
-      color: var(--bg, #fff);
+      border-color: var(--txt-l);
+      color: var(--txt);
     }
   }
 
   .trajectory-toggle--on {
-    background: var(--bg, #fff);
-    color: var(--txt);
-    border-color: var(--bg, #fff);
+    background: var(--txt);
+    color: var(--bg);
+    border-color: var(--txt);
 
     &:hover {
-      background: var(--bg-l, #ddd);
-      border-color: var(--bg-l, #ddd);
+      background: var(--txt-l);
+      border-color: var(--txt-l);
     }
   }
 

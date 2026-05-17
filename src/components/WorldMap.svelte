@@ -626,13 +626,13 @@
     if (isGlobe) {
       bgCtx.beginPath();
       geoPath(SPHERE);
-      bgCtx.fillStyle = '#f4f6f8';
+      bgCtx.fillStyle = '#141414';
       bgCtx.fill();
-      bgCtx.strokeStyle = '#202020';
+      bgCtx.strokeStyle = 'rgba(255,255,255,0.18)';
       bgCtx.lineWidth = 0.6;
       bgCtx.stroke();
     } else {
-      bgCtx.fillStyle = '#ffffff';
+      bgCtx.fillStyle = '#0a0a0a';
       bgCtx.fillRect(0, 0, width, height);
     }
 
@@ -640,7 +640,7 @@
       // Um único path agregando todos os países: 1 fill em vez de 177.
       bgCtx.beginPath();
       geoPath(countriesFeature);
-      bgCtx.fillStyle = '#202020';
+      bgCtx.fillStyle = '#2a2a2a';
       bgCtx.fill();
 
       // Bordas via mesh interno (cada borda compartilhada desenhada uma vez).
@@ -649,7 +649,7 @@
       if (countriesMesh) {
         bgCtx.beginPath();
         geoPath(countriesMesh);
-        bgCtx.strokeStyle = isGlobe ? '#f4f6f8' : '#ffffff';
+        bgCtx.strokeStyle = '#0a0a0a';
         bgCtx.lineWidth = 0.5;
         bgCtx.stroke();
       }

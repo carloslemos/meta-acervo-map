@@ -60,8 +60,8 @@
 <style lang="scss">
   .artwork-strip {
     position: relative;
-    background: var(--txt);
-    color: var(--bg);
+    background: var(--bg);
+    color: var(--txt);
     border-top: 1px solid var(--bg-hl);
     /* Sempre interativo, mesmo com o mapa bloqueado. */
     pointer-events: auto;
@@ -77,7 +77,7 @@
     height: 100%;
     font-size: 0.8rem;
     letter-spacing: 0.06em;
-    color: var(--bg-l);
+    color: var(--txt-l);
   }
 
   .artwork-strip__list {
@@ -108,11 +108,11 @@
     box-sizing: border-box;
 
     &:hover .artwork__img {
-      outline: 2px solid var(--bg);
+      outline: 2px solid var(--txt);
     }
 
     &:focus-visible {
-      outline: 2px solid #fff;
+      outline: 2px solid var(--txt);
       outline-offset: 2px;
     }
   }
@@ -121,7 +121,7 @@
     width: 96px;
     height: 76px;
     object-fit: cover;
-    background: var(--bg-hl);
+    background: var(--bg-l);
     border-radius: 2px;
     display: block;
     transition: outline 0.1s;
@@ -131,7 +131,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--bg-l);
+    color: var(--txt-l);
     font-size: 0.7rem;
   }
 
@@ -143,7 +143,7 @@
     margin-top: 4px;
     font-size: 0.62rem;
     line-height: 1.1;
-    color: var(--bg-l);
+    color: var(--txt-l);
   }
 
   .artwork__title {
@@ -155,7 +155,7 @@
 
   .artwork__year {
     font-weight: 600;
-    color: var(--bg);
+    color: var(--txt);
     flex-shrink: 0;
   }
 </style>

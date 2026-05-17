@@ -7,15 +7,16 @@
 }
 
 :root {
-  --bg: #ffffff;
-  --bg-l: #dddddd;
-  --bg-hl: #aaaaaa;
-  --txt: #202020;
-  --txt-l: #404040;
-  --txt-hl: #808080;
-  --birth-color: #2563eb;
-  --death-color: #dc2626;
-  --edu-color: #16a34a;
+  /* Paleta escura — referência Figma `q7qOSGJ47dlLKvBE5lyIGo` (Versão 1). */
+  --bg: #0a0a0a;       /* fundo principal da página / header / sphere overlay */
+  --bg-l: #1a1a1a;     /* superfície elevada (header de cards, hover de itens) */
+  --bg-hl: #3a3a3a;    /* bordas e separadores */
+  --txt: #f4f4f4;      /* texto primário */
+  --txt-l: #b0b0b0;    /* texto secundário */
+  --txt-hl: #707070;   /* texto muted */
+  --birth-color: #f5e51c;  /* amarelo */
+  --death-color: #2ec09c;  /* verde água */
+  --edu-color: #e89bd3;    /* rosa */
   --menu-height: 52px;
   font-size: 13px;
 }

@@ -73,13 +73,14 @@ Trajetória:
 }
 ```
 
-Cores canônicas por tipo — definidas em `src/lib/constants.js` (`TYPE_COLOR`) e importadas por todos os módulos que as usam. **Não duplicar hex strings nos componentes.**
+Cores canônicas por tipo — definidas em `src/lib/constants.js` (`TYPE_COLOR`) e importadas por todos os módulos que as usam. **Não duplicar hex strings nos componentes.** Paleta do tema escuro (referência Figma).
 
 | type | cor | hex |
 |---|---|---|
-| `birth` | azul | `#2563eb` |
-| `death` | vermelho | `#dc2626` |
-| `education` | verde | `#16a34a` |
+| `birth` | amarelo | `#f5e51c` |
+| `death` | verde água | `#2ec09c` |
+| `education` | rosa | `#e89bd3` |
+| `acervo` | branco | `#ffffff` |
 
 ## Convenções
 

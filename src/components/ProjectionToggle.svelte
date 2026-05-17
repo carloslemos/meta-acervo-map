@@ -43,9 +43,9 @@
     align-items: center;
     padding: 0.3rem 0.75rem;
     border-radius: 0.3rem;
-    border: 1px solid var(--bg-l, #ddd);
+    border: 1px solid var(--bg-hl);
     background: transparent;
-    color: var(--bg-l, #ddd);
+    color: var(--txt-l);
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     font-family: inherit;
@@ -55,20 +55,20 @@
     transition: background 0.12s, color 0.12s, border-color 0.12s;
 
     &:not(.pill--active):hover {
-      border-color: var(--bg, #fff);
-      color: var(--bg, #fff);
+      border-color: var(--txt-l);
+      color: var(--txt);
     }
   }
 
   .pill--active {
-    background-color: var(--bg, #fff);
-    color: var(--txt, #202020);
-    border-color: var(--bg, #fff);
+    background-color: var(--txt);
+    color: var(--bg);
+    border-color: var(--txt);
 
     &:hover {
-      background-color: var(--bg-l, #ddd);
-      border-color: var(--bg-l, #ddd);
-      color: var(--txt, #202020);
+      background-color: var(--txt-l);
+      border-color: var(--txt-l);
+      color: var(--bg);
     }
   }
 </style>
