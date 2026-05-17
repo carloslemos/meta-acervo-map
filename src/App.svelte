@@ -6,6 +6,7 @@
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import { loadData } from './lib/dataUtils.js';
+  import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
 
   let bubbles = [];
   let trajectories = [];
@@ -111,21 +112,16 @@
     sidebarOpen = false;
   }
 
-  $: bubblesForMap = bubbles.filter(b =>
-    (b.acervos.length === 0 || b.acervos.some(a => activeAcervos.has(a))) &&
-    (activeGenders.size === 0 || activeGenders.has(b.gender)) &&
-    (!selectedCreator || b.creator === selectedCreator) &&
-    (!selectedSchool || b.educatedAt.includes(selectedSchool)) &&
-    (!selectedNationality || b.nationality === selectedNationality)
-  );
+  $: bubblesForMap = applyFilters(bubbles, {
+    activeAcervos,
+    activeGenders,
+    selectedCreator,
+    selectedSchool,
+    selectedNationality,
+  });
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
-  $: trajectoriesForMap = trajectories
-    .map(t => ({
-      creator: t.creator,
-      segments: t.segments.filter(s => visibleBubbleIds.has(s.from.id) && visibleBubbleIds.has(s.to.id)),
-    }))
-    .filter(t => t.segments.length > 0);
+  $: trajectoriesForMap = applyTrajectoryFilter(trajectories, visibleBubbleIds);
   $: birthCount = bubblesForMap.filter(b => b.type === 'birth').length;
   $: deathCount = bubblesForMap.filter(b => b.type === 'death').length;
 </script>

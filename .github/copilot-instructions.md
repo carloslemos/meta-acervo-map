@@ -27,6 +27,7 @@ src/
   lib/
     constants.js                # fonte de verdade: TYPE_COLOR, TYPE_LABEL, BUBBLE_RADIUS, CENTRAL_ROTATION, REF_W, REF_H
     dataUtils.js                # loadData() — CSV → bubbles[] + trajectories[]
+    filterModel.js              # applyFilters() + applyTrajectoryFilter() — predicados puros, testáveis em isolamento
   components/
     WorldMap.svelte             # SVG/Canvas D3 + projeção Natural Earth (2D e globo 3D)
     Tooltip.svelte              # tooltip flutuante por hover
@@ -85,7 +86,7 @@ Cores canônicas por tipo — definidas em `src/lib/constants.js` (`TYPE_COLOR`)
 - **Componentes Svelte**: continuar no padrão legado (`export let prop`, blocos `$:` para reatividade, `createEventDispatcher` + `on:event`). Não introduzir runes (`$state`, `$props`) sem migrar o resto do projeto junto.
 - **SCSS**: use as variáveis CSS já definidas (`var(--bg)`, `var(--txt)`, etc.) em vez de hardcoded.
 - **Acesso ao CSV**: sempre via `d3.csv()` em `dataUtils.js`. Componentes não leem o arquivo diretamente.
-- **Filtros**: dispatcham eventos `change` com um `Set` no `event.detail`. O estado mestre vive em `App.svelte`.
+- **Filtros**: dispatcham eventos `change` com um `Set` no `event.detail`. O estado mestre vive em `App.svelte`. Os **predicados de filtragem** vivem em `src/lib/filterModel.js` (`applyFilters`, `applyTrajectoryFilter`) — adicionar um novo filtro requer apenas estender o parâmetro e o predicado nesse módulo.
 - **Constantes compartilhadas**: `TYPE_COLOR`, `TYPE_LABEL`, `BUBBLE_RADIUS`, `CENTRAL_ROTATION`, `REF_W`, `REF_H` vivem em `src/lib/constants.js`. Importar de lá; nunca redefinir inline.
 - **Pills alternáveis**: usar `ToggleGroup.svelte` com `items: { value, label }[]` e `active: Set`. Não duplicar lógica de toggle em novos filtros.
 - **Não criar arquivos markdown de documentação** sobre mudanças, salvo pedido explícito.
