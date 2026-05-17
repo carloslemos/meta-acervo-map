@@ -94,9 +94,10 @@
   $: bubblesForMap = applyFilters(bubbles, {
     activeAcervos,
     activeGenders,
-    selectedCreator,
-    selectedSchool,
-    selectedNationality,
+    selectedCreators: selectedCreator ? new Set([selectedCreator]) : new Set(),
+    selectedSchools: selectedSchool ? new Set([selectedSchool]) : new Set(),
+    selectedNationalities: selectedNationality ? new Set([selectedNationality]) : new Set(),
+    selectedLocalidade: null,
   });
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));

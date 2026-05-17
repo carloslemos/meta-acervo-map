@@ -17,22 +17,31 @@
  *
  * @param {object[]} bubbles
  * @param {{
- *   activeAcervos:       Set<string>,
- *   activeGenders:       Set<string>,
- *   selectedCreator:     string|null,
- *   selectedSchool:      string|null,
- *   selectedNationality: string|null,
+ *   activeAcervos:         Set<string>,
+ *   activeGenders:         Set<string>,
+ *   selectedCreators:      Set<string>,
+ *   selectedSchools:       Set<string>,
+ *   selectedNationalities: Set<string>,
+ *   selectedLocalidade:    string|null,
  * }} filters
  * @returns {object[]}
  */
 export function applyFilters(bubbles, filters) {
-  const { activeAcervos, activeGenders, selectedCreator, selectedSchool, selectedNationality } = filters;
+  const {
+    activeAcervos,
+    activeGenders,
+    selectedCreators,
+    selectedSchools,
+    selectedNationalities,
+    selectedLocalidade,
+  } = filters;
   return bubbles.filter(b =>
     (b.acervos.length === 0 || b.acervos.some(a => activeAcervos.has(a))) &&
     (activeGenders.size === 0 || activeGenders.has(b.gender)) &&
-    (!selectedCreator || b.creator === selectedCreator) &&
-    (!selectedSchool || b.educatedAt.includes(selectedSchool)) &&
-    (!selectedNationality || b.nationality === selectedNationality)
+    (selectedCreators.size === 0 || selectedCreators.has(b.creator)) &&
+    (selectedSchools.size === 0 || b.educatedAt.some(s => selectedSchools.has(s))) &&
+    (selectedNationalities.size === 0 || selectedNationalities.has(b.nationality)) &&
+    (!selectedLocalidade || b.country === selectedLocalidade || b.continent === selectedLocalidade)
   );
 }
 
