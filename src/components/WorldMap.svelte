@@ -536,6 +536,7 @@
             kind: seg.kind,
             fromId: seg.from.id,
             toId: seg.to.id,
+            fromBubble: seg.from,
             fromLon: seg.from.lon,
             fromLat: seg.from.lat,
             toLon: seg.to.lon,
@@ -570,6 +571,7 @@
             kind: seg.kind,
             fromId: seg.from.id,
             toId: seg.to.id,
+            fromBubble: seg.from,
             flowOffset: flowOffsetFor(id),
             length: dist,
             ax, ay, cpx, cpy, bx, by,
@@ -924,6 +926,15 @@
 
       if (found) {
         hoveredBubbleId = found.bubble.id;
+        return;
+      }
+
+      // Sem bubble sob o cursor — tenta acertar uma trajetória.
+      const seg = hitTrajectory(mx, my, 4);
+      if (seg) {
+        // Usa o id do extremo `from` para reaproveitar a lógica existente de
+        // destaque por criador (highlightedBubbleIds/highlightedSegmentIds).
+        if (hoveredBubbleId !== seg.fromId) hoveredBubbleId = seg.fromId;
       } else if (hoveredBubbleId) {
         hoveredBubbleId = null;
       }
@@ -951,7 +962,81 @@
     // Bubbles de acervo não disparam interação de artista.
     if (found && found.bubble.type !== 'acervo') {
       dispatch('artistclick', found.bubble);
+      return;
     }
+    if (found) return; // acervo: ignora
+    // Sem bubble — tenta acertar trajetória.
+    const seg = hitTrajectory(mx, my, 4);
+    if (seg?.fromBubble) {
+      dispatch('artistclick', seg.fromBubble);
+    }
+  }
+
+  // ─── Hit-test em trajetórias ─────────────────────────────────
+  // Itera `positionedTrajectories` amostrando cada segmento e calculando
+  // distância ponto-a-polilinha. Retorna o segmento mais próximo se
+  // estiver dentro de `tol` pixels. Em 2D usa Bézier quadrática
+  // pré-calculada; em 3D amostra o arco geodésico pela projeção atual.
+  const HIT_SAMPLES = 10;
+
+  function distPointSeg(px, py, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay;
+    const len2 = dx * dx + dy * dy;
+    let t = len2 > 0 ? ((px - ax) * dx + (py - ay) * dy) / len2 : 0;
+    if (t < 0) t = 0; else if (t > 1) t = 1;
+    const cx = ax + t * dx, cy = ay + t * dy;
+    return Math.hypot(px - cx, py - cy);
+  }
+
+  function hitTrajectory(mx, my, tol) {
+    if (!positionedTrajectories.length) return null;
+    const isGlobe = morphing || projectionType === '3d';
+    let best = null;
+    let bestDist = tol;
+
+    for (const seg of positionedTrajectories) {
+      // Reusa um array de amostras locais para evitar alocações.
+      const pts = [];
+      if (isGlobe) {
+        const interp = d3.geoInterpolate(
+          [seg.fromLon, seg.fromLat],
+          [seg.toLon, seg.toLat]
+        );
+        for (let i = 0; i <= HIT_SAMPLES; i++) {
+          const t = i / HIT_SAMPLES;
+          const ll = interp(t);
+          if (!isVisibleOnGlobe(ll[0], ll[1])) continue;
+          const pt = projection(ll);
+          if (pt) pts.push(pt[0], pt[1]);
+        }
+      } else {
+        for (let i = 0; i <= HIT_SAMPLES; i++) {
+          const t = i / HIT_SAMPLES;
+          const mt = 1 - t;
+          const x = mt * mt * seg.ax + 2 * mt * t * seg.cpx + t * t * seg.bx;
+          const y = mt * mt * seg.ay + 2 * mt * t * seg.cpy + t * t * seg.by;
+          pts.push(x, y);
+        }
+      }
+      // Bounding box rápido para descartar segmentos muito distantes.
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (let i = 0; i < pts.length; i += 2) {
+        const x = pts[i], y = pts[i + 1];
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+      }
+      if (mx < minX - bestDist || mx > maxX + bestDist ||
+          my < minY - bestDist || my > maxY + bestDist) continue;
+
+      for (let i = 0; i + 3 < pts.length; i += 2) {
+        const d = distPointSeg(mx, my, pts[i], pts[i + 1], pts[i + 2], pts[i + 3]);
+        if (d < bestDist) {
+          bestDist = d;
+          best = seg;
+        }
+      }
+    }
+    return best;
   }
 </script>
 
