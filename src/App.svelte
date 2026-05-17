@@ -5,6 +5,7 @@
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import ArtistCard from './components/ArtistCard.svelte';
+  import ArtworkStrip from './components/ArtworkStrip.svelte';
   import MapStats from './components/MapStats.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
@@ -117,6 +118,13 @@
     selectedArtist = event.detail;
   }
 
+  /** Click numa obra do ArtworkStrip: trata como artistclick a partir do nome. */
+  function handleArtistSelect(event) {
+    const creator = event.detail;
+    if (!creator) return;
+    selectedArtist = { creator };
+  }
+
   /** Fecha o ArtistCard e libera o mapa. */
   function handleArtistClose() {
     selectedArtist = null;
@@ -143,6 +151,34 @@
     ...bubbles.map(b => b.country),
     ...bubbles.map(b => b.continent),
   ].filter(Boolean))].sort();
+
+  // ── Obras para o ArtworkStrip: flatmap dos criadores visíveis, dedup por id, ordenado.
+  $: artworksForStrip = (() => {
+    const visibleCreators = new Set(bubblesForMap.map(b => b.creator).filter(Boolean));
+    const seen = new Set();
+    const out = [];
+    for (const creator of visibleCreators) {
+      const list = artworksByCreator.get(creator);
+      if (!list) continue;
+      for (const art of list) {
+        if (seen.has(art.id)) continue;
+        seen.add(art.id);
+        out.push(art);
+      }
+    }
+    // Já vem ordenada por criador via sortArtworks no loadData, mas o flatmap
+    // entre criadores precisa re-ordenar. Aplicamos a mesma regra inline:
+    // year desc, 9999/null/não-numérico ao final preservando ordem original.
+    const isUndated = (y) => y === null || y === undefined || y === 9999 || typeof y !== 'number' || Number.isNaN(y);
+    return out.sort((a, b) => {
+      const au = isUndated(a.year);
+      const bu = isUndated(b.year);
+      if (au && bu) return 0;
+      if (au) return 1;
+      if (bu) return -1;
+      return b.year - a.year;
+    });
+  })();
   $: birthCount = bubblesForMap.filter(b => b.type === 'birth').length;
   $: deathCount = bubblesForMap.filter(b => b.type === 'death').length;
 
@@ -271,6 +307,13 @@
       {/if}
     </main>
   </div>
+
+  {#if !loading && !error}
+    <ArtworkStrip
+      artworks={artworksForStrip}
+      on:artistselect={handleArtistSelect}
+    />
+  {/if}
 </div>
 
 <style lang="scss">
