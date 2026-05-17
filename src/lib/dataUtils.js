@@ -271,6 +271,7 @@ export async function loadData() {
     const educationAcervos = splitSemicolon(museum_json || acervo);
     const educationScore = parseFloat(row['score_estudou']) || 0;
     const educationConfidence = normalizeConfidence(row['confianca_educated_at']);
+    const educationDates = row['datas em que estudou']?.trim() ?? '';
     const educationPlace = row['onde estudou']?.trim() || row['educated at']?.trim() || '';
     const baseSchoolName = row['nome da escola']?.trim() ?? '';
 
@@ -295,6 +296,7 @@ export async function loadData() {
           gender,
           score: educationScore,
           confidence: educationConfidence,
+          dates: educationDates,
         });
       } else {
         unmatched.push(institution);
@@ -317,6 +319,7 @@ export async function loadData() {
           gender,
           score: educationScore,
           confidence: educationConfidence,
+          dates: educationDates,
           isFallback: true,
         });
       } else if (educations.length === 0) {
@@ -336,6 +339,7 @@ export async function loadData() {
           gender,
           score: educationScore,
           confidence: educationConfidence,
+          dates: educationDates,
           isFallback: true,
         });
       }

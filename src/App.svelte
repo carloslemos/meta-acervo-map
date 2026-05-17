@@ -4,11 +4,14 @@
   import FilterControls from './components/FilterControls.svelte';
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
+  import ArtistCard from './components/ArtistCard.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
 
   let bubbles = [];
   let trajectories = [];
+  let artworksByCreator = new Map();
+  let selectedArtist = null;
   let activeTypes = new Set(['birth', 'education', 'death']);
   let projectionType = '3d';
   let activeAcervos = new Set();
@@ -32,6 +35,7 @@
       const data = await loadData();
       bubbles = data.bubbles;
       trajectories = data.trajectories;
+      artworksByCreator = data.artworksByCreator ?? new Map();
       allAcervos = [...new Set(bubbles.flatMap(b => b.acervos).filter(Boolean))].sort();
       activeAcervos = new Set(allAcervos);
       allGenders = [...new Set(bubbles.map(b => b.gender).filter(Boolean))].sort();
@@ -90,6 +94,18 @@
   function handleCloseSidebar() {
     sidebarOpen = false;
   }
+
+  /** Click numa bubble do mapa: abre/atualiza o ArtistCard. */
+  function handleArtistClick(event) {
+    selectedArtist = event.detail;
+  }
+
+  /** Fecha o ArtistCard e libera o mapa. */
+  function handleArtistClose() {
+    selectedArtist = null;
+  }
+
+  $: mapLocked = selectedArtist !== null;
 
   $: bubblesForMap = applyFilters(bubbles, {
     activeAcervos,
@@ -175,6 +191,14 @@
           trajectories={trajectoriesForMap}
           {activeTypes}
           {projectionType}
+          locked={mapLocked}
+          on:artistclick={handleArtistClick}
+        />
+        <ArtistCard
+          artist={selectedArtist}
+          allBubbles={bubbles}
+          {artworksByCreator}
+          on:close={handleArtistClose}
         />
       {/if}
     </main>

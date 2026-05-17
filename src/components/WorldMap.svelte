@@ -1,5 +1,5 @@
 ﻿<script>
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import * as d3 from 'd3';
   import * as topojson from 'topojson-client';
   import { TYPE_COLOR, BUBBLE_RADIUS, CENTRAL_ROTATION } from '../lib/constants.js';
@@ -8,6 +8,10 @@
   export let trajectories = [];
   export let activeTypes = new Set(['birth', 'education', 'death']);
   export let projectionType = '2d';
+  /** Quando `true`, bloqueia totalmente interação (mouse, drag, zoom). */
+  export let locked = false;
+
+  const dispatch = createEventDispatcher();
 
 
 
@@ -380,7 +384,7 @@
   $: if (canvasEl && ctx) {
     const key = morphing
       ? 'morph'
-      : `${projectionType}|${Math.round(width)}x${Math.round(height)}`;
+      : `${projectionType}|${Math.round(width)}x${Math.round(height)}|${locked ? 'L' : 'U'}`;
     if (attachedKey !== key) {
       attachedKey = key;
       const sel = d3.select(canvasEl);
@@ -393,6 +397,7 @@
         const zoom = d3.zoom()
           .scaleExtent([0.5, 5])
           .filter((e) => {
+            if (locked) return false;
             // Zoom: só wheel e dois dedos (pinch) em touch
             // Drag (um dedo/mouse) passa direto para d3.drag, sem filtro
             if (e.type === 'wheel') return true;
@@ -407,6 +412,7 @@
           });
 
         const drag = d3.drag()
+          .filter(() => !locked)
           .on('start', () => sel.style('cursor', 'grabbing'))
           .on('drag', (e) => {
             const k = 75 / (BASE_3D.scale * state3d.k);
@@ -426,6 +432,7 @@
           .scaleExtent([1, 8])
           .extent([[0, 0], [width, height]])
           .translateExtent(b)
+          .filter(() => !locked)
           .on('zoom', (e) => {
             state2d.k = e.transform.k;
             state2d.x = e.transform.x;
@@ -897,6 +904,7 @@
   /** Hit-test em quadtree para detectar bubble sob o cursor. */
   function onMouseMove(e) {
     if (!canvasEl) return;
+    if (locked) { if (hoveredBubbleId) hoveredBubbleId = null; return; }
     pendingMouse = { clientX: e.clientX, clientY: e.clientY };
     if (mouseRaf) return;
     mouseRaf = requestAnimationFrame(() => {
@@ -930,6 +938,20 @@
       hoveredBubbleId = null;
     }
   }
+
+  /** Click no canvas: hit-test e dispatch de `artistclick` se acertou uma bubble. */
+  function onClick(e) {
+    if (!canvasEl || !bubbleQuadtree) return;
+    const rect = canvasEl.getBoundingClientRect();
+    const scaleX = width / rect.width;
+    const scaleY = height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top) * scaleY;
+    const found = bubbleQuadtree.find(mx, my, BUBBLE_RADIUS + 4);
+    if (found) {
+      dispatch('artistclick', found.bubble);
+    }
+  }
 </script>
 
 <div class="world-map-wrap" bind:this={containerEl}>
@@ -943,9 +965,11 @@
     bind:this={canvasEl}
     class="world-map world-map--fg"
     class:world-map--globe={projectionType === '3d'}
+    class:world-map--locked={locked}
     aria-label="Mapa interativo de criadores"
     on:mousemove={onMouseMove}
     on:mouseleave={onMouseLeave}
+    on:click={onClick}
   ></canvas>
 </div>
 
@@ -977,5 +1001,11 @@
     &:active {
       cursor: grabbing;
     }
+  }
+
+  .world-map--locked {
+    /* Bloqueia hover/cursor; pan/zoom desligados via filter() do d3, mas o
+       click permanece ativo para permitir troca de artista no card. */
+    cursor: default;
   }
 </style>
