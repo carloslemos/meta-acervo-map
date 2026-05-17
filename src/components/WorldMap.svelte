@@ -1,5 +1,5 @@
 ﻿<script>
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import * as d3 from 'd3';
   import * as topojson from 'topojson-client';
   import { TYPE_COLOR, BUBBLE_RADIUS, CENTRAL_ROTATION } from '../lib/constants.js';
@@ -9,7 +9,7 @@
   export let activeTypes = new Set(['birth', 'education', 'death']);
   export let projectionType = '2d';
 
-  const dispatch = createEventDispatcher();
+
 
   const TAU = 2 * Math.PI;
 
@@ -839,6 +839,35 @@
     }
 
     ctx.globalAlpha = 1;
+
+    // Label de hover desenhado diretamente no canvas
+    if (hoveredBubbleId) {
+      const found = positionedBubbles.find(pb => pb.bubble.id === hoveredBubbleId);
+      if (found) {
+        const { bubble, x, y } = found;
+        const label = (bubble.creator || bubble.place || '').toUpperCase();
+        if (label) {
+          const PAD = 4;
+          const FONT_SIZE = 10;
+          ctx.save();
+          ctx.globalAlpha = 1;
+          ctx.font = `500 ${FONT_SIZE}px "Roboto Mono", monospace`;
+          ctx.textBaseline = 'alphabetic';
+          const tw = ctx.measureText(label).width;
+          const boxW = tw + PAD * 2;
+          const boxH = FONT_SIZE + PAD * 2;
+          let lx = x + BUBBLE_RADIUS + 6;
+          let ly = y - BUBBLE_RADIUS - 4;
+          if (lx + boxW > width) lx = x - boxW - BUBBLE_RADIUS - 6;
+          if (ly - boxH < 0) ly = y + BUBBLE_RADIUS + boxH + 4;
+          ctx.fillStyle = 'rgba(20,20,20,0.88)';
+          ctx.fillRect(lx, ly - boxH, boxW, boxH);
+          ctx.fillStyle = '#f4f6f8';
+          ctx.fillText(label, lx + PAD, ly - PAD);
+          ctx.restore();
+        }
+      }
+    }
   }
 
   // Reatividade: qualquer mudança de projeção/dimensão/dados marca ambas
@@ -886,16 +915,9 @@
         : null;
 
       if (found) {
-        if (hoveredBubbleId !== found.bubble.id) {
-          hoveredBubbleId = found.bubble.id;
-          dispatch('bubblehover', { bubble: found.bubble, x: clientX, y: clientY });
-        } else {
-          // Mesma bubble — só atualiza posição do tooltip
-          dispatch('bubblehover', { bubble: found.bubble, x: clientX, y: clientY });
-        }
+        hoveredBubbleId = found.bubble.id;
       } else if (hoveredBubbleId) {
         hoveredBubbleId = null;
-        dispatch('bubbleleave');
       }
     });
   }
@@ -906,7 +928,6 @@
     pendingMouse = null;
     if (hoveredBubbleId) {
       hoveredBubbleId = null;
-      dispatch('bubbleleave');
     }
   }
 </script>

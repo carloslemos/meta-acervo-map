@@ -1,7 +1,6 @@
 <script>
   import { onMount } from 'svelte';
   import WorldMap from './components/WorldMap.svelte';
-  import Tooltip from './components/Tooltip.svelte';
   import FilterControls from './components/FilterControls.svelte';
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
@@ -27,12 +26,6 @@
 
   // Estado da sidebar (mobile)
   let sidebarOpen = false;
-
-  // Estado do tooltip
-  let tooltipVisible = false;
-  let tooltipBubble = null;
-  let tooltipX = 0;
-  let tooltipY = 0;
 
   onMount(async () => {
     try {
@@ -86,20 +79,6 @@
   /** Define a nacionalidade selecionada para o filtro (ou `null`). */
   function handleNationalitySelect(event) {
     selectedNationality = event.detail;
-  }
-
-  /** Mostra o tooltip da bubble sob o cursor. */
-  function handleBubbleHover(event) {
-    const { bubble, x, y } = event.detail;
-    tooltipBubble = bubble;
-    tooltipX = x;
-    tooltipY = y;
-    tooltipVisible = true;
-  }
-
-  /** Esconde o tooltip ao sair de uma bubble. */
-  function handleBubbleLeave() {
-    tooltipVisible = false;
   }
 
   /** Alterna a sidebar (mobile). */
@@ -195,21 +174,11 @@
           trajectories={trajectoriesForMap}
           {activeTypes}
           {projectionType}
-          on:bubblehover={handleBubbleHover}
-          on:bubbleleave={handleBubbleLeave}
         />
       {/if}
     </main>
   </div>
 </div>
-
-<Tooltip
-  bubble={tooltipBubble}
-  x={tooltipX}
-  y={tooltipY}
-  visible={tooltipVisible}
-  on:close={() => (tooltipVisible = false)}
-/>
 
 <style lang="scss">
   .layout {
