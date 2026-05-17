@@ -633,6 +633,27 @@
     bgCtx.clearRect(0, 0, width, height);
 
     if (isGlobe) {
+      /* Gradiente vertical: topo escuro → base mais clara */
+      const vertGrad = bgCtx.createLinearGradient(0, 0, 0, height);
+      vertGrad.addColorStop(0,    'rgba(0, 0, 0, 1)');
+      vertGrad.addColorStop(1,    'rgba(94, 94, 94, 1)');
+      bgCtx.fillStyle = vertGrad;
+      bgCtx.fillRect(0, 0, width, height);
+
+      /* Glow luminoso por trás do globo — canvas preenchido com gradiente
+         radial antes da esfera, criando um halo mais claro ao redor dela. */
+      const [glowCx, glowCy] = projection.translate();
+      const glowSc = projection.scale();
+      const glow = bgCtx.createRadialGradient(
+        glowCx, glowCy, glowSc * 0.8,
+        glowCx, glowCy, glowSc * 2.4
+      );
+      glow.addColorStop(0,   'rgba(94, 94, 94, 1)');
+      glow.addColorStop(0.3, 'rgba(94, 94, 94, 0.3)');
+      glow.addColorStop(1,   'rgba(94, 94, 94, 0)');
+      bgCtx.fillStyle = glow;
+      bgCtx.fillRect(0, 0, width, height);
+
       bgCtx.beginPath();
       geoPath(SPHERE);
       bgCtx.fillStyle = '#141414';
@@ -662,6 +683,35 @@
         bgCtx.lineWidth = 0.5;
         bgCtx.stroke();
       }
+    }
+
+    /* Efeitos 3D clipsados na esfera: sombra interna (rim) + brilho superior */
+    if (isGlobe) {
+      const [cx, cy] = projection.translate();
+      const sc = projection.scale();
+
+      bgCtx.save();
+      bgCtx.beginPath();
+      geoPath(SPHERE);
+      bgCtx.clip();
+
+      /* Sombra interna — borda escura (efeito atmosférico / profundidade) */
+      const rim = bgCtx.createRadialGradient(cx, cy, sc * 0.42, cx, cy, sc);
+      rim.addColorStop(0,    'rgba(0,0,0,0)');
+      rim.addColorStop(0.65, 'rgba(0,0,0,0.10)');
+      rim.addColorStop(1,    'rgba(0,0,0,0.58)');
+      bgCtx.fillStyle = rim;
+      bgCtx.fillRect(0, 0, width, height);
+
+      /* Brilho fixo superior-central — dá tridimensionalidade à esfera */
+      const halo = bgCtx.createRadialGradient(cx, cy - sc * 0.30, 0, cx, cy - sc * 0.30, sc * 0.80);
+      halo.addColorStop(0,   'rgba(255,255,255,0.07)');
+      halo.addColorStop(0.5, 'rgba(255,255,255,0.02)');
+      halo.addColorStop(1,   'rgba(255,255,255,0)');
+      bgCtx.fillStyle = halo;
+      bgCtx.fillRect(0, 0, width, height);
+
+      bgCtx.restore();
     }
   }
 
@@ -1066,6 +1116,10 @@
     on:mouseleave={onMouseLeave}
     on:click={onClick}
   ></canvas>
+  <!-- Gradientes de profundidade sobre o canvas -->
+  <div class="map-vignette" aria-hidden="true"></div>
+  <div class="map-gradient-top" aria-hidden="true"></div>
+  <div class="map-gradient-left" aria-hidden="true"></div>
 </div>
 
 <style lang="scss">
@@ -1102,5 +1156,42 @@
     /* Bloqueia hover/cursor; pan/zoom desligados via filter() do d3, mas o
        click permanece ativo para permitir troca de artista no card. */
     cursor: default;
+  }
+
+  /* ── Gradientes de profundidade ────────────────────────────────────── */
+  .map-vignette,
+  .map-gradient-top,
+  .map-gradient-left {
+    position: absolute;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* Vignette radial: cantos escuros, centro aberto */
+  .map-vignette {
+    inset: 0;
+    background: radial-gradient(
+      ellipse 70% 60% at 60% 50%,
+      transparent 30%,
+      rgba(0, 0, 0, 0.70) 100%
+    );
+  }
+
+  /* Gradiente superior — separa canvas do header */
+  .map-gradient-top {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.60) 0%, transparent 100%);
+  }
+
+  /* Gradiente lateral esquerdo — suaviza transição com a sidebar */
+  .map-gradient-left {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 200px;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.50) 0%, transparent 100%);
   }
 </style>
