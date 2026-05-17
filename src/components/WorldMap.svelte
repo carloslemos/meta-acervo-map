@@ -752,7 +752,7 @@
         if (hasDefault) {
           ctx.strokeStyle = baseColor;
           ctx.lineWidth = 0.6;
-          ctx.globalAlpha = isHovering ? 0.15 : 1;
+          ctx.globalAlpha = isHovering ? 0.05 : 0.3
           ctx.stroke();
         }
 
@@ -854,7 +854,7 @@
       }
 
       if (hasNormal) {
-        ctx.globalAlpha = isHovering ? 0.15 : 0.95;
+        ctx.globalAlpha = isHovering ? 0.05 : 0.3;
         ctx.fillStyle = FLOW_COLOR_NORMAL;
         ctx.fill(normalPath);
       }
@@ -888,8 +888,8 @@
 
     // Fills agrupados
     ctx.globalAlpha = dimAlpha;
-    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 0.1;
     for (const [color, path] of fillByColor) {
       ctx.fillStyle = color;
       ctx.fill(path);
