@@ -228,7 +228,7 @@
     background: var(--bg);
     color: var(--txt);
     pointer-events: auto;
-    height: 280px;
+    height: 220px;
     display: flex;
     flex-direction: column;
     overflow: hidden;

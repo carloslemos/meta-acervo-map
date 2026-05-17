@@ -55,7 +55,7 @@
   $: saveCollapsed(artworkStripCollapsed);
   /** Altura ocupada pela faixa: 280px expandida, 36px colapsada (só header).
    * Quando não há obras, a faixa não renderiza e o inset é 0. */
-  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? 36 : 280);
+  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? 36 : 220);
 
   onMount(async () => {
     try {
