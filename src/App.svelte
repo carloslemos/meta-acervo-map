@@ -10,6 +10,18 @@
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
 
+  const LS_STRIP_KEY = 'meta-acervo:artwork-strip-collapsed';
+
+  /** Lê estado collapsed do localStorage (fallback false). */
+  function readCollapsed() {
+    try { return localStorage.getItem(LS_STRIP_KEY) === 'true'; } catch { return false; }
+  }
+
+  /** Persiste estado collapsed sem lançar exceção (quota / modo privado). */
+  function saveCollapsed(val) {
+    try { localStorage.setItem(LS_STRIP_KEY, String(val)); } catch { /* silencioso */ }
+  }
+
   let bubbles = [];
   let trajectories = [];
   let acervoBubbles = [];
@@ -37,8 +49,10 @@
   // Estado da sidebar (mobile)
   let sidebarOpen = false;
 
-  /** Estado collapse do ArtworkStrip — controla `bottomInset` do WorldMap. */
-  let artworkStripCollapsed = false;
+  /** Estado collapse do ArtworkStrip — controla `bottomInset` do WorldMap.
+   * Inicializado do localStorage para persistir entre reloads. */
+  let artworkStripCollapsed = readCollapsed();
+  $: saveCollapsed(artworkStripCollapsed);
   /** Altura ocupada pela faixa: 280px expandida, 36px colapsada (só header).
    * Quando não há obras, a faixa não renderiza e o inset é 0. */
   $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? 36 : 280);

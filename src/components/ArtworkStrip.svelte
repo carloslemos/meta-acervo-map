@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onDestroy } from 'svelte';
 
   /**
    * Lista de obras já filtrada e ordenada por `App.svelte`.
@@ -37,13 +37,96 @@
     if (artwork?.creator) dispatch('artistselect', artwork.creator);
   }
 
-  /** Decide se o ano deve ser exibido no `title=` (oculta 9999/null). */
+  /** Decide se o ano deve ser exibido (oculta 9999/null). */
   function showYear(year) {
     return typeof year === 'number' && year !== 9999;
   }
 
   function toggleCollapsed() {
     collapsed = !collapsed;
+  }
+
+  /* ── Tooltip rico ─────────────────────────────────────────────────── */
+  /** Obra atualmente em hover (ou null). */
+  let hoveredArt = null;
+  /** Coordenadas do cursor para posicionar o tooltip. */
+  let tipX = 0;
+  let tipY = 0;
+  /** Timer do delay de 300ms antes de exibir o tooltip. */
+  let hoverTimer = null;
+
+  function onArtworkPointerEnter(event, art) {
+    tipX = event.clientX;
+    tipY = event.clientY;
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(() => { hoveredArt = art; }, 300);
+  }
+
+  function onArtworkPointerMove(event) {
+    tipX = event.clientX;
+    tipY = event.clientY;
+  }
+
+  function onArtworkPointerLeave() {
+    clearTimeout(hoverTimer);
+    hoveredArt = null;
+  }
+
+  /* ── Lazy-load por IntersectionObserver (ativado com >50 obras) ─── */
+  /** Ativo apenas quando a lista é grande o suficiente para justificar. */
+  $: useObserver = artworks.length > 50;
+
+  let observer = null;
+
+  /** Inicializa ou destrói o observer conforme `useObserver`. */
+  $: {
+    if (useObserver) {
+      if (!observer) {
+        observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              const lazy = img.dataset.lazySrc;
+              if (lazy) {
+                img.src = lazy;
+                img.removeAttribute('data-lazy-src');
+                img.classList.add('artwork__img--loaded');
+                observer.unobserve(img);
+              }
+            }
+          });
+        }, { rootMargin: '80px' });
+      }
+    } else {
+      if (observer) {
+        observer.disconnect();
+        observer = null;
+      }
+    }
+  }
+
+  onDestroy(() => {
+    if (observer) observer.disconnect();
+    clearTimeout(hoverTimer);
+  });
+
+  /**
+   * Action do Svelte: conecta um <img> ao observer quando useObserver=true.
+   * Substitui o src real por data-lazy-src e coloca placeholder.
+   */
+  function lazyImg(node, src) {
+    if (!useObserver || !src) return {};
+    node.dataset.lazySrc = src;
+    node.src = '';
+    if (observer) observer.observe(node);
+    return {
+      destroy() {
+        if (observer) observer.unobserve(node);
+      },
+      update(newSrc) {
+        node.dataset.lazySrc = newSrc;
+      },
+    };
   }
 </script>
 
@@ -59,15 +142,18 @@
       aria-expanded={!collapsed}
       on:click={toggleCollapsed}
     >
-      <span class="artwork-strip__chevron" aria-hidden="true">
-        {collapsed ? '▸' : '▾'}
-      </span>
+      <span
+        class="artwork-strip__chevron"
+        class:artwork-strip__chevron--collapsed={collapsed}
+        aria-hidden="true"
+      >▾</span>
       <span class="artwork-strip__label">
         Obras dos artistas nos acervos selecionados
       </span>
     </button>
 
-    {#if !collapsed}
+    <!-- Wrapper animado: sempre no DOM, altura 0 quando colapsado -->
+    <div class="artwork-strip__body" class:artwork-strip__body--collapsed={collapsed}>
       <div
         class="artwork-strip__scroll"
         class:artwork-strip__scroll--at-bottom={atBottom}
@@ -81,16 +167,27 @@
                 type="button"
                 class="artwork__btn"
                 on:click={() => selectArtwork(art)}
-                title="{art.title || 'Sem título'}{showYear(art.year) ? ` (${art.year})` : ''} — {art.creator}"
+                on:pointerenter={(e) => onArtworkPointerEnter(e, art)}
+                on:pointermove={onArtworkPointerMove}
+                on:pointerleave={onArtworkPointerLeave}
               >
                 {#if art.image}
-                  <img
-                    class="artwork__img"
-                    src={art.image}
-                    alt={art.title || 'Obra'}
-                    loading="lazy"
-                    draggable="false"
-                  />
+                  {#if useObserver}
+                    <img
+                      class="artwork__img"
+                      use:lazyImg={art.image}
+                      alt={art.title || 'Obra'}
+                      draggable="false"
+                    />
+                  {:else}
+                    <img
+                      class="artwork__img"
+                      src={art.image}
+                      alt={art.title || 'Obra'}
+                      loading="lazy"
+                      draggable="false"
+                    />
+                  {/if}
                 {:else}
                   <div class="artwork__img artwork__img--placeholder">—</div>
                 {/if}
@@ -99,8 +196,27 @@
           {/each}
         </ul>
       </div>
-    {/if}
+    </div>
   </section>
+{/if}
+
+<!-- Tooltip rico — renderizado fora do <section> para evitar clipping -->
+{#if hoveredArt}
+  <div
+    class="artwork-tip"
+    style="left: {tipX + 14}px; top: {tipY - 10}px;"
+    role="tooltip"
+    aria-live="polite"
+  >
+    <p class="artwork-tip__title">{hoveredArt.title || 'Sem título'}</p>
+    {#if showYear(hoveredArt.year)}
+      <p class="artwork-tip__year">{hoveredArt.year}</p>
+    {/if}
+    <p class="artwork-tip__creator">{hoveredArt.creator}</p>
+    {#if hoveredArt.museum}
+      <p class="artwork-tip__museum">{hoveredArt.museum}</p>
+    {/if}
+  </div>
 {/if}
 
 <style lang="scss">
@@ -118,6 +234,7 @@
     overflow: hidden;
     box-sizing: border-box;
     z-index: 5;
+    transition: height 200ms ease-out;
   }
 
   .artwork-strip--collapsed {
@@ -155,12 +272,26 @@
     width: 12px;
     text-align: center;
     color: var(--txt);
+    transform: rotate(0deg);
+    transition: transform 200ms ease-out;
+  }
+
+  .artwork-strip__chevron--collapsed {
+    transform: rotate(-90deg);
   }
 
   .artwork-strip__label {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* ── Wrapper do body animado ──────────────────────────────────────── */
+  .artwork-strip__body {
+    flex: 1 1 auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ── Container scrollável da grid ──────────────────────────────────── */
@@ -232,7 +363,16 @@
     object-fit: cover;
     background: var(--bg-l);
     display: block;
-    transition: outline 0.1s;
+    transition: outline 0.1s, opacity 180ms;
+  }
+
+  .artwork__img--loaded {
+    animation: artwork-fadein 180ms ease-out;
+  }
+
+  @keyframes artwork-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .artwork__img--placeholder {
@@ -241,6 +381,46 @@
     justify-content: center;
     color: var(--txt-l);
     font-size: 0.7rem;
+  }
+
+  /* ── Tooltip rico das obras ─────────────────────────────────────────── */
+  :global(.artwork-tip) {
+    position: fixed;
+    z-index: 100;
+    background: var(--bg-l);
+    color: var(--txt);
+    border: 1px solid var(--bg-hl);
+    border-radius: 4px;
+    padding: 8px 12px;
+    max-width: 220px;
+    pointer-events: none;
+    font-size: 0.78rem;
+    line-height: 1.4;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  :global(.artwork-tip__title) {
+    font-weight: 600;
+    margin-bottom: 2px !important;
+  }
+
+  :global(.artwork-tip__year) {
+    color: var(--txt-l);
+  }
+
+  :global(.artwork-tip__creator) {
+    margin-top: 4px !important;
+    color: var(--txt-l);
+    font-style: italic;
+  }
+
+  :global(.artwork-tip__museum) {
+    margin-top: 2px !important;
+    font-size: 0.7rem;
+    color: var(--txt-hl);
   }
 </style>
 
