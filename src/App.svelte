@@ -5,6 +5,7 @@
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import ArtistCard from './components/ArtistCard.svelte';
+  import MapStats from './components/MapStats.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
 
@@ -125,6 +126,32 @@
   $: trajectoriesForMap = applyTrajectoryFilter(trajectories, visibleBubbleIds);
   $: birthCount = bubblesForMap.filter(b => b.type === 'birth').length;
   $: deathCount = bubblesForMap.filter(b => b.type === 'death').length;
+
+  // ── Stats agregados sobre o conjunto filtrado atual ────────────────
+  $: statsBlock = (() => {
+    const artists = new Set();
+    const schools = new Set();
+    for (const b of bubblesForMap) {
+      if (b.creator) artists.add(b.creator);
+      for (const s of b.educatedAt) schools.add(s);
+    }
+    let obras = 0;
+    const acervos = new Set();
+    for (const creator of artists) {
+      const list = artworksByCreator.get(creator);
+      if (!list) continue;
+      obras += list.length;
+      for (const a of list) {
+        if (a.museum) acervos.add(a.museum);
+      }
+    }
+    return {
+      acervos: acervos.size,
+      artistas: artists.size,
+      escolas: schools.size,
+      obras,
+    };
+  })();
 </script>
 
 <div class="layout">
@@ -205,6 +232,7 @@
           {artworksByCreator}
           on:close={handleArtistClose}
         />
+        <MapStats stats={statsBlock} />
       {/if}
     </main>
   </div>
