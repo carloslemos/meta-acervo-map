@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
-import { BUBBLE_RADIUS, CENTRAL_ROTATION, REF_W, REF_H } from './constants.js';
+import * as topojson from 'topojson-client';
+import { BUBBLE_RADIUS, CENTRAL_ROTATION, REF_W, REF_H, ISO_CONTINENT } from './constants.js';
 
 // Aliases para unificar grafias diferentes do mesmo acervo.
 // Exemplo: "MAC USP" e "MAC" referem-se à mesma coleção.
@@ -81,6 +82,105 @@ function splitSemicolon(val) {
 }
 
 /**
+ * Retorna o nome do continente em PT-BR para um código ISO 3166-1 numérico.
+ * Aceita string ou número; retorna `null` se desconhecido ou nulo.
+ *
+ * @param {string|number|null|undefined} isoId
+ * @returns {string|null}
+ */
+export function continentForIsoId(isoId) {
+  if (isoId === null || isoId === undefined) return null;
+  const key = String(isoId);
+  return ISO_CONTINENT[key] ?? ISO_CONTINENT[String(parseInt(key, 10))] ?? null;
+}
+
+/**
+ * Ordena obras por `year` descendente. Obras com `year === 9999`, `null`,
+ * `undefined` ou não-numérico vão para o final, na ordem original entre si.
+ *
+ * @param {object[]} artworks
+ * @returns {object[]} novo array ordenado (não muta o original)
+ */
+export function sortArtworks(artworks) {
+  const isUndated = (y) => y === null || y === undefined || y === 9999 || typeof y !== 'number' || Number.isNaN(y);
+  return [...artworks].sort((a, b) => {
+    const au = isUndated(a.year);
+    const bu = isUndated(b.year);
+    if (au && bu) return 0;
+    if (au) return 1;
+    if (bu) return -1;
+    return b.year - a.year;
+  });
+}
+
+/**
+ * Carrega o CSV de acervos geolocalizados e retorna bubbles do tipo `acervo`.
+ * Linhas sem lat/lon válidos são ignoradas silenciosamente.
+ *
+ * @returns {Promise<object[]>}
+ */
+async function loadAcervoBubbles() {
+  const rows = await d3.csv('acervos_geolocated.csv');
+  const out = [];
+  rows.forEach((row, i) => {
+    const acervo = (row.acervo ?? '').trim();
+    const lat = parseFloat(row.lat);
+    const lon = parseFloat(row.lon);
+    if (!acervo || isNaN(lat) || isNaN(lon)) return;
+    const name = ACERVO_ALIASES[acervo] ?? acervo;
+    out.push({
+      id: `acervo-${i}`,
+      creator: name,
+      lat,
+      lon,
+      type: 'acervo',
+      place: name,
+      acervos: [name],
+      educatedAt: [],
+      nationality: '',
+      gender: 'unknown',
+      score: 0,
+      confidence: null,
+    });
+  });
+  return out;
+}
+
+/**
+ * Carrega o JSON de obras e retorna um Map `creator -> obras[]` já ordenado
+ * por `year` descendente (9999/null por último).
+ *
+ * @returns {Promise<Map<string, object[]>>}
+ */
+async function loadArtworksByCreator() {
+  const resp = await fetch(`${import.meta.env?.BASE_URL ?? '/'}20250705_processed.json`);
+  if (!resp.ok) throw new Error(`Falha ao carregar JSON de obras: ${resp.status}`);
+  const dict = await resp.json();
+  /** @type {Map<string, object[]>} */
+  const byCreator = new Map();
+  for (const [wikidataId, entry] of Object.entries(dict)) {
+    const creator = (entry?.creator ?? '').trim();
+    if (!creator) continue;
+    const artwork = {
+      id: wikidataId,
+      creator,
+      museum: entry.museum ?? '',
+      title: entry.title ?? '',
+      year: typeof entry.year === 'number' ? entry.year : null,
+      image: entry.image?.image ?? '',
+      url: entry.url ?? '',
+    };
+    const list = byCreator.get(creator);
+    if (list) list.push(artwork);
+    else byCreator.set(creator, [artwork]);
+  }
+  for (const [creator, list] of byCreator) {
+    byCreator.set(creator, sortArtworks(list));
+  }
+  return byCreator;
+}
+
+/**
  * Carrega e transforma os dados de criadores a partir do CSV-fonte.
  *
  * Para cada linha do CSV, gera até três bubbles (nascimento, estudo, morte)
@@ -95,9 +195,12 @@ function splitSemicolon(val) {
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
  */
 export async function loadData() {
-  const [rows, educatedAtIndex] = await Promise.all([
+  const [rows, educatedAtIndex, artworksByCreator, acervoBubbles, topo] = await Promise.all([
     d3.dsv(';', 'atlas_ma_0501_v2.csv'),
     loadEducatedAtIndex(),
+    loadArtworksByCreator(),
+    loadAcervoBubbles(),
+    d3.json('countries-110m.json'),
   ]);
   const bubbles = [];
   /** @type {Map<number, { creator: string, birth?: object, educations?: object[], death?: object }>} */
@@ -298,5 +401,41 @@ export async function loadData() {
     bubbles[n.index].dyBase = n.y - p.y;
   }
 
-  return { bubbles, trajectories };
+  // Acervos têm dxBase/dyBase = 0 (sem descolisão pré-computada por enquanto)
+  for (const b of acervoBubbles) {
+    b.dxBase = 0;
+    b.dyBase = 0;
+  }
+
+  // Pré-anota country/continent para todas as bubbles (artistas + acervos).
+  const countriesFeature = topojson.feature(topo, topo.objects.countries);
+  annotateGeo([...bubbles, ...acervoBubbles], countriesFeature);
+
+  return { bubbles, trajectories, artworksByCreator, acervoBubbles };
+}
+
+/**
+ * Para cada bubble, popula `country` (nome em inglês do TopoJSON) e
+ * `continent` (PT-BR via `ISO_CONTINENT`). Os campos ficam `null` quando
+ * nenhuma feature contém o ponto.
+ *
+ * @param {object[]} bubbles
+ * @param {object} countriesFeature - FeatureCollection do TopoJSON
+ */
+function annotateGeo(bubbles, countriesFeature) {
+  for (const b of bubbles) {
+    b.country = null;
+    b.continent = null;
+  }
+  for (const feature of countriesFeature.features) {
+    const name = feature.properties?.name ?? null;
+    const continent = continentForIsoId(feature.id);
+    for (const b of bubbles) {
+      if (b.country !== null) continue;
+      if (d3.geoContains(feature, [b.lon, b.lat])) {
+        b.country = name;
+        b.continent = continent;
+      }
+    }
+  }
 }

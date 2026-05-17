@@ -85,7 +85,7 @@ export const ISO_CONTINENT = {
   '586': 'Ásia', '275': 'Ásia', '608': 'Ásia', '634': 'Ásia', '682': 'Ásia',
   '702': 'Ásia', '144': 'Ásia', '760': 'Ásia', '158': 'Ásia', '762': 'Ásia',
   '764': 'Ásia', '795': 'Ásia', '784': 'Ásia', '860': 'Ásia', '704': 'Ásia',
-  '887': 'Ásia',
+  '887': 'Ásia', '792': 'Ásia',
 
   // Europa
   '8': 'Europa', '20': 'Europa', '40': 'Europa', '112': 'Europa',
