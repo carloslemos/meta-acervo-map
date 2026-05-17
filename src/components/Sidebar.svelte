@@ -9,11 +9,11 @@
   export let allGenders = [];
   export let activeGenders = new Set();
   export let allCreators = [];
-  export let selectedCreator = null;
+  export let selectedCreators = new Set();
   export let allSchools = [];
-  export let selectedSchool = null;
+  export let selectedSchools = new Set();
   export let allNationalities = [];
-  export let selectedNationality = null;
+  export let selectedNationalities = new Set();
   export let isOpen = false;
   export let onClose = null;
 
@@ -36,8 +36,9 @@
     <AutocompleteSelect
       label="Artista"
       options={allCreators}
-      value={selectedCreator}
-      on:select={e => dispatch('creatorselect', e.detail)}
+      value={selectedCreators}
+      multiple={true}
+      on:change={e => dispatch('creatorschange', e.detail)}
     />
 
     <GenderFilter
@@ -49,15 +50,17 @@
     <AutocompleteSelect
       label="Escola"
       options={allSchools}
-      value={selectedSchool}
-      on:select={e => dispatch('schoolselect', e.detail)}
+      value={selectedSchools}
+      multiple={true}
+      on:change={e => dispatch('schoolschange', e.detail)}
     />
 
     <AutocompleteSelect
       label="Nacionalidade"
       options={allNationalities}
-      value={selectedNationality}
-      on:select={e => dispatch('nationalityselect', e.detail)}
+      value={selectedNationalities}
+      multiple={true}
+      on:change={e => dispatch('nationalitieschange', e.detail)}
     />
 
     <AcervoFilter

@@ -18,9 +18,9 @@
   let allAcervos = [];
   let allGenders = [];
   let activeGenders = new Set();
-  let selectedCreator = null;
-  let selectedSchool = null;
-  let selectedNationality = null;
+  let selectedCreators = new Set();
+  let selectedSchools = new Set();
+  let selectedNationalities = new Set();
   let allCreators = [];
   let allSchools = [];
   let allNationalities = [];
@@ -70,19 +70,19 @@
     activeGenders = event.detail;
   }
 
-  /** Define o artista selecionado para o filtro (ou `null`). */
-  function handleCreatorSelect(event) {
-    selectedCreator = event.detail;
+  /** Atualiza o conjunto de criadores selecionados. */
+  function handleCreatorsChange(event) {
+    selectedCreators = event.detail;
   }
 
-  /** Define a escola selecionada para o filtro (ou `null`). */
-  function handleSchoolSelect(event) {
-    selectedSchool = event.detail;
+  /** Atualiza o conjunto de escolas selecionadas. */
+  function handleSchoolsChange(event) {
+    selectedSchools = event.detail;
   }
 
-  /** Define a nacionalidade selecionada para o filtro (ou `null`). */
-  function handleNationalitySelect(event) {
-    selectedNationality = event.detail;
+  /** Atualiza o conjunto de nacionalidades selecionadas. */
+  function handleNationalitiesChange(event) {
+    selectedNationalities = event.detail;
   }
 
   /** Alterna a sidebar (mobile). */
@@ -110,9 +110,9 @@
   $: bubblesForMap = applyFilters(bubbles, {
     activeAcervos,
     activeGenders,
-    selectedCreators: selectedCreator ? new Set([selectedCreator]) : new Set(),
-    selectedSchools: selectedSchool ? new Set([selectedSchool]) : new Set(),
-    selectedNationalities: selectedNationality ? new Set([selectedNationality]) : new Set(),
+    selectedCreators,
+    selectedSchools,
+    selectedNationalities,
     selectedLocalidade: null,
   });
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
@@ -168,16 +168,16 @@
       {allGenders}
       {activeGenders}
       {allCreators}
-      {selectedCreator}
+      {selectedCreators}
       {allSchools}
-      {selectedSchool}
+      {selectedSchools}
       {allNationalities}
-      {selectedNationality}
+      {selectedNationalities}
       on:acervochange={handleAcervoChange}
       on:genderchange={handleGenderChange}
-      on:creatorselect={handleCreatorSelect}
-      on:schoolselect={handleSchoolSelect}
-      on:nationalityselect={handleNationalitySelect}
+      on:creatorschange={handleCreatorsChange}
+      on:schoolschange={handleSchoolsChange}
+      on:nationalitieschange={handleNationalitiesChange}
     />
 
     <main class="map-container">
