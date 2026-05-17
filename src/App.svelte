@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import WorldMap from './components/WorldMap.svelte';
-  import FilterControls from './components/FilterControls.svelte';
+  import Header from './components/Header.svelte';
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import ArtistCard from './components/ArtistCard.svelte';
@@ -23,6 +23,10 @@
   let selectedCreators = new Set();
   let selectedSchools = new Set();
   let selectedNationalities = new Set();
+  /** Localidade ativa (nome de país OU de continente). `''` = sem filtro. */
+  let selectedLocalidade = '';
+  /** Visibilidade das trajetórias (linhas conectando bubbles do mesmo criador). */
+  let showTrajectories = true;
   let allCreators = [];
   let allSchools = [];
   let allNationalities = [];
@@ -53,9 +57,19 @@
     }
   });
 
-  /** Atualiza o conjunto de tipos ativos (nascimento/estudo/morte). */
+  /** Atualiza o conjunto de tipos ativos (nascimento/estudo/morte/acervo). */
   function handleFilterChange(event) {
     activeTypes = event.detail;
+  }
+
+  /** Atualiza a localidade ativa (string vazia limpa o filtro). */
+  function handleLocalidadeChange(event) {
+    selectedLocalidade = event.detail ?? '';
+  }
+
+  /** Alterna visibilidade das trajetórias. */
+  function handleTrajectoriesChange(event) {
+    showTrajectories = event.detail;
   }
 
   /** Alterna a projeção entre 2D e 3D. */
@@ -116,14 +130,19 @@
     selectedCreators,
     selectedSchools,
     selectedNationalities,
-    selectedLocalidade: null,
+    selectedLocalidade: selectedLocalidade || null,
   });
   // Bubbles de acervo não passam pelos filtros de sidebar: visibilidade
   // depende somente da pill ACERVO em `activeTypes` (filtrada dentro do WorldMap).
   $: bubblesWithAcervos = [...bubblesForMap, ...acervoBubbles];
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
-  $: trajectoriesForMap = applyTrajectoryFilter(trajectories, visibleBubbleIds);
+  $: trajectoriesForMap = showTrajectories ? applyTrajectoryFilter(trajectories, visibleBubbleIds) : [];
+  // Opções de localidade: países + continentes únicos das bubbles carregadas.
+  $: allLocalidades = [...new Set([
+    ...bubbles.map(b => b.country),
+    ...bubbles.map(b => b.continent),
+  ].filter(Boolean))].sort();
   $: birthCount = bubblesForMap.filter(b => b.type === 'birth').length;
   $: deathCount = bubblesForMap.filter(b => b.type === 'death').length;
 
@@ -167,7 +186,15 @@
     </div>
 
     <div class="header__controls">
-      <FilterControls {activeTypes} on:change={handleFilterChange} />
+      <Header
+        {activeTypes}
+        {selectedLocalidade}
+        localidades={allLocalidades}
+        {showTrajectories}
+        on:typeschange={handleFilterChange}
+        on:localidadechange={handleLocalidadeChange}
+        on:trajectorieschange={handleTrajectoriesChange}
+      />
       <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
     </div>
 
@@ -178,7 +205,15 @@
   </header>
 
   <div class="subheader">
-    <FilterControls {activeTypes} on:change={handleFilterChange} />
+    <Header
+      {activeTypes}
+      {selectedLocalidade}
+      localidades={allLocalidades}
+      {showTrajectories}
+      on:typeschange={handleFilterChange}
+      on:localidadechange={handleLocalidadeChange}
+      on:trajectorieschange={handleTrajectoriesChange}
+    />
     <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
   </div>
 
