@@ -37,6 +37,12 @@
   // Estado da sidebar (mobile)
   let sidebarOpen = false;
 
+  /** Estado collapse do ArtworkStrip — controla `bottomInset` do WorldMap. */
+  let artworkStripCollapsed = false;
+  /** Altura ocupada pela faixa: 280px expandida, 36px colapsada (só header).
+   * Quando não há obras, a faixa não renderiza e o inset é 0. */
+  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? 36 : 280);
+
   onMount(async () => {
     try {
       const data = await loadData();
@@ -295,6 +301,7 @@
           {activeTypes}
           {projectionType}
           locked={mapLocked}
+          bottomInset={artworkStripInset}
           on:artistclick={handleArtistClick}
         />
         <ArtistCard
@@ -304,16 +311,14 @@
           on:close={handleArtistClose}
         />
         <MapStats stats={statsBlock} />
+        <ArtworkStrip
+          artworks={artworksForStrip}
+          bind:collapsed={artworkStripCollapsed}
+          on:artistselect={handleArtistSelect}
+        />
       {/if}
     </main>
   </div>
-
-  {#if !loading && !error}
-    <ArtworkStrip
-      artworks={artworksForStrip}
-      on:artistselect={handleArtistSelect}
-    />
-  {/if}
 </div>
 
 <style lang="scss">

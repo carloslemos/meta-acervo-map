@@ -73,7 +73,7 @@
 
 <style lang="scss">
   .sidebar {
-    width: 220px;
+    width: var(--sidebar-width, 220px);
     flex-shrink: 0;
     border-right: 1px solid var(--bg-hl);
     background: var(--bg);

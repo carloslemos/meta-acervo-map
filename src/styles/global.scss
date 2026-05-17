@@ -18,7 +18,14 @@
   --death-color: #2ec09c;  /* verde água */
   --edu-color: #e89bd3;    /* rosa */
   --menu-height: 52px;
+  --sidebar-width: 220px;  /* largura da sidebar no desktop (≥1024px) */
   font-size: 13px;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --sidebar-width: 0px;  /* sidebar vira drawer overlay; faixa ocupa largura cheia */
+  }
 }
 
 html,

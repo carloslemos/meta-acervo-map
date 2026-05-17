@@ -10,6 +10,13 @@
   export let projectionType = '2d';
   /** Quando `true`, bloqueia totalmente interação (mouse, drag, zoom). */
   export let locked = false;
+  /**
+   * Margem inferior (em px) ocupada por overlays externos (ex.: ArtworkStrip).
+   * O canvas continua ocupando toda a altura do container, mas a projeção é
+   * centralizada apenas na altura visível (`height - bottomInset`), de modo
+   * que o globo não fique escondido sob o overlay.
+   */
+  export let bottomInset = 0;
 
   const dispatch = createEventDispatcher();
 
@@ -73,13 +80,15 @@
   // Parâmetros base proporcionais ao tamanho atual do canvas.
   // 2D: "content-fit" pela altura — o mapa preenche toda a altura do canvas
   // (pode ficar mais largo que o container; o pan revela o resto, contido).
+  /* Altura efetiva para centralizar a projeção, descontando overlays. */
+  $: effHeight = Math.max(1, height - bottomInset);
   $: BASE_2D = (() => {
-    if (width <= 0 || height <= 0) return { scale: 168, translate: [width / 2, height / 2] };
-    const tmp = d3.geoEqualEarth().rotate(CENTRAL_ROTATION).fitSize([Infinity, height], SPHERE);
-    return { scale: tmp.scale(), translate: [width / 2, height / 2] };
+    if (width <= 0 || effHeight <= 0) return { scale: 168, translate: [width / 2, effHeight / 2] };
+    const tmp = d3.geoEqualEarth().rotate(CENTRAL_ROTATION).fitSize([Infinity, effHeight], SPHERE);
+    return { scale: tmp.scale(), translate: [width / 2, effHeight / 2] };
   })();
   $: BASE_3D = {
-    scale: Math.min(width, height) * 0.44, // 220 quando 500x500
+    scale: Math.min(width, effHeight) * 0.44, // 220 quando 500x500 visíveis
   };
 
   // Bounds do mapa renderizado em pixels (no estado base k=1) — usado para
@@ -115,9 +124,9 @@
     const s3d = BASE_3D.scale * state3d.k;
 
     const txFrom = morphFrom === '2d' ? tx2d : width / 2;
-    const tyFrom = morphFrom === '2d' ? ty2d : height / 2;
+    const tyFrom = morphFrom === '2d' ? ty2d : effHeight / 2;
     const txTo   = morphTo   === '2d' ? tx2d : width / 2;
-    const tyTo   = morphTo   === '2d' ? ty2d : height / 2;
+    const tyTo   = morphTo   === '2d' ? ty2d : effHeight / 2;
     const rotFrom = morphFrom === '2d' ? CENTRAL_ROTATION : state3d.rotate;
     const rotTo   = morphTo   === '2d' ? CENTRAL_ROTATION : state3d.rotate;
 
@@ -174,12 +183,12 @@
     } else if (projectionType === '3d') {
       projection = d3.geoOrthographic()
         .scale(BASE_3D.scale * state3d.k)
-        .translate([width / 2, height / 2])
+        .translate([width / 2, effHeight / 2])
         .rotate(state3d.rotate)
         .clipAngle(90);
       projectionUnclipped = d3.geoOrthographic()
         .scale(BASE_3D.scale * state3d.k)
-        .translate([width / 2, height / 2])
+        .translate([width / 2, effHeight / 2])
         .rotate(state3d.rotate);
     } else {
       const tx = BASE_2D.translate[0] * state2d.k + state2d.x;
