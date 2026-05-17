@@ -27,7 +27,7 @@
   let acervoBubbles = [];
   let artworksByCreator = new Map();
   let selectedArtist = null;
-  let activeTypes = new Set(['birth', 'education', 'death', 'acervo']);
+  let activeTypes = new Set(['birth', 'education']);
   let projectionType = '3d';
   let activeAcervos = new Set();
   let allAcervos = [];

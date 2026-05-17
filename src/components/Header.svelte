@@ -4,7 +4,7 @@
   import AutocompleteSelect from './AutocompleteSelect.svelte';
 
   /** Conjunto de tipos de bubble visíveis. */
-  export let activeTypes = new Set(['birth', 'education', 'death', 'acervo']);
+  export let activeTypes = new Set(['birth', 'education']);
 
   /** Localidade selecionada (país OU continente). String vazia = sem filtro. */
   export let selectedLocalidade = '';
