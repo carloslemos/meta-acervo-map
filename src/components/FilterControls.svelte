@@ -10,6 +10,7 @@
     { type: 'birth',     label: 'Nascimento', color: TYPE_COLOR.birth,     disabled: false },
     { type: 'education', label: 'Estudo',     color: TYPE_COLOR.education, disabled: false },
     { type: 'death',     label: 'Morte',      color: TYPE_COLOR.death,     disabled: false },
+    { type: 'acervo',    label: 'Acervo',     color: TYPE_COLOR.acervo,    disabled: false },
   ];
 
   /** Alterna a presença de um tipo de bubble (nascimento/estudo/morte) no conjunto ativo. */

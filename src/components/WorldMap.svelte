@@ -948,7 +948,8 @@
     const mx = (e.clientX - rect.left) * scaleX;
     const my = (e.clientY - rect.top) * scaleY;
     const found = bubbleQuadtree.find(mx, my, BUBBLE_RADIUS + 4);
-    if (found) {
+    // Bubbles de acervo não disparam interação de artista.
+    if (found && found.bubble.type !== 'acervo') {
       dispatch('artistclick', found.bubble);
     }
   }

@@ -10,9 +10,10 @@
 
   let bubbles = [];
   let trajectories = [];
+  let acervoBubbles = [];
   let artworksByCreator = new Map();
   let selectedArtist = null;
-  let activeTypes = new Set(['birth', 'education', 'death']);
+  let activeTypes = new Set(['birth', 'education', 'death', 'acervo']);
   let projectionType = '3d';
   let activeAcervos = new Set();
   let allAcervos = [];
@@ -35,6 +36,7 @@
       const data = await loadData();
       bubbles = data.bubbles;
       trajectories = data.trajectories;
+      acervoBubbles = data.acervoBubbles ?? [];
       artworksByCreator = data.artworksByCreator ?? new Map();
       allAcervos = [...new Set(bubbles.flatMap(b => b.acervos).filter(Boolean))].sort();
       activeAcervos = new Set(allAcervos);
@@ -115,6 +117,9 @@
     selectedNationalities,
     selectedLocalidade: null,
   });
+  // Bubbles de acervo não passam pelos filtros de sidebar: visibilidade
+  // depende somente da pill ACERVO em `activeTypes` (filtrada dentro do WorldMap).
+  $: bubblesWithAcervos = [...bubblesForMap, ...acervoBubbles];
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
   $: trajectoriesForMap = applyTrajectoryFilter(trajectories, visibleBubbleIds);
@@ -187,7 +192,7 @@
         <div class="state-message state-message--error">Erro: {error}</div>
       {:else}
         <WorldMap
-          bubbles={bubblesForMap}
+          bubbles={bubblesWithAcervos}
           trajectories={trajectoriesForMap}
           {activeTypes}
           {projectionType}

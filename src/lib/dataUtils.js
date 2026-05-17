@@ -115,34 +115,49 @@ export function sortArtworks(artworks) {
 
 /**
  * Carrega o CSV de acervos geolocalizados e retorna bubbles do tipo `acervo`.
- * Linhas sem lat/lon válidos são ignoradas silenciosamente.
+ * Linhas sem lat/lon válidos são ignoradas silenciosamente. Acervos que
+ * compartilham a mesma coordenada (arredondada a 4 casas ≈ 11 m) são
+ * agrupados em uma única bubble cujo `creator` concatena os nomes.
  *
  * @returns {Promise<object[]>}
  */
 async function loadAcervoBubbles() {
   const rows = await d3.csv('acervos_geolocated.csv');
-  const out = [];
-  rows.forEach((row, i) => {
+  /** @type {Map<string, { lat: number, lon: number, names: string[] }>} */
+  const groups = new Map();
+  for (const row of rows) {
     const acervo = (row.acervo ?? '').trim();
     const lat = parseFloat(row.lat);
     const lon = parseFloat(row.lon);
-    if (!acervo || isNaN(lat) || isNaN(lon)) return;
+    if (!acervo || isNaN(lat) || isNaN(lon)) continue;
     const name = ACERVO_ALIASES[acervo] ?? acervo;
+    const key = `${lat.toFixed(4)},${lon.toFixed(4)}`;
+    const g = groups.get(key);
+    if (g) {
+      if (!g.names.includes(name)) g.names.push(name);
+    } else {
+      groups.set(key, { lat, lon, names: [name] });
+    }
+  }
+  const out = [];
+  let i = 0;
+  for (const { lat, lon, names } of groups.values()) {
+    const label = names.join(', ');
     out.push({
-      id: `acervo-${i}`,
-      creator: name,
+      id: `acervo-${i++}`,
+      creator: label,
       lat,
       lon,
       type: 'acervo',
-      place: name,
-      acervos: [name],
+      place: label,
+      acervos: names,
       educatedAt: [],
       nationality: '',
       gender: 'unknown',
       score: 0,
       confidence: null,
     });
-  });
+  }
   return out;
 }
 
