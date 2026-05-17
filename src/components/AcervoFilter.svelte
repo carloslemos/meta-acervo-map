@@ -1,21 +1,13 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import ToggleGroup from './ToggleGroup.svelte';
 
   export let acervos = [];
   export let activeAcervos = new Set();
 
   const dispatch = createEventDispatcher();
 
-  /** Alterna a presença de um acervo no conjunto ativo. */
-  function toggle(acervo) {
-    const next = new Set(activeAcervos);
-    if (next.has(acervo)) {
-      next.delete(acervo);
-    } else {
-      next.add(acervo);
-    }
-    dispatch('change', next);
-  }
+  $: items = acervos.map(a => ({ value: a, label: a }));
 
   /** Seleciona todos os acervos. */
   function selectAll() {
@@ -38,21 +30,12 @@
     </div>
   </div>
 
-  <ul class="acervo-filter__list">
-    {#each acervos as acervo (acervo)}
-      {@const active = activeAcervos.has(acervo)}
-      <li>
-        <button
-          class="pill"
-          class:pill--active={active}
-          aria-pressed={active}
-          on:click={() => toggle(acervo)}
-        >
-          {acervo}
-        </button>
-      </li>
-    {/each}
-  </ul>
+  <ToggleGroup
+    {items}
+    active={activeAcervos}
+    layout="list"
+    on:change={e => dispatch('change', e.detail)}
+  />
 </div>
 
 <style lang="scss">
@@ -103,46 +86,5 @@
     color: var(--bg-hl);
   }
 
-  .acervo-filter__list {
-    list-style: none;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--bg-hl) transparent;
-    padding: 0.75rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
 
-  .pill {
-    all: unset;
-    display: inline-block;
-    width: 100%;
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.25rem;
-    border: 1px solid var(--bg-hl);
-    color: var(--txt-hl);
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    text-align: left;
-    box-sizing: border-box;
-    transition: background 0.1s, color 0.1s, border-color 0.1s;
-
-    &:hover {
-      border-color: var(--txt-l);
-      color: var(--txt);
-    }
-  }
-
-  .pill--active {
-    background: var(--txt);
-    border-color: var(--txt);
-    color: var(--bg);
-
-    &:hover {
-      background: var(--txt-l);
-      border-color: var(--txt-l);
-    }
-  }
 </style>

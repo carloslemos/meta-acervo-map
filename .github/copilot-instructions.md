@@ -18,17 +18,23 @@ Mapa interativo de criadores da base **Meta-Acervos** (FAU-USP). Plota nasciment
 
 ```
 source/
-  resultado_geolocalizado.csv   # dataset principal
+  atlas_ma_0501_v2.csv          # dataset principal
+  educated_at_geolocated.csv    # geolocalização de instituições de ensino
   countries-110m.json           # mapa-base (Natural Earth 110m TopoJSON)
 src/
   App.svelte                    # estado global, carrega dados, conecta filtros
   main.js                       # bootstrap
-  lib/dataUtils.js              # loadData() — CSV → bubbles[]
+  lib/
+    constants.js                # fonte de verdade: TYPE_COLOR, TYPE_LABEL, BUBBLE_RADIUS, CENTRAL_ROTATION, REF_W, REF_H
+    dataUtils.js                # loadData() — CSV → bubbles[] + trajectories[]
   components/
-    WorldMap.svelte             # SVG D3 + projeção Natural Earth
+    WorldMap.svelte             # SVG/Canvas D3 + projeção Natural Earth (2D e globo 3D)
     Tooltip.svelte              # tooltip flutuante por hover
     FilterControls.svelte       # filtro por tipo (birth/death/education)
-    AcervoFilter.svelte         # filtro por acervo
+    AcervoFilter.svelte         # filtro por acervo (usa ToggleGroup)
+    GenderFilter.svelte         # filtro por gênero (usa ToggleGroup)
+    ToggleGroup.svelte          # pills alternáveis reutilizáveis — layout 'wrap' ou 'list'
+    ProjectionToggle.svelte     # alterna projeção 2D ↔ globo 3D
     AutocompleteSelect.svelte   # input de autocomplete reutilizável
     Sidebar.svelte              # composição dos filtros
   styles/global.scss            # variáveis CSS (--bg, --bg-l, --txt, --accent)
@@ -36,7 +42,7 @@ src/
 
 ## Modelo de dados — "bubble"
 
-`loadData()` em `src/lib/dataUtils.js` lê o CSV e gera um array de bubbles. Cada linha do CSV pode produzir até 3 bubbles (uma por tipo).
+`loadData()` em `src/lib/dataUtils.js` lê o CSV e gera um array de bubbles e um array de trajetórias. Cada linha do CSV pode produzir até 3 bubbles (uma por tipo) e um objeto `trajectory` com segmentos `from → to`.
 
 ```js
 {
@@ -49,12 +55,24 @@ src/
   acervos: string[],
   educatedAt: string[],
   nationality: string,
+  gender: string,           // 'male' | 'female' | 'non-binary' | 'unknown'
   score: number,
-  schoolName?: string,   // só em type === 'education'
+  confidence: 'alta' | 'médio' | 'baixo' | null,
+  dxBase: number,           // offset de colisão pré-computado
+  dyBase: number,
+  schoolName?: string,      // só em type === 'education'
 }
 ```
 
-Cores canônicas por tipo (definidas em `WorldMap.svelte` e `Tooltip.svelte`):
+Trajetória:
+```js
+{
+  creator: string,
+  segments: [{ from: bubble, to: bubble, kind: string }],
+}
+```
+
+Cores canônicas por tipo — definidas em `src/lib/constants.js` (`TYPE_COLOR`) e importadas por todos os módulos que as usam. **Não duplicar hex strings nos componentes.**
 
 | type | cor | hex |
 |---|---|---|
@@ -68,19 +86,22 @@ Cores canônicas por tipo (definidas em `WorldMap.svelte` e `Tooltip.svelte`):
 - **SCSS**: use as variáveis CSS já definidas (`var(--bg)`, `var(--txt)`, etc.) em vez de hardcoded.
 - **Acesso ao CSV**: sempre via `d3.csv()` em `dataUtils.js`. Componentes não leem o arquivo diretamente.
 - **Filtros**: dispatcham eventos `change` com um `Set` no `event.detail`. O estado mestre vive em `App.svelte`.
+- **Constantes compartilhadas**: `TYPE_COLOR`, `TYPE_LABEL`, `BUBBLE_RADIUS`, `CENTRAL_ROTATION`, `REF_W`, `REF_H` vivem em `src/lib/constants.js`. Importar de lá; nunca redefinir inline.
+- **Pills alternáveis**: usar `ToggleGroup.svelte` com `items: { value, label }[]` e `active: Set`. Não duplicar lógica de toggle em novos filtros.
 - **Não criar arquivos markdown de documentação** sobre mudanças, salvo pedido explícito.
 
 ## Fluxo de dados
 
-1. `App.svelte` chama `loadData()` no `onMount`
-2. Deriva listas únicas de acervos / escolas / nacionalidades
-3. Passa `bubbles` + filtros ativos para `WorldMap`
-4. `WorldMap` filtra por `activeTypes` e renderiza um `<circle>` por bubble visível
-5. Hover dispara evento que atualiza `Tooltip`
+1. `App.svelte` chama `loadData()` no `onMount` — retorna `{ bubbles, trajectories }`
+2. Deriva listas únicas de acervos / gêneros / escolas / nacionalidades
+3. Computa reativamente `bubblesForMap` e `trajectoriesForMap` aplicando todos os filtros ativos
+4. Passa os dados filtrados + estado de filtros para `WorldMap` e `Sidebar`
+5. `WorldMap` renderiza bubbles e trajetórias em canvas (camada estática + dinâmica)
+6. Hover dispara evento `bubblehover` que atualiza `Tooltip`
 
 ## Ao adicionar novo tipo de bubble (ex: `burial`)
 
 1. Adicionar bloco `if (!isNaN(lat) && !isNaN(lon))` em `loadData()` seguindo o padrão de `birth`/`death`/`education`
-2. Adicionar entrada em `TYPE_COLOR` (em `WorldMap.svelte` **e** `Tooltip.svelte`) e em `TYPE_LABEL` (`Tooltip.svelte`)
+2. Adicionar entrada em `TYPE_COLOR` e `TYPE_LABEL` em **`src/lib/constants.js`** (única fonte de verdade)
 3. Adicionar entrada em `FILTERS` (`FilterControls.svelte`) com `disabled: false` se houver dados
 4. Verificar cobertura dos dados antes — ver skill `/csv-data`

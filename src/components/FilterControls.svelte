@@ -1,14 +1,15 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { TYPE_COLOR } from '../lib/constants.js';
 
   export let activeTypes = new Set(['birth', 'education', 'death']);
 
   const dispatch = createEventDispatcher();
 
   const FILTERS = [
-    { type: 'birth',     label: 'Nascimento', color: '#2563eb', disabled: false },
-    { type: 'education', label: 'Estudo',     color: '#16a34a', disabled: false },
-    { type: 'death',     label: 'Morte',      color: '#dc2626', disabled: false },
+    { type: 'birth',     label: 'Nascimento', color: TYPE_COLOR.birth,     disabled: false },
+    { type: 'education', label: 'Estudo',     color: TYPE_COLOR.education, disabled: false },
+    { type: 'death',     label: 'Morte',      color: TYPE_COLOR.death,     disabled: false },
   ];
 
   /** Alterna a presença de um tipo de bubble (nascimento/estudo/morte) no conjunto ativo. */

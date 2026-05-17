@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { TYPE_COLOR, TYPE_LABEL } from '../lib/constants.js';
 
   export let bubble = null;
   export let x = 0;
@@ -12,17 +13,7 @@
   let tooltipWidth = 0;
   let tooltipHeight = 0;
 
-  const TYPE_LABEL = {
-    birth: 'Nascimento',
-    death: 'Morte',
-    education: 'Estudo',
-  };
-
-  const TYPE_COLOR = {
-    birth: '#2563eb',
-    death: '#dc2626',
-    education: '#16a34a',
-  };
+  // TYPE_LABEL e TYPE_COLOR importados de constants.js
 
   const CONFIDENCE_COLOR = {
     alta: '#16a34a',      // verde

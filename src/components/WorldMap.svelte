@@ -2,6 +2,7 @@
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import * as d3 from 'd3';
   import * as topojson from 'topojson-client';
+  import { TYPE_COLOR, BUBBLE_RADIUS, CENTRAL_ROTATION } from '../lib/constants.js';
 
   export let bubbles = [];
   export let trajectories = [];
@@ -10,7 +11,6 @@
 
   const dispatch = createEventDispatcher();
 
-  const BUBBLE_RADIUS = 2.5;
   const TAU = 2 * Math.PI;
 
   // ─── Animação de fluxo nas trajetórias ───────────────────────────────────
@@ -38,7 +38,7 @@
   let countriesMesh = null;
 
   // Meridiano central ~-54°W — Brasil no centro do mundo (estilo IBGE, abr/2024).
-  const CENTRAL_ROTATION = [54, 0, 0];
+  // CENTRAL_ROTATION importado de constants.js
 
   // Estado por projeção — preservado ao alternar de volta.
   // 2D: transform de zoom {k, x, y}. 3D: rotação + fator de zoom k.
@@ -234,11 +234,7 @@
 
   const SPHERE = { type: 'Sphere' };
 
-  const TYPE_COLOR = {
-    birth: '#2563eb',
-    death: '#dc2626',
-    education: '#16a34a',
-  };
+  // TYPE_COLOR importado de constants.js
 
   /** Ajusta as dimensões internas dos canvases (foreground e background) ao DPR atual. */
   function applyCanvasDims() {

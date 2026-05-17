@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { BUBBLE_RADIUS, CENTRAL_ROTATION, REF_W, REF_H } from './constants.js';
 
 // Aliases para unificar grafias diferentes do mesmo acervo.
 // Exemplo: "MAC USP" e "MAC" referem-se à mesma coleção.
@@ -265,15 +266,14 @@ export async function loadData() {
   //   y = projected.y + dyBase / k
   // Em 3D, o offset é aplicado direto (boa aproximação fora das bordas do globo).
   // Roda forceCollide uma única vez aqui, evitando recomputo a cada pan/zoom.
-  const REF_W = 960;
-  const REF_H = 500;
-  const REF_ROTATION = [54, 0, 0]; // mesmo CENTRAL_ROTATION usado em WorldMap
+  // REF_W, REF_H e CENTRAL_ROTATION importados de constants.js
+  const REF_ROTATION = CENTRAL_ROTATION;
   const refProj = d3.geoEqualEarth()
     .rotate(REF_ROTATION)
     .fitSize([Infinity, REF_H], { type: 'Sphere' })
     .translate([REF_W / 2, REF_H / 2]);
 
-  const RADIUS = 2.5; // mesmo BUBBLE_RADIUS de WorldMap
+  const RADIUS = BUBBLE_RADIUS;
   const nodes = [];
   const projected = new Array(bubbles.length);
   for (let i = 0; i < bubbles.length; i++) {
