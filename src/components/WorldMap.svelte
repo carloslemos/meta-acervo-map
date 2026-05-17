@@ -662,13 +662,10 @@
       bgCtx.lineWidth = 0.6;
       bgCtx.stroke();
     } else {
-      /* Fundo do mapa 2D: base escura + gradiente vertical igual ao modo 3D */
-      bgCtx.fillStyle = '#0a0a0a';
-      bgCtx.fillRect(0, 0, width, height);
+      /* Fundo do mapa 2D: gradiente vertical sólido — topo preto → base cinza */
       const vertGrad2d = bgCtx.createLinearGradient(0, 0, 0, height);
-      vertGrad2d.addColorStop(0,    'rgba(0, 0, 0, 0.65)');
-      vertGrad2d.addColorStop(0.45, 'rgba(0, 0, 0, 0.15)');
-      vertGrad2d.addColorStop(1,    'rgba(0, 0, 0, 0)');
+      vertGrad2d.addColorStop(0, 'rgba(0, 0, 0, 1)');
+      vertGrad2d.addColorStop(1, 'rgba(94, 94, 94, 1)');
       bgCtx.fillStyle = vertGrad2d;
       bgCtx.fillRect(0, 0, width, height);
     }
@@ -677,7 +674,7 @@
       // Um único path agregando todos os países: 1 fill em vez de 177.
       bgCtx.beginPath();
       geoPath(countriesFeature);
-      bgCtx.fillStyle = isGlobe ? '#2a2a2a' : '#555555';
+      bgCtx.fillStyle = isGlobe ? '#404040' : 'rgba(125, 125, 125, 1)';
       bgCtx.fill();
 
       // Bordas via mesh interno (cada borda compartilhada desenhada uma vez).
@@ -1123,10 +1120,12 @@
     on:mouseleave={onMouseLeave}
     on:click={onClick}
   ></canvas>
-  <!-- Gradientes de profundidade sobre o canvas -->
+  <!-- Gradientes de profundidade sobre o canvas: apenas no modo globo 3D -->
+  {#if projectionType === '3d'}
   <div class="map-vignette" aria-hidden="true"></div>
   <div class="map-gradient-top" aria-hidden="true"></div>
   <div class="map-gradient-left" aria-hidden="true"></div>
+  {/if}
 </div>
 
 <style lang="scss">
