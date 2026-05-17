@@ -662,7 +662,14 @@
       bgCtx.lineWidth = 0.6;
       bgCtx.stroke();
     } else {
+      /* Fundo do mapa 2D: base escura + gradiente vertical igual ao modo 3D */
       bgCtx.fillStyle = '#0a0a0a';
+      bgCtx.fillRect(0, 0, width, height);
+      const vertGrad2d = bgCtx.createLinearGradient(0, 0, 0, height);
+      vertGrad2d.addColorStop(0,    'rgba(0, 0, 0, 0.65)');
+      vertGrad2d.addColorStop(0.45, 'rgba(0, 0, 0, 0.15)');
+      vertGrad2d.addColorStop(1,    'rgba(0, 0, 0, 0)');
+      bgCtx.fillStyle = vertGrad2d;
       bgCtx.fillRect(0, 0, width, height);
     }
 
@@ -670,7 +677,7 @@
       // Um único path agregando todos os países: 1 fill em vez de 177.
       bgCtx.beginPath();
       geoPath(countriesFeature);
-      bgCtx.fillStyle = '#2a2a2a';
+      bgCtx.fillStyle = isGlobe ? '#2a2a2a' : '#555555';
       bgCtx.fill();
 
       // Bordas via mesh interno (cada borda compartilhada desenhada uma vez).
@@ -679,7 +686,7 @@
       if (countriesMesh) {
         bgCtx.beginPath();
         geoPath(countriesMesh);
-        bgCtx.strokeStyle = '#0a0a0a';
+        bgCtx.strokeStyle = isGlobe ? '#0a0a0a' : '#3a3a3a';
         bgCtx.lineWidth = 0.5;
         bgCtx.stroke();
       }
