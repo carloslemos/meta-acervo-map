@@ -1,6 +1,19 @@
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client';
-import { BUBBLE_RADIUS, CENTRAL_ROTATION, REF_W, REF_H, ISO_CONTINENT } from './constants.js';
+import {
+  BUBBLE_RADIUS,
+  CENTRAL_ROTATION,
+  REF_W,
+  REF_H,
+  ISO_CONTINENT,
+  UNDATED_YEAR,
+  CSV_CREATORS_PATH,
+  CSV_CREATORS_DELIMITER,
+  CSV_EDUCATED_AT_PATH,
+  CSV_ACERVOS_PATH,
+  JSON_ARTWORKS_PATH,
+  GEOJSON_COUNTRIES_PATH,
+} from './constants.js';
 
 // Aliases para unificar grafias diferentes do mesmo acervo.
 // Exemplo: "MAC USP" e "MAC" referem-se à mesma coleção.
@@ -53,7 +66,7 @@ function normalizeInstitutionKey(name) {
  * @returns {Promise<Map<string, { lat: number, lon: number }>>}
  */
 async function loadEducatedAtIndex() {
-  const rows = await d3.csv('educated_at_geolocated.csv');
+  const rows = await d3.csv(CSV_EDUCATED_AT_PATH);
   const index = new Map();
   for (const row of rows) {
     const name = row['educated at'];
@@ -95,14 +108,14 @@ export function continentForIsoId(isoId) {
 }
 
 /**
- * Ordena obras por `year` descendente. Obras com `year === 9999`, `null`,
+ * Ordena obras por `year` descendente. Obras com `year === UNDATED_YEAR`, `null`,
  * `undefined` ou não-numérico vão para o final, na ordem original entre si.
  *
  * @param {object[]} artworks
  * @returns {object[]} novo array ordenado (não muta o original)
  */
 export function sortArtworks(artworks) {
-  const isUndated = (y) => y === null || y === undefined || y === 9999 || typeof y !== 'number' || Number.isNaN(y);
+  const isUndated = (y) => y === null || y === undefined || y === UNDATED_YEAR || typeof y !== 'number' || Number.isNaN(y);
   return [...artworks].sort((a, b) => {
     const au = isUndated(a.year);
     const bu = isUndated(b.year);
@@ -122,7 +135,7 @@ export function sortArtworks(artworks) {
  * @returns {Promise<object[]>}
  */
 async function loadAcervoBubbles() {
-  const rows = await d3.csv('acervos_geolocated.csv');
+  const rows = await d3.csv(CSV_ACERVOS_PATH);
   /** @type {Map<string, { lat: number, lon: number, names: string[] }>} */
   const groups = new Map();
   for (const row of rows) {
@@ -163,12 +176,12 @@ async function loadAcervoBubbles() {
 
 /**
  * Carrega o JSON de obras e retorna um Map `creator -> obras[]` já ordenado
- * por `year` descendente (9999/null por último).
+ * por `year` descendente (UNDATED_YEAR/null por último).
  *
  * @returns {Promise<Map<string, object[]>>}
  */
 async function loadArtworksByCreator() {
-  const resp = await fetch(`${import.meta.env?.BASE_URL ?? '/'}20250705_processed.json`);
+  const resp = await fetch(`${import.meta.env?.BASE_URL ?? '/'}${JSON_ARTWORKS_PATH}`);
   if (!resp.ok) throw new Error(`Falha ao carregar JSON de obras: ${resp.status}`);
   const dict = await resp.json();
   /** @type {Map<string, object[]>} */
@@ -211,11 +224,11 @@ async function loadArtworksByCreator() {
  */
 export async function loadData() {
   const [rows, educatedAtIndex, artworksByCreator, acervoBubbles, topo] = await Promise.all([
-    d3.dsv(';', 'atlas_ma_0501_v2.csv'),
+    d3.dsv(CSV_CREATORS_DELIMITER, CSV_CREATORS_PATH),
     loadEducatedAtIndex(),
     loadArtworksByCreator(),
     loadAcervoBubbles(),
-    d3.json('countries-110m.json'),
+    d3.json(GEOJSON_COUNTRIES_PATH),
   ]);
   const bubbles = [];
   /** @type {Map<number, { creator: string, birth?: object, educations?: object[], death?: object }>} */

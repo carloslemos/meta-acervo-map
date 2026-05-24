@@ -9,6 +9,14 @@
   import MapStats from './components/MapStats.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
+import {
+  UNDATED_YEAR,
+  ARTWORK_STRIP_HEIGHT_EXPANDED,
+  ARTWORK_STRIP_HEIGHT_COLLAPSED,
+  BREAKPOINT_MOBILE,
+  SIDEBAR_BACKDROP_OPACITY,
+  SIDEBAR_BACKDROP_COLOR,
+} from './lib/constants.js';
 
   const LS_STRIP_KEY = 'meta-acervo:artwork-strip-collapsed';
 
@@ -53,9 +61,10 @@
    * Inicializado do localStorage para persistir entre reloads. */
   let artworkStripCollapsed = readCollapsed();
   $: saveCollapsed(artworkStripCollapsed);
-  /** Altura ocupada pela faixa: 280px expandida, 36px colapsada (só header).
+  /** Altura ocupada pela faixa: ARTWORK_STRIP_HEIGHT_EXPANDED quando expandida,
+   * ARTWORK_STRIP_HEIGHT_COLLAPSED quando colapsada.
    * Quando não há obras, a faixa não renderiza e o inset é 0. */
-  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? 36 : 220);
+  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? ARTWORK_STRIP_HEIGHT_COLLAPSED : ARTWORK_STRIP_HEIGHT_EXPANDED);
 
   onMount(async () => {
     try {
@@ -188,8 +197,8 @@
     }
     // Já vem ordenada por criador via sortArtworks no loadData, mas o flatmap
     // entre criadores precisa re-ordenar. Aplicamos a mesma regra inline:
-    // year desc, 9999/null/não-numérico ao final preservando ordem original.
-    const isUndated = (y) => y === null || y === undefined || y === 9999 || typeof y !== 'number' || Number.isNaN(y);
+    // year desc, UNDATED_YEAR/null/não-numérico ao final preservando ordem original.
+    const isUndated = (y) => y === null || y === undefined || y === UNDATED_YEAR || typeof y !== 'number' || Number.isNaN(y);
     return out.sort((a, b) => {
       const au = isUndated(a.year);
       const bu = isUndated(b.year);
@@ -466,6 +475,7 @@
   }
 
   .menu-toggle:hover {
+    /* opacity: SIDEBAR_BACKDROP_OPACITY (0.8) */
     opacity: 0.8;
   }
 
@@ -474,17 +484,18 @@
     line-height: 1;
   }
 
-  /* ─── Sidebar backdrop (overlay quando sidebar aberta em mobile) ─────── */
+  /* Sidebar backdrop (overlay quando sidebar aberta em mobile) ─────── */
   .sidebar-backdrop {
     display: none;
     position: fixed;
     inset: 0;
+    /* background: SIDEBAR_BACKDROP_COLOR (rgba(0, 0, 0, 0.5)) */
     background: rgba(0, 0, 0, 0.5);
     z-index: 99;
     top: var(--menu-height);
   }
 
-  /* ─── Responsive: mobile (<1024px) ────────────────────────────────────── */
+  /* Responsive: mobile (<BREAKPOINT_MOBILE: 1023px) ────────────────────────────────────── */
   @media (max-width: 1023px) {
     .header {
       padding: 0 1.5rem 0 0;

@@ -1,5 +1,10 @@
 <script>
   import { createEventDispatcher, onDestroy } from 'svelte';
+import {
+  UNDATED_YEAR,
+  ARTWORK_STRIP_HOVER_DELAY,
+  ARTWORK_STRIP_TRANSITION_DURATION,
+} from '../lib/constants.js';
 
   /**
    * Lista de obras já filtrada e ordenada por `App.svelte`.
@@ -37,9 +42,9 @@
     if (artwork?.creator) dispatch('artistselect', artwork.creator);
   }
 
-  /** Decide se o ano deve ser exibido (oculta 9999/null). */
+  /** Decide se o ano deve ser exibido (oculta UNDATED_YEAR/null). */
   function showYear(year) {
-    return typeof year === 'number' && year !== 9999;
+    return typeof year === 'number' && year !== UNDATED_YEAR;
   }
 
   function toggleCollapsed() {
@@ -52,14 +57,14 @@
   /** Coordenadas do cursor para posicionar o tooltip. */
   let tipX = 0;
   let tipY = 0;
-  /** Timer do delay de 300ms antes de exibir o tooltip. */
+  /** Timer do delay antes de exibir o tooltip. */
   let hoverTimer = null;
 
   function onArtworkPointerEnter(event, art) {
     tipX = event.clientX;
     tipY = event.clientY;
     clearTimeout(hoverTimer);
-    hoverTimer = setTimeout(() => { hoveredArt = art; }, 300);
+    hoverTimer = setTimeout(() => { hoveredArt = art; }, ARTWORK_STRIP_HOVER_DELAY);
   }
 
   function onArtworkPointerMove(event) {
@@ -228,16 +233,19 @@
     background: var(--bg);
     color: var(--txt);
     pointer-events: auto;
+    /* height: ARTWORK_STRIP_HEIGHT_EXPANDED (220px) */
     height: 220px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-sizing: border-box;
     z-index: 5;
+    /* transition: height ARTWORK_STRIP_TRANSITION_DURATION (200ms) */
     transition: height 200ms ease-out;
   }
 
   .artwork-strip--collapsed {
+    /* height: ARTWORK_STRIP_HEIGHT_COLLAPSED (36px) */
     height: 36px;
   }
 

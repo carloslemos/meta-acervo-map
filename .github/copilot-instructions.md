@@ -88,9 +88,101 @@ Cores canônicas por tipo — definidas em `src/lib/constants.js` (`TYPE_COLOR`)
 - **SCSS**: use as variáveis CSS já definidas (`var(--bg)`, `var(--txt)`, etc.) em vez de hardcoded.
 - **Acesso ao CSV**: sempre via `d3.csv()` em `dataUtils.js`. Componentes não leem o arquivo diretamente.
 - **Filtros**: dispatcham eventos `change` com um `Set` no `event.detail`. O estado mestre vive em `App.svelte`. Os **predicados de filtragem** vivem em `src/lib/filterModel.js` (`applyFilters`, `applyTrajectoryFilter`) — adicionar um novo filtro requer apenas estender o parâmetro e o predicado nesse módulo.
-- **Constantes compartilhadas**: `TYPE_COLOR`, `TYPE_LABEL`, `BUBBLE_RADIUS`, `CENTRAL_ROTATION`, `REF_W`, `REF_H` vivem em `src/lib/constants.js`. Importar de lá; nunca redefinir inline.
+- **Constantes compartilhadas**: `TYPE_COLOR`, `TYPE_LABEL`, `BUBBLE_RADIUS`, `CENTRAL_ROTATION`, REF_W`, `REF_H` vivem em `src/lib/constants.js`. Importar de lá; nunca redefinir inline.
 - **Pills alternáveis**: usar `ToggleGroup.svelte` com `items: { value, label }[]` e `active: Set`. Não duplicar lógica de toggle em novos filtros.
 - **Não criar arquivos markdown de documentação** sobre mudanças, salvo pedido explícito.
+
+## Constantes e Magic Numbers — `src/lib/constants.js`
+
+**Princípio**: Nenhum valor hardcoded deve estar espalhado nos componentes. Cores, durations, dimensões, URLs e textos imutáveis pertencem a `constants.js`.
+
+### O que vai em `constants.js`
+
+✅ **Valores imutáveis que podem ser alterados globalmente:**
+- Cores (TYPE_COLOR, TRAJECTORY_FLOW_COLOR_NORMAL, etc.)
+- Rótulos/labels (TYPE_LABEL, CONFIDENCE_LABEL, etc.)
+- Dimensões fixas (BUBBLE_RADIUS, ARTWORK_STRIP_HEIGHT_EXPANDED, etc.)
+- Durations de animação (TRANSITION_FAST, ARTWORK_STRIP_TRANSITION_DURATION, etc.)
+- URLs, paths, endpoints
+- Valores sentinela (UNDATED_YEAR = 9999)
+- Fatores de escala (PROJECTION_3D_SCALE_FACTOR, etc.)
+- Breakpoints (BREAKPOINT_MOBILE, etc.)
+- Flags de features (TRAJECTORY_FLOW_ENABLED, PROJECTION_MORPH_ENABLED, etc.)
+
+❌ **O que NÃO vai em constants.js:**
+- State reativo (use `export let` em Svelte ou stores)
+- Valores computados dinamicamente (altura do canvas, posições, etc.)
+- State transitório (hover, seleção atual, etc.)
+
+### Estrutura de constants.js
+
+Constantes organizadas por seção (comentários `// ─── Seção ───`), com documentação de propósito:
+
+```javascript
+// ─── Cores e rótulos por tipo de bubble ──────────────────────────────────────
+export const TYPE_COLOR = { ... };
+export const TYPE_LABEL = { ... };
+
+// ─── Trajetórias: animação de fluxo ──────────────────────────────────────────
+export const TRAJECTORY_FLOW_ENABLED = true;
+export const TRAJECTORY_FLOW_SPEED_PX = 0.06;
+// ... etc
+```
+
+### Como usar constantes
+
+**Importar:**
+```svelte
+<!-- Em World.svelte, por exemplo -->
+<script>
+  import { 
+    TYPE_COLOR, 
+    TRAJECTORY_FLOW_SPEED_PX,
+    ARTWORK_STRIP_HEIGHT_EXPANDED 
+  } from '../lib/constants.js';
+</script>
+```
+
+**Usar:**
+```javascript
+// Em componente Svelte
+const color = TYPE_COLOR.birth;
+const speed = TRAJECTORY_FLOW_SPEED_PX;
+
+// Em CSS (se variável CSS)
+fill: var(--accent);
+
+// Em lógica
+if (height > ARTWORK_STRIP_HEIGHT_EXPANDED) { ... }
+```
+
+### Como adicionar nova constante
+
+1. **Identificar** se é realmente uma constante (valor imutável? será alterado globalmente?)
+2. **Adicionar a constants.js** na seção apropriada (ou criar seção se necessário):
+   ```javascript
+   // ─── Nova Seção ───────────────────────────────────────────────────────
+   /** Descrição do propósito e contexto. */
+   export const NEW_CONSTANT_NAME = value;
+   ```
+3. **Documenting**: adicionar comentário explicativo
+4. **Importar e usar** nos componentes
+
+### Exemplo: Mudar cor do fluxo de trajetória
+
+**Antes** (sem constantes): vasculhar WorldMap.svelte, achar `const FLOW_COLOR_HIGHLIGHT = '#e68d0c'`, mudar, esperar que não haja outra cópia em outro arquivo.
+
+**Depois** (com constantes): 
+1. Mudar `constants.js`: `export const TRAJECTORY_FLOW_COLOR_HIGHLIGHT = '#ffffff'` (branco)
+2. Rebuildar/recarregar. Feito.
+
+### Exemplo: Trocar arquivo CSV de criadores
+
+**Antes** (sem constantes): encontrar `d3.dsv(';', 'atlas_ma_0522_v2.csv')` em `dataUtils.js`, mudar para `atlas_ma_0530_v3.csv`, testar.
+
+**Depois** (com constantes):
+1. Mudar `constants.js`: `export const CSV_CREATORS_PATH = 'atlas_ma_0530_v3.csv'`
+2. Todos os carregamentos de dados (teste, build, dev) usam a versão nova automaticamente.
 
 ## Fluxo de dados
 

@@ -7,7 +7,7 @@
    * é bloqueado (responsabilidade de `App.svelte`).
    */
   import { createEventDispatcher } from 'svelte';
-  import { CONFIDENCE_LABEL } from '../lib/constants.js';
+  import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH } from '../lib/constants.js';
 
   /** Bubble clicada — usada apenas para obter o nome do criador. */
   export let artist = null;
@@ -116,7 +116,7 @@
                     {:else}
                       <span>{a.title || '(sem título)'}</span>
                     {/if}
-                    {#if a.year && a.year !== 9999}
+                    {#if a.year && a.year !== UNDATED_YEAR}
                       <span class="artwork__year">({a.year})</span>
                     {/if}
                   </li>
@@ -136,6 +136,7 @@
     top: 16px;
     right: 16px;
     z-index: 20;
+    /* width: ARTIST_CARD_WIDTH (360px) */
     width: 360px;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - var(--menu-height, 60px) - 32px);

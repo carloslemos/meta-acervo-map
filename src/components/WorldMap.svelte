@@ -2,7 +2,20 @@
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import * as d3 from 'd3';
   import * as topojson from 'topojson-client';
-  import { TYPE_COLOR, BUBBLE_RADIUS, CENTRAL_ROTATION } from '../lib/constants.js';
+  import {
+  TYPE_COLOR,
+  BUBBLE_RADIUS,
+  CENTRAL_ROTATION,
+  TRAJECTORY_FLOW_ENABLED,
+  TRAJECTORY_FLOW_SPEED_PX,
+  TRAJECTORY_FLOW_DOT_RADIUS,
+  TRAJECTORY_FLOW_COLOR_NORMAL,
+  TRAJECTORY_FLOW_COLOR_HIGHLIGHT,
+  PROJECTION_MORPH_ENABLED,
+  PROJECTION_MORPH_DURATION,
+  PROJECTION_3D_SCALE_FACTOR,
+  PROJECTION_2D_BASE_SCALE,
+} from '../lib/constants.js';
 
   export let bubbles = [];
   export let trajectories = [];
@@ -25,15 +38,7 @@
   const TAU = 2 * Math.PI;
 
   // ─── Animação de fluxo nas trajetórias ───────────────────────────────────
-  // Pontos animados percorrendo cada segmento (estilo "pulso de fibra óptica")
-  // indicando a direção do percurso de cada criador (from → to). Toggle único:
-  // basta trocar para `false` para desativar — zero overhead, nenhum rAF agendado.
-  // No futuro pode virar `export let` + botão em Sidebar.svelte sem refator.
-  const TRAJECTORY_FLOW_ENABLED = true;
-  const FLOW_SPEED_PX = 0.06;       // pixels por ms (~60 px/s) — velocidade constante
-  const FLOW_DOT_RADIUS = 1;
-  const FLOW_COLOR_NORMAL = '#f4f6f8';   // branco-gelo
-  const FLOW_COLOR_HIGHLIGHT = '#e68d0c'; // amber (mesmo do hover)
+  // Valores importados de constants.js
 
   // Dimensões do canvas — atualizadas dinamicamente via ResizeObserver
   let width = 960;
@@ -57,12 +62,7 @@
   const state3d = { rotate: [CENTRAL_ROTATION[0], -10, 0], k: 1 };
 
   // ─── Morph entre projeções (2D ↔ 3D) ─────────────────────────
-  // Interpolação por raw function (técnica do Bostock): mistura linear de
-  // geoEqualEarthRaw e geoOrthographicRaw em t∈[0,1]. Tween rAF de ~700ms.
-  // Flag global para ligar/desligar a animação. Quando false, a troca é
-  // instantânea (mesmo comportamento de antes da animação).
-  const MORPH_ENABLED = false;
-  const MORPH_DURATION = 700;
+  // Valores importados de constants.js: PROJECTION_MORPH_ENABLED, PROJECTION_MORPH_DURATION
   let morphing = false;
   let morphT = 0;            // 0 = pose `morphFrom`, 1 = pose `morphTo`
   let morphFrom = '2d';
@@ -83,12 +83,12 @@
   /* Altura efetiva para centralizar a projeção, descontando overlays. */
   $: effHeight = Math.max(1, height - bottomInset);
   $: BASE_2D = (() => {
-    if (width <= 0 || effHeight <= 0) return { scale: 168, translate: [width / 2, effHeight / 2] };
+    if (width <= 0 || effHeight <= 0) return { scale: PROJECTION_2D_BASE_SCALE, translate: [width / 2, effHeight / 2] };
     const tmp = d3.geoEqualEarth().rotate(CENTRAL_ROTATION).fitSize([Infinity, effHeight], SPHERE);
     return { scale: tmp.scale(), translate: [width / 2, effHeight / 2] };
   })();
   $: BASE_3D = {
-    scale: Math.min(width, effHeight) * 0.44, // 220 quando 500x500 visíveis
+    scale: Math.min(width, effHeight) * PROJECTION_3D_SCALE_FACTOR,
   };
 
   // Bounds do mapa renderizado em pixels (no estado base k=1) — usado para
@@ -208,7 +208,7 @@
    * @param {'2d'|'3d'} to
    */
   function startMorph(from, to) {
-    if (!MORPH_ENABLED || prefersReducedMotion || from === to) return;
+    if (!PROJECTION_MORPH_ENABLED || prefersReducedMotion || from === to) return;
     if (morphRaf) cancelAnimationFrame(morphRaf);
     morphFrom = from;
     morphTo = to;
@@ -222,7 +222,7 @@
   /** Avança um frame do tween de morph. */
   function stepMorph() {
     const elapsed = performance.now() - morphStartTime;
-    const u = Math.min(1, elapsed / MORPH_DURATION);
+    const u = Math.min(1, elapsed / PROJECTION_MORPH_DURATION);
     morphT = d3.easeCubicInOut(u);
     morphTick++;
     markStaticDirty();
@@ -353,7 +353,7 @@
   /** Tick do rAF para atualizar a fase do fluxo das trajetórias. */
   function tickFlow(ts) {
     if (flowLastTs) {
-      flowPhase += (ts - flowLastTs) * FLOW_SPEED_PX;
+      flowPhase += (ts - flowLastTs) * TRAJECTORY_FLOW_SPEED_PX;
     }
     flowLastTs = ts;
     markDynamicDirty();
@@ -767,7 +767,7 @@
             hasHighlight = true;
           }
           if (hasHighlight) {
-            ctx.strokeStyle = '#f59e0b';
+            ctx.strokeStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
             ctx.lineWidth = 1.6;
             ctx.globalAlpha = 1;
             ctx.stroke();
@@ -801,7 +801,7 @@
           ctx.stroke(defaultPath);
         }
         if (hasHighlight) {
-          ctx.strokeStyle = '#f59e0b';
+          ctx.strokeStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
           ctx.lineWidth = 1.6;
           ctx.globalAlpha = 1;
           ctx.stroke(highlightPath);
@@ -819,8 +819,8 @@
       let hasHighlight = false;
       // Em 3D/morph as trajetórias têm `geo`; em 2D têm Bézier.
       const useGeo = morphing || projectionType === '3d';
-      const r = FLOW_DOT_RADIUS;
-      const rH = FLOW_DOT_RADIUS * 1.6;
+      const r = TRAJECTORY_FLOW_DOT_RADIUS;
+      const rH = TRAJECTORY_FLOW_DOT_RADIUS * 1.6;
 
       for (const seg of positionedTrajectories) {
         if (!seg.length) continue;
@@ -855,12 +855,12 @@
 
       if (hasNormal) {
         ctx.globalAlpha = isHovering ? 0.05 : 0.3;
-        ctx.fillStyle = FLOW_COLOR_NORMAL;
+        ctx.fillStyle = TRAJECTORY_FLOW_COLOR_NORMAL;
         ctx.fill(normalPath);
       }
       if (hasHighlight) {
         ctx.globalAlpha = 1;
-        ctx.fillStyle = FLOW_COLOR_HIGHLIGHT;
+        ctx.fillStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
         ctx.fill(highlightPath);
       }
       ctx.globalAlpha = 1;
@@ -904,7 +904,7 @@
         ctx.arc(a.x, a.y, BUBBLE_RADIUS, 0, TAU);
         ctx.fillStyle = a.color;
         ctx.fill();
-        ctx.strokeStyle = '#f59e0b';
+        ctx.strokeStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
         ctx.lineWidth = 1.8;
         ctx.stroke();
       }

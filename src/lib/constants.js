@@ -133,3 +133,118 @@ export const CENTRAL_ROTATION = [54, 0, 0];
  */
 export const REF_W = 960;
 export const REF_H = 500;
+
+// ─── Trajetórias: animação de fluxo ──────────────────────────────────────────
+
+/** Ativa/desativa animação de pontos fluindo nas trajetórias (pulso óptico). */
+export const TRAJECTORY_FLOW_ENABLED = true;
+
+/** Velocidade de fluxo em pixels por milissegundo (~60 px/s). */
+export const TRAJECTORY_FLOW_SPEED_PX = 0.06;
+
+/** Raio do ponto animado nas trajetórias (px). */
+export const TRAJECTORY_FLOW_DOT_RADIUS = 1;
+
+/** Cor do ponto de fluxo em repouso (branco-gelo). */
+export const TRAJECTORY_FLOW_COLOR_NORMAL = '#f4f6f8';
+
+/** Cor do ponto de fluxo destacado (amber/laranja). */
+export const TRAJECTORY_FLOW_COLOR_HIGHLIGHT = '#ffffff';
+
+// ─── Morph entre projeções (2D ↔ 3D) ──────────────────────────────────────────
+
+/** Ativa/desativa animação de morph entre projeções. False = troca instantânea. */
+export const PROJECTION_MORPH_ENABLED = false;
+
+/** Duração da animação de morph entre projeções (ms). */
+export const PROJECTION_MORPH_DURATION = 700;
+
+/** Fator de escala 3D do globo em relação ao tamanho do canvas (0.44 = 44%). */
+export const PROJECTION_3D_SCALE_FACTOR = 0.44;
+
+/** Fator de escala base 2D para o mapa (pixels). */
+export const PROJECTION_2D_BASE_SCALE = 168;
+
+// ─── Artwork Strip: dimensões e timing ────────────────────────────────────────
+
+/** Altura da faixa de obras quando expandida (px). */
+export const ARTWORK_STRIP_HEIGHT_EXPANDED = 220;
+
+/** Altura da faixa de obras quando colapsada (só header) (px). */
+export const ARTWORK_STRIP_HEIGHT_COLLAPSED = 36;
+
+/** Duração da transição de altura ao expandir/colapsar (ms). */
+export const ARTWORK_STRIP_TRANSITION_DURATION = 200;
+
+/** Delay antes de exibir tooltip ao passar hover em obra (ms). */
+export const ARTWORK_STRIP_HOVER_DELAY = 300;
+
+/** Gradiente do fade-out na base da faixa de obras. */
+export const ARTWORK_STRIP_FADE_GRADIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0) 38.46%, #000000 100%)';
+
+// ─── Layout: dimensões e breakpoints ──────────────────────────────────────────
+
+/** Breakpoint mobile/desktop em pixels (max-width para mobile). */
+export const BREAKPOINT_MOBILE = 1023;
+
+/** Largura da sidebar em desktop (px). */
+export const SIDEBAR_WIDTH_DESKTOP = 220;
+
+/** Largura do card de artista em desktop (px). */
+export const ARTIST_CARD_WIDTH = 360;
+
+/** Opacidade do backdrop quando sidebar está aberta em mobile. */
+export const SIDEBAR_BACKDROP_OPACITY = 0.8;
+
+/** Cor e opacidade do backdrop (RGBA). */
+export const SIDEBAR_BACKDROP_COLOR = 'rgba(0, 0, 0, 0.5)';
+
+// ─── Dados: marcadores especiais ──────────────────────────────────────────────
+
+/** Valor sentinela para ano não-datado (será oculto em visualizações). */
+export const UNDATED_YEAR = 9999;
+
+// ─── Animações e transições (SCSS shared) ────────────────────────────────────
+
+/** Duração padrão de transições rápidas (ms). */
+export const TRANSITION_FAST = '0.12s';
+
+/** Duração padrão de transições médias (ms). */
+export const TRANSITION_MEDIUM = '200ms';
+
+/** Duração padrão de transições lentas (ms). */
+export const TRANSITION_SLOW = '300ms';
+// ─── URLs e caminhos de arquivos de dados ────────────────────────────────────
+
+/**
+ * CSV principal com criadores: lat/lon de nascimento, morte, estudo.
+ * Versão fixa (v2). Se mudar, atualizar apenas aqui.
+ */
+export const CSV_CREATORS_PATH = 'atlas_ma_0523_v1.csv';
+
+/**
+ * CSV de geolocalização de instituições de ensino.
+ * Mapeia nome da instituição → { lat, lon }.
+ */
+export const CSV_EDUCATED_AT_PATH = 'educated_at_geolocated.csv';
+
+/**
+ * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.
+ * Bubbles de tipo "acervo" são geradas daqui.
+ */
+export const CSV_ACERVOS_PATH = 'acervos_geolocated.csv';
+
+/**
+ * JSON de obras dos criadores. Estrutura: { wikidataId: { creator, museum, title, year, image, url } }.
+ * Carregado via fetch com BASE_URL (para GitHub Pages).
+ */
+export const JSON_ARTWORKS_PATH = '20250705_processed.json';
+
+/**
+ * TopoJSON de fronteiras de países e continentes (Natural Earth 110m).
+ * Usado para pré-computar country/continent de cada bubble.
+ */
+export const GEOJSON_COUNTRIES_PATH = 'countries-110m.json';
+
+/** Delimitador do CSV de criadores (ponto-e-vírgula). */
+export const CSV_CREATORS_DELIMITER = ';';
