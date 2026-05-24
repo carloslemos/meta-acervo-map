@@ -220,7 +220,7 @@
     top: calc(100% + 2px);
     left: 0;
     right: 0;
-    z-index: 50;
+    z-index: 200;
     background: var(--bg);
     border: 1px solid var(--txt-l);
     border-radius: 0.25rem;

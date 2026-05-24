@@ -18,7 +18,7 @@ export const TYPE_COLOR = {
 export const TYPE_LABEL = {
   birth:     'Nascimento',
   death:     'Morte',
-  education: 'Estudo',
+  education: 'Estudos',
   acervo:    'Acervo',
 };
 

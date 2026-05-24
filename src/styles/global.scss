@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 *,
 *::before,
 *::after {
@@ -17,7 +18,7 @@
   --birth-color: #f5e51c;  /* amarelo */
   --death-color: #2ec09c;  /* verde água */
   --edu-color: #e89bd3;    /* rosa */
-  --menu-height: 52px;
+  --menu-height: 98px;
   --sidebar-width: 220px;  /* largura da sidebar no desktop (≥1024px) */
   font-size: 13px;
 }
@@ -35,7 +36,7 @@ body {
   overflow: hidden;
   background-color: var(--bg);
   color: var(--txt);
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 400;
   text-transform: uppercase;
   -webkit-font-smoothing: antialiased;

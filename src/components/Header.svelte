@@ -36,99 +36,123 @@
   function handleLocalidadeSelect(event) {
     dispatch('localidadechange', event.detail ?? '');
   }
-
-  /** Alterna visibilidade das trajetórias. */
-  function toggleTrajectories() {
-    dispatch('trajectorieschange', !showTrajectories);
-  }
 </script>
 
 <div class="header-bar" role="group" aria-label="Controles do mapa">
-  <div class="header-bar__pills">
-    {#each FILTERS as filter}
+
+  <!-- Seção 1: Tipos de bubble -->
+  <div class="header-section">
+    <span class="header-section__label">Visualização por trajetórias dos artistas</span>
+    <div class="header-bar__pills">
+      {#each FILTERS as filter}
+        <button
+          type="button"
+          class="pill"
+          class:pill--active={activeTypes.has(filter.type)}
+          style="--accent: {filter.color}"
+          aria-pressed={activeTypes.has(filter.type)}
+          on:click={() => toggleType(filter.type)}
+        >
+          <span class="pill__dot"></span>
+          {filter.label}
+        </button>
+      {/each}
+    </div>
+  </div>
+
+  <!-- Seção 2: Filtro de localidade -->
+  <div class="header-section header-section--locality">
+    <span class="header-section__label">Filtrar por localidade</span>
+    <div class="header-bar__locality">
+      <AutocompleteSelect
+        label=""
+        options={localidades}
+        value={selectedLocalidade || null}
+        multiple={false}
+        on:select={handleLocalidadeSelect}
+      />
+    </div>
+  </div>
+
+  <!-- Seção 3: Toggle de trajetórias (radio style) -->
+  <div class="header-section">
+    <span class="header-section__label">Linhas do percurso</span>
+    <div class="trajectory-group" role="group" aria-label="Visibilidade das trajetórias">
       <button
         type="button"
-        class="pill"
-        class:pill--active={activeTypes.has(filter.type)}
-        style="--accent: {filter.color}"
-        aria-pressed={activeTypes.has(filter.type)}
-        on:click={() => toggleType(filter.type)}
+        class="trajectory-option"
+        class:trajectory-option--active={showTrajectories}
+        aria-pressed={showTrajectories}
+        on:click={() => !showTrajectories && dispatch('trajectorieschange', true)}
       >
-        <span class="pill__dot"></span>
-        {filter.label}
+        <span class="trajectory-dot"></span>
+        Visíveis
       </button>
-    {/each}
+      <button
+        type="button"
+        class="trajectory-option"
+        class:trajectory-option--active={!showTrajectories}
+        aria-pressed={!showTrajectories}
+        on:click={() => showTrajectories && dispatch('trajectorieschange', false)}
+      >
+        <span class="trajectory-dot"></span>
+        Ocultas
+      </button>
+    </div>
   </div>
 
-  <div class="header-bar__locality">
-    <AutocompleteSelect
-      label="Localidade"
-      options={localidades}
-      value={selectedLocalidade || null}
-      multiple={false}
-      on:select={handleLocalidadeSelect}
-    />
-  </div>
-
-  <button
-    type="button"
-    class="trajectory-toggle"
-    class:trajectory-toggle--on={showTrajectories}
-    aria-pressed={showTrajectories}
-    on:click={toggleTrajectories}
-  >
-    <span class="trajectory-toggle__label">Trajetórias</span>
-    <span class="trajectory-toggle__state">
-      {showTrajectories ? 'VISÍVEIS' : 'OCULTAS'}
-    </span>
-  </button>
 </div>
 
 <style lang="scss">
   .header-bar {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    align-items: flex-start;
+    gap: 30px;
     flex: 1;
     flex-wrap: nowrap;
     min-width: 0;
   }
 
-  .header-bar__pills {
+  /* ── Seções com label + controle ──────────────────────────────────────── */
+  .header-section {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
     flex-shrink: 0;
   }
 
-  .header-bar__locality {
-    flex: 0 1 260px;
-    min-width: 160px;
-    /* O AutocompleteSelect traz padding/border-top próprios pensados para
-       a sidebar. Neutralizamos aqui para a barra horizontal. */
-    :global(.autocomplete-section) {
-      border-top: none;
-      padding: 0;
-    }
-    :global(.section-header) {
-      margin-bottom: 4px;
-    }
-    :global(.section-title) {
-      color: var(--txt);
-    }
+  .header-section--locality {
+    flex: 0 1 220px;
+    min-width: 150px;
+    flex-shrink: 1;
+  }
+
+  .header-section__label {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--txt-l);
+    white-space: nowrap;
   }
 
   /* ── Pills de tipo (cores por TYPE_COLOR) ─────────────────────────────── */
+  .header-bar__pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .pill {
     all: unset;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 0.3rem 0.75rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 0.3rem;
     border: 1px solid var(--bg-hl);
     color: var(--txt-l);
-    font-size: 0.72rem;
+    font-size: 0.875rem;
     letter-spacing: 0.06em;
     cursor: pointer;
     white-space: nowrap;
@@ -152,50 +176,71 @@
   }
 
   .pill__dot {
-    width: 7px;
-    height: 7px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: var(--accent);
     flex-shrink: 0;
     transition: background 0.12s;
   }
 
-  /* ── Toggle de trajetórias ───────────────────────────────────────────── */
-  .trajectory-toggle {
+  /* ── Localidade (AutocompleteSelect inline) ──────────────────────────── */
+  .header-bar__locality {
+    /* O AutocompleteSelect traz padding/border-top próprios pensados para
+       a sidebar. Neutralizamos aqui para a barra horizontal. */
+    :global(.autocomplete-section) {
+      border-top: none;
+      padding: 0;
+    }
+    :global(.section-header) {
+      display: none;
+    }
+    :global(.autocomplete__input) {
+      font-size: 0.875rem;
+      padding: 0.35rem 0.75rem;
+    }
+  }
+
+  /* ── Toggle de trajetórias (radio style) ─────────────────────────────── */
+  .trajectory-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .trajectory-option {
     all: unset;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 0.3rem 0.75rem;
-    border-radius: 0.3rem;
-    border: 1px solid var(--bg-hl);
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
     color: var(--txt-l);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
     cursor: pointer;
     white-space: nowrap;
-    box-sizing: border-box;
-    flex-shrink: 0;
 
     &:hover {
-      border-color: var(--txt-l);
       color: var(--txt);
     }
   }
 
-  .trajectory-toggle--on {
-    background: var(--txt);
-    color: var(--bg);
-    border-color: var(--txt);
-
-    &:hover {
-      background: var(--txt-l);
-      border-color: var(--txt-l);
-    }
+  .trajectory-option--active {
+    color: var(--txt);
   }
 
-  .trajectory-toggle__state {
-    font-weight: 600;
-    letter-spacing: 0.08em;
+  .trajectory-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    flex-shrink: 0;
+
+    .trajectory-option--active & {
+      background: currentColor;
+    }
   }
 </style>

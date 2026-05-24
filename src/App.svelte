@@ -245,9 +245,22 @@ import {
     </button>
 
     <div class="header__brand">
-      <span class="header__title">Atlas dos acervos digitais</span>
-      <span class="header__sep">—</span>
-      <span class="header__subtitle">Mapa de Criadores</span>
+      <img
+        class="header__logo"
+        src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
+        alt="Atlas dos Acervos Digitais"
+      />
+      <div class="header__brand-text">
+        <span class="header__title">Atlas Geopolítico</span>
+        <span class="header__subtitle">dos Acervos Digitais</span>
+      </div>
+      <div class="header__brand-actions">
+        <button class="header__action-btn">Sobre</button>
+        <div class="header__lang">
+          <button class="header__lang-btn header__lang-btn--active">PT</button>
+          <button class="header__lang-btn">EN</button>
+        </div>
+      </div>
     </div>
 
     <div class="header__controls">
@@ -263,10 +276,6 @@ import {
       <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
     </div>
 
-    <div class="header__stats">
-      <span class="stat">{birthCount} <span class="stat__label">nasc.</span></span>
-      <span class="stat">{deathCount} <span class="stat__label">morte</span></span>
-    </div>
   </header>
 
   <div class="subheader">
@@ -357,7 +366,7 @@ import {
   .header {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 30px;
     padding: 0 1.5rem;
     height: var(--menu-height);
     background: var(--bg);
@@ -365,37 +374,92 @@ import {
     border-bottom: 1px solid var(--bg-hl);
     flex-shrink: 0;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-  }
-
-  .header::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
   }
 
   .header__brand {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
+    align-items: center;
+    gap: 16px;
     flex-shrink: 0;
-    white-space: nowrap;
+  }
+
+  .header__logo {
+    height: 58px;
+    width: auto;
+    display: block;
+  }
+
+  .header__brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
   }
 
   .header__title {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  .header__sep {
-    color: var(--txt-hl);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #D2D2D2;
+    white-space: nowrap;
   }
 
   .header__subtitle {
-    font-size: 0.8rem;
-    color: var(--txt-l);
-    letter-spacing: 0.04em;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #D2D2D2;
+    white-space: nowrap;
+  }
+
+  .header__action-btn {
+    all: unset;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #BBBBBB;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: stretch;
+
+    &:hover {
+      color: var(--txt);
+    }
+  }
+
+  .header__brand-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .header__lang {
+    display: flex;
+    gap: 6px;
+  }
+
+  .header__lang-btn {
+    all: unset;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--txt-hl);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--txt);
+    }
+  }
+
+  .header__lang-btn--active {
+    color: var(--txt);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .header__controls {
@@ -404,22 +468,7 @@ import {
     align-items: center;
     gap: 16px;
     flex-wrap: nowrap;
-  }
-
-  .header__stats {
-    display: flex;
-    gap: 16px;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .stat {
-    font-size: 0.8rem;
-    color: var(--bg-l);
-  }
-
-  .stat__label {
-    color: var(--bg-hl);
+    min-width: 0;
   }
 
   /* ─── Subheader para filtros (mobile) ──────────────────────────────── */
