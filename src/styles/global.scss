@@ -11,6 +11,8 @@
   /* Paleta escura — referência Figma `q7qOSGJ47dlLKvBE5lyIGo` (Versão 1). */
   --bg: #0a0a0a;       /* fundo principal da página / header / sphere overlay */
   --bg-l: #1a1a1a;     /* superfície elevada (header de cards, hover de itens) */
+  --bg-c: rgba(0.1, 0.1, 0.1, 0.2);     /* background de cards e outros elementos em overlay ao mapa */
+  --bg-m: #272727;     /* Neutral 100 — fundo de inputs */
   --bg-hl: #3a3a3a;    /* bordas e separadores */
   --txt: #f4f4f4;      /* texto primário */
   --txt-l: #b0b0b0;    /* texto secundário */

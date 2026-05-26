@@ -66,6 +66,7 @@
     <div class="header-bar__locality">
       <AutocompleteSelect
         label=""
+        placeholder="Selecionar país ou continente"
         options={localidades}
         value={selectedLocalidade || null}
         multiple={false}

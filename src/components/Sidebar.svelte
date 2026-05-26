@@ -74,6 +74,7 @@
 
     <AutocompleteSelect
       label="Artistas"
+      placeholder="Selecionar artistas"
       options={allCreators}
       value={selectedCreators}
       multiple={true}
@@ -82,6 +83,7 @@
 
     <AutocompleteSelect
       label="Escola"
+      placeholder="Selecionar escolas"
       options={allSchools}
       value={selectedSchools}
       multiple={true}
@@ -90,6 +92,7 @@
 
     <AutocompleteSelect
       label="Nacionalidade"
+      placeholder="Selecionar nacionalidade"
       options={allNationalities}
       value={selectedNationalities}
       multiple={true}

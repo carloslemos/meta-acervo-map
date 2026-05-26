@@ -4,6 +4,7 @@
   export let label = '';
   export let options = [];
   export let value = null;
+  export let placeholder = 'Buscar…';
   /** Quando true, acumula seleções como Set e exibe chips removíveis. */
   export let multiple = false;
 
@@ -117,13 +118,19 @@
       class="autocomplete__input"
       class:autocomplete__input--active={!multiple && !!value}
       type="text"
-      placeholder="Buscar…"
+      placeholder={placeholder}
       value={!multiple && value ? value : query}
       on:input={onInput}
       on:focus={onFocus}
       autocomplete="off"
       spellcheck="false"
     />
+    <span class="autocomplete__icon" aria-hidden="true">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="4.8" cy="4.8" r="3.3" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="7.5" y1="7.5" x2="10.5" y2="10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </span>
 
     {#if open && filtered.length > 0}
       <ul class="autocomplete__dropdown" role="listbox">
@@ -187,7 +194,7 @@
     display: block;
     width: 100%;
     box-sizing: border-box;
-    padding: 0.3rem 0.6rem;
+    padding: 0.45rem 2rem 0.45rem 0.6rem;
     border: 1px solid var(--bg-hl);
     border-radius: 0.25rem;
     font-family: 'Roboto Mono', monospace;
@@ -195,11 +202,11 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--txt-l);
-    background: var(--bg);
+    background: var(--bg-m);
     cursor: text;
 
     &::placeholder {
-      color: var(--bg-hl);
+      color: var(--txt-hl);
       text-transform: uppercase;
     }
 
@@ -207,6 +214,18 @@
       border-color: var(--txt-l);
       outline: none;
     }
+  }
+
+  .autocomplete__icon {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--txt-hl);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    line-height: 0;
   }
 
   .autocomplete__input--active {

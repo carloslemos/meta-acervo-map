@@ -33,19 +33,12 @@
 
   // Obras agrupadas por acervo (museum).
   $: artworks = (creatorName && artworksByCreator.get(creatorName)) || [];
-  $: artworksByMuseum = groupByMuseum(artworks);
-
-  function groupByMuseum(list) {
-    /** @type {Map<string, object[]>} */
-    const map = new Map();
-    for (const a of list) {
-      const key = a.museum || 'Sem acervo';
-      const bucket = map.get(key);
-      if (bucket) bucket.push(a);
-      else map.set(key, [a]);
-    }
-    return [...map.entries()].map(([museum, items]) => ({ museum, items }));
-  }
+  $: artworksByMuseum = artworks.reduce((acc, a) => {
+    const key = a.museum || '';
+    if (!acc.has(key)) acc.set(key, []);
+    acc.get(key).push(a);
+    return acc;
+  }, new Map());
 
   function confidenceLabel(value) {
     if (!value) return '';
@@ -61,71 +54,89 @@
     </header>
 
     <div class="artist-card__body">
-      {#if birth}
-        <section class="section">
-          <h3 class="section__title">Nascimento</h3>
-          <p class="section__line">
-            {birth.place || '—'}
-            {#if confidenceLabel(birth.confidence)}
-              <span class="confidence">qualidade: {confidenceLabel(birth.confidence)}</span>
-            {/if}
-          </p>
-        </section>
-      {/if}
 
-      {#if educations.length > 0}
-        <section class="section">
-          <h3 class="section__title">Estudos</h3>
-          {#each educations as e (e.id)}
-            <p class="section__line">
-              {e.schoolName || e.place || '—'}
-              {#if e.dates}
-                <span class="dates"> · {e.dates}</span>
-              {/if}
-              {#if confidenceLabel(e.confidence)}
-                <span class="confidence">qualidade: {confidenceLabel(e.confidence)}</span>
-              {/if}
-            </p>
-          {/each}
-        </section>
-      {/if}
-
-      {#if death}
-        <section class="section">
-          <h3 class="section__title">Morte</h3>
-          <p class="section__line">
-            {death.place || '—'}
-            {#if confidenceLabel(death.confidence)}
-              <span class="confidence">qualidade: {confidenceLabel(death.confidence)}</span>
-            {/if}
-          </p>
-        </section>
-      {/if}
-
+      <!-- Obras e Acervos (primeiro) -->
       {#if artworks.length > 0}
         <section class="section">
-          <h3 class="section__title">Obras ({artworks.length})</h3>
-          {#each artworksByMuseum as group (group.museum)}
-            <div class="museum-group">
-              <h4 class="museum-group__title">{group.museum}</h4>
-              <ul class="artwork-list">
-                {#each group.items as a (a.id)}
-                  <li class="artwork">
-                    {#if a.url}
-                      <a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || '(sem título)'}</a>
-                    {:else}
-                      <span>{a.title || '(sem título)'}</span>
-                    {/if}
-                    {#if a.year && a.year !== UNDATED_YEAR}
-                      <span class="artwork__year">({a.year})</span>
-                    {/if}
-                  </li>
+          <h3 class="section__label">Obras e Acervos</h3>
+          <ul class="artwork-list">
+            {#each [...artworksByMuseum.entries()] as [museum, works]}
+              <li class="artwork">
+                {#each works as a, i}
+                  {#if a.url}<a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</a>{:else}<span class="artwork__title">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</span>{/if}{#if i < works.length - 1}, {/if}
                 {/each}
-              </ul>
-            </div>
-          {/each}
+                {#if museum}<span class="artwork__museum"> — {museum}</span>{/if}
+              </li>
+            {/each}
+          </ul>
         </section>
       {/if}
+
+      <!-- Nascimento -->
+      {#if birth}
+        <section class="section">
+          <div class="section__row">
+            <div class="section__left">
+              <span class="section__dot" style="color: var(--birth-color)">●</span>
+              <div>
+                <h3 class="section__label">Nascimento</h3>
+                <p class="section__text">{birth.place || '—'}</p>
+              </div>
+            </div>
+            {#if birth.confidence}
+              <div class="section__right">
+                <span class="badge">{confidenceLabel(birth.confidence)}</span>
+                <button class="info-btn" aria-label="Informações sobre confiança">ⓘ</button>
+              </div>
+            {/if}
+          </div>
+        </section>
+      {/if}
+
+      <!-- Local de Estudo -->
+      {#if educations.length > 0}
+        {#each educations as e (e.id)}
+          <section class="section">
+            <div class="section__row">
+              <div class="section__left">
+                <span class="section__dot" style="color: var(--edu-color)">●</span>
+                <div>
+                  <h3 class="section__label">Local de Estudo</h3>
+                  <p class="section__text">{e.schoolName || e.place || '—'}</p>
+                </div>
+              </div>
+              {#if e.confidence}
+                <div class="section__right">
+                  <span class="badge">{confidenceLabel(e.confidence)}</span>
+                  <button class="info-btn" aria-label="Informações sobre confiança">ⓘ</button>
+                </div>
+              {/if}
+            </div>
+          </section>
+        {/each}
+      {/if}
+
+      <!-- Morte -->
+      {#if death}
+        <section class="section">
+          <div class="section__row">
+            <div class="section__left">
+              <span class="section__dot" style="color: var(--death-color)">●</span>
+              <div>
+                <h3 class="section__label">Morte</h3>
+                <p class="section__text">{death.place || '—'}</p>
+              </div>
+            </div>
+            {#if death.confidence}
+              <div class="section__right">
+                <span class="badge">{confidenceLabel(death.confidence)}</span>
+                <button class="info-btn" aria-label="Informações sobre confiança">ⓘ</button>
+              </div>
+            {/if}
+          </div>
+        </section>
+      {/if}
+
     </div>
   </aside>
 {/if}
@@ -133,121 +144,169 @@
 <style lang="scss">
   .artist-card {
     position: absolute;
-    top: 16px;
+    bottom: calc(var(--artwork-strip-inset, 0px) + 16px);
     right: 16px;
     z-index: 20;
-    /* width: ARTIST_CARD_WIDTH (360px) */
     width: 360px;
     max-width: calc(100vw - 32px);
-    max-height: calc(100vh - var(--menu-height, 60px) - 32px);
+    max-height: calc(100vh - var(--menu-height) - 32px);
     display: flex;
     flex-direction: column;
-    background: var(--bg);
+    background: var(--bg-c);
     color: var(--txt);
-    border: 1px solid var(--bg-hl, #333);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--bg-hl);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px); 
     border-radius: 4px;
     overflow: hidden;
   }
 
   .artist-card__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    padding: 12px 14px;
-    background: var(--bg-l, #1a1a1a);
-    border-bottom: 1px solid var(--bg-hl, #333);
+    gap: 8px;
+    padding: 14px 14px 10px;
+    flex-shrink: 0;
   }
 
   .artist-card__name {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     line-height: 1.2;
   }
 
   .artist-card__close {
-    background: transparent;
-    color: inherit;
-    border: none;
-    font-size: 1.5rem;
+    all: unset;
+    color: var(--txt-hl);
+    font-size: 1.4rem;
     line-height: 1;
     cursor: pointer;
-    padding: 0 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+
+    &:hover { color: var(--txt); }
   }
 
   .artist-card__body {
-    padding: 12px 14px;
+    padding: 0 14px 14px;
     overflow-y: auto;
-    font-size: 0.85rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-hl) transparent;
+  }
+
+  /* ─── Seções ──────────────────────────────────────────────────────── */
+
+  .section {
+    padding: 10px 0;
+  }
+
+  .section__label {
+    margin: 0 0 5px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--txt-hl);
+  }
+
+  /* linha com dot + info à esquerda, badge à direita */
+  .section__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .section__left {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .section__dot {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    margin-top: 3px;
+    line-height: 1;
+  }
+
+  .section__text {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--txt);
+    line-height: 1.35;
+  }
+
+  .section__right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    padding-top: 14px; /* alinha com o texto */
+  }
+
+  /* ─── Badge de confiança ────────────────────────────────────────────── */
+
+  .badge {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    border: 1px solid var(--bg-hl);
+    color: var(--txt-l);
+    white-space: nowrap;
     line-height: 1.4;
   }
 
-  .section {
-    margin-bottom: 14px;
+  .info-btn {
+    all: unset;
+    font-size: 14px;
+    color: var(--txt-hl);
+    cursor: pointer;
+    line-height: 1;
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+    &:hover { color: var(--txt); }
   }
 
-  .section__title {
-    margin: 0 0 4px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.7;
-  }
-
-  .section__line {
-    margin: 0 0 4px;
-  }
-
-  .confidence {
-    display: inline-block;
-    margin-left: 8px;
-    font-size: 0.7rem;
-    opacity: 0.6;
-    font-style: italic;
-  }
-
-  .dates {
-    opacity: 0.7;
-  }
-
-  .museum-group {
-    margin-top: 8px;
-  }
-
-  .museum-group__title {
-    margin: 0 0 4px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    opacity: 0.85;
-  }
+  /* ─── Obras ─────────────────────────────────────────────────────────── */
 
   .artwork-list {
     list-style: none;
     margin: 0;
-    padding: 0 0 0 8px;
+    padding: 0;
   }
 
   .artwork {
-    margin-bottom: 2px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    color: var(--txt-l);
 
     a {
-      color: var(--accent, #4af);
-      text-decoration: none;
+      color: var(--txt-l);
+      text-decoration: underline;
+      text-underline-offset: 2px;
 
-      &:hover {
-        text-decoration: underline;
-      }
+      &:hover { color: var(--txt); }
     }
   }
 
-  .artwork__year {
-    opacity: 0.6;
-    margin-left: 4px;
+  .artwork__title {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .artwork__museum {
+    color: var(--txt-hl);
   }
 </style>

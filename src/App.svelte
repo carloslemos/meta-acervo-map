@@ -303,7 +303,7 @@ import {
     
     <!-- Tab de reabertura removida: collapse-btn na Sidebar é absoluto e sempre visível -->
 
-    <main class="map-container">
+    <main class="map-container" style="--artwork-strip-inset: {artworkStripInset}px">
       {#if loading}
         <div class="state-message">Carregando dados…</div>
       {:else if error}
