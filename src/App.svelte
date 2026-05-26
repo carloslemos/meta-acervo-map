@@ -273,7 +273,6 @@ import {
         on:localidadechange={handleLocalidadeChange}
         on:trajectorieschange={handleTrajectoriesChange}
       />
-      <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
     </div>
 
   </header>
@@ -288,7 +287,6 @@ import {
       on:localidadechange={handleLocalidadeChange}
       on:trajectorieschange={handleTrajectoriesChange}
     />
-    <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
   </div>
 
   <div class="content">
@@ -324,6 +322,9 @@ import {
           {artworksByCreator}
           on:close={handleArtistClose}
         />
+        <div class="map-overlay-right">
+          <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
+        </div>
         <MapStats stats={statsBlock} />
         <ArtworkStrip
           artworks={artworksForStrip}
@@ -401,6 +402,14 @@ import {
     inset: 0;
     overflow: hidden;
     background: var(--bg);
+  }
+
+  .map-overlay-right {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10; /* acima do canvas, abaixo do ArtistCard (z-index: 20) */
+    pointer-events: none;
   }
 
   .state-message {
