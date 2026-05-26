@@ -218,15 +218,9 @@ export const TRANSITION_SLOW = '300ms';
 
 /**
  * CSV principal com criadores: lat/lon de nascimento, morte, estudo.
- * Versão fixa (v2). Se mudar, atualizar apenas aqui.
+ * Versão fixa (v4). Se mudar, atualizar apenas aqui.
  */
-export const CSV_CREATORS_PATH = 'atlas_ma_0523_v1.csv';
-
-/**
- * CSV de geolocalização de instituições de ensino.
- * Mapeia nome da instituição → { lat, lon }.
- */
-export const CSV_EDUCATED_AT_PATH = 'educated_at_geolocated.csv';
+export const CSV_CREATORS_PATH = 'atlas_ma_0525_v4.csv';
 
 /**
  * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.

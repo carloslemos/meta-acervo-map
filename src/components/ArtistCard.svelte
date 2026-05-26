@@ -63,7 +63,7 @@
             {#each [...artworksByMuseum.entries()] as [museum, works]}
               <li class="artwork">
                 {#each works as a, i}
-                  {#if a.url}<a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</a>{:else}<span class="artwork__title">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</span>{/if}{#if i < works.length - 1}, {/if}
+                  {#if a.url}<a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</a>{:else}<span class="artwork__title">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</span>{/if}{#if i < works.length - 1}{', '}{/if}
                 {/each}
                 {#if museum}<span class="artwork__museum"> — {museum}</span>{/if}
               </li>
@@ -149,7 +149,7 @@
     z-index: 20;
     width: 360px;
     max-width: calc(100vw - 32px);
-    max-height: calc(100vh - var(--menu-height) - 32px);
+    max-height: calc(100vh - var(--menu-height) - var(--artwork-strip-inset, 0px) - 32px);
     display: flex;
     flex-direction: column;
     background: var(--bg-c);

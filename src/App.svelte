@@ -74,7 +74,7 @@ import {
       acervoBubbles = data.acervoBubbles ?? [];
       artworksByCreator = data.artworksByCreator ?? new Map();
       allAcervos = [...new Set(bubbles.flatMap(b => b.acervos).filter(Boolean))].sort();
-      activeAcervos = new Set(allAcervos);
+      // activeAcervos permanece Set vazio → sem filtro ativo, mostra tudo
       allGenders = [...new Set(bubbles.map(b => b.gender).filter(Boolean))].sort();
       activeGenders = new Set(allGenders);
       allCreators = [...new Set(bubbles.map(b => b.creator).filter(Boolean))].sort();
@@ -181,8 +181,20 @@ import {
     ...bubbles.map(b => b.continent),
   ].filter(Boolean))].sort();
 
-  // ── Obras para o ArtworkStrip: flatmap dos criadores visíveis, dedup por id, ordenado.
+  // ── Obras para o ArtworkStrip: quando há artista selecionado, mostra só as
+  // obras dele; caso contrário, flatmap dos criadores visíveis, dedup por id, ordenado.
   $: artworksForStrip = (() => {
+    const isUndated = (y) => y === null || y === undefined || y === UNDATED_YEAR || typeof y !== 'number' || Number.isNaN(y);
+    const sortWorks = (arr) => [...arr].sort((a, b) => {
+      const au = isUndated(a.year); const bu = isUndated(b.year);
+      if (au && bu) return 0; if (au) return 1; if (bu) return -1;
+      return b.year - a.year;
+    });
+    if (selectedArtist?.creator) {
+      const list = artworksByCreator.get(selectedArtist.creator) ?? [];
+      const filtered = activeAcervos.size > 0 ? list.filter(art => activeAcervos.has(art.museum)) : list;
+      return sortWorks(filtered);
+    }
     const visibleCreators = new Set(bubblesForMap.map(b => b.creator).filter(Boolean));
     const seen = new Set();
     const out = [];
@@ -191,22 +203,12 @@ import {
       if (!list) continue;
       for (const art of list) {
         if (seen.has(art.id)) continue;
+        if (activeAcervos.size > 0 && !activeAcervos.has(art.museum)) continue;
         seen.add(art.id);
         out.push(art);
       }
     }
-    // Já vem ordenada por criador via sortArtworks no loadData, mas o flatmap
-    // entre criadores precisa re-ordenar. Aplicamos a mesma regra inline:
-    // year desc, UNDATED_YEAR/null/não-numérico ao final preservando ordem original.
-    const isUndated = (y) => y === null || y === undefined || y === UNDATED_YEAR || typeof y !== 'number' || Number.isNaN(y);
-    return out.sort((a, b) => {
-      const au = isUndated(a.year);
-      const bu = isUndated(b.year);
-      if (au && bu) return 0;
-      if (au) return 1;
-      if (bu) return -1;
-      return b.year - a.year;
-    });
+    return sortWorks(out);
   })();
   $: birthCount = bubblesForMap.filter(b => b.type === 'birth').length;
   $: deathCount = bubblesForMap.filter(b => b.type === 'death').length;
@@ -224,13 +226,14 @@ import {
     for (const creator of artists) {
       const list = artworksByCreator.get(creator);
       if (!list) continue;
-      obras += list.length;
       for (const a of list) {
+        if (activeAcervos.size > 0 && !activeAcervos.has(a.museum)) continue;
+        obras++;
         if (a.museum) acervos.add(a.museum);
       }
     }
     return {
-      acervos: acervos.size,
+      acervos: activeAcervos.size > 0 ? activeAcervos.size : acervos.size,
       artistas: artists.size,
       escolas: schools.size,
       obras,
@@ -313,6 +316,7 @@ import {
           {activeTypes}
           {projectionType}
           locked={mapLocked}
+          pinnedCreator={selectedArtist?.creator ?? null}
           bottomInset={artworkStripInset}
           on:artistclick={handleArtistClick}
         />
@@ -328,6 +332,7 @@ import {
         <MapStats stats={statsBlock} />
         <ArtworkStrip
           artworks={artworksForStrip}
+          selectedCreator={selectedArtist?.creator ?? null}
           bind:collapsed={artworkStripCollapsed}
           on:artistselect={handleArtistSelect}
         />

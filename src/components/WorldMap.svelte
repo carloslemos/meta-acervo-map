@@ -23,6 +23,8 @@
   export let projectionType = '2d';
   /** Quando `true`, bloqueia totalmente interação (mouse, drag, zoom). */
   export let locked = false;
+  /** Nome do criador a manter destacado enquanto o card estiver aberto (`locked=true`). */
+  export let pinnedCreator = null;
   /**
    * Margem inferior (em px) ocupada por overlays externos (ex.: ArtworkStrip).
    * O canvas continua ocupando toda a altura do container, mas a projeção é
@@ -592,11 +594,20 @@
   })();
 
   let hoveredBubbleId = null;
+  // Quando locked + pinnedCreator, resolve o ID de uma bubble do criador para
+  // reutilizar a lógica de highlight existente. Caso contrário, usa o hover.
+  $: effectiveBubbleId = (() => {
+    if (locked && pinnedCreator) {
+      const found = bubbles.find(b => b.creator === pinnedCreator && b.type !== 'acervo');
+      return found?.id ?? null;
+    }
+    return hoveredBubbleId;
+  })();
   $: highlightedBubbleIds = (() => {
-    if (!hoveredBubbleId) return null;
+    if (!effectiveBubbleId) return null;
     const ids = new Set();
     for (const t of trajectories) {
-      const touches = t.segments.some(s => s.from.id === hoveredBubbleId || s.to.id === hoveredBubbleId);
+      const touches = t.segments.some(s => s.from.id === effectiveBubbleId || s.to.id === effectiveBubbleId);
       if (touches) {
         for (const s of t.segments) {
           ids.add(s.from.id);
@@ -604,14 +615,14 @@
         }
       }
     }
-    ids.add(hoveredBubbleId);
+    ids.add(effectiveBubbleId);
     return ids;
   })();
   $: highlightedSegmentIds = (() => {
-    if (!hoveredBubbleId) return null;
+    if (!effectiveBubbleId) return null;
     const ids = new Set();
     for (const seg of positionedTrajectories) {
-      if (seg.fromId === hoveredBubbleId || seg.toId === hoveredBubbleId) {
+      if (seg.fromId === effectiveBubbleId || seg.toId === effectiveBubbleId) {
         ids.add(seg.id);
       } else if (highlightedBubbleIds && highlightedBubbleIds.has(seg.fromId) && highlightedBubbleIds.has(seg.toId)) {
         ids.add(seg.id);
@@ -724,7 +735,7 @@
   function redrawDynamic() {
     if (!ctx || !projection) return;
 
-    const isHovering = !!hoveredBubbleId;
+    const isHovering = !!effectiveBubbleId;
     const isGlobe = projectionType === '3d';
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -947,7 +958,7 @@
   $: { void projection; void width; void height; void countriesFeature; void countriesMesh;
        if (bgCtx) markStaticDirty();
        if (ctx) markDynamicDirty(); }
-  $: { void positionedBubbles; void positionedTrajectories; void hoveredBubbleId;
+  $: { void positionedBubbles; void positionedTrajectories; void hoveredBubbleId; void effectiveBubbleId;
        if (ctx) markDynamicDirty(); }
 
   // Atualiza cursor quando entra/sai do hover de uma bubble

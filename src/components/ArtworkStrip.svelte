@@ -12,6 +12,9 @@ import {
    */
   export let artworks = [];
 
+  /** Quando definido, indica que o strip está filtrado a um único criador. */
+  export let selectedCreator = null;
+
   /**
    * Estado do collapse — controlado (bindable). Pai pode `bind:collapsed`
    * para calcular `bottomInset` do WorldMap e evitar oclusão do globo.
@@ -153,7 +156,7 @@ import {
         aria-hidden="true"
       >▾</span>
       <span class="artwork-strip__label">
-        Obras dos artistas nos acervos selecionados
+        {selectedCreator ? `Obras de ${selectedCreator}` : 'Obras dos artistas nos acervos selecionados'}
       </span>
     </button>
 

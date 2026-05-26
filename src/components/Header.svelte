@@ -123,7 +123,7 @@
   }
 
   .header-section--locality {
-    flex: 0 1 220px;
+    flex: 0 1 345px;
     min-width: 150px;
     flex-shrink: 1;
   }

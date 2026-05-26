@@ -9,7 +9,6 @@ import {
   UNDATED_YEAR,
   CSV_CREATORS_PATH,
   CSV_CREATORS_DELIMITER,
-  CSV_EDUCATED_AT_PATH,
   CSV_ACERVOS_PATH,
   JSON_ARTWORKS_PATH,
   GEOJSON_COUNTRIES_PATH,
@@ -35,61 +34,59 @@ function normalizeConfidence(value) {
 }
 
 /**
- * Quebra um campo separado por `|` em lista de strings limpas.
+ * Quebra um campo separado por ` > ` em lista de strings limpas.
+ * Usado para parsear colunas multi-valor do CSV (educated at, lat_educated_at, lon_educated_at).
  *
  * @param {string|null|undefined} val
  * @returns {string[]}
  */
-function splitPipe(val) {
-  return (val ?? '').split('|').map(s => s.trim()).filter(Boolean);
+function splitGt(val) {
+  return (val ?? '').split('>').map(s => s.trim()).filter(Boolean);
 }
 
 /**
- * Quebra um campo de instituições aceitando `|` ou `;` como separador.
- *
- * @param {string|null|undefined} val
- * @returns {string[]}
+ * Distância euclidiana ao quadrado entre dois pontos {lat, lon}.
+ * Suficiente para comparações de proximidade (sem necessidade de projeção).
  */
-function splitInstitutions(val) {
-  return (val ?? '').split(/[|;]/).map(s => s.trim()).filter(Boolean);
-}
-
-/** Normaliza nome de instituição para chave de lookup (trim + lowercase). */
-function normalizeInstitutionKey(name) {
-  return (name ?? '').trim().toLowerCase();
+function dist2(a, b) {
+  const dlat = a.lat - b.lat;
+  const dlon = a.lon - b.lon;
+  return dlat * dlat + dlon * dlon;
 }
 
 /**
- * Carrega o CSV de geolocalização de instituições e retorna um Map
- * `nomeNormalizado -> { lat, lon }`. Linhas sem coordenadas são ignoradas.
- *
- * @returns {Promise<Map<string, { lat: number, lon: number }>>}
+ * Reordena `points` por nearest-neighbor greedy partindo de `anchor`.
+ * Minimiza vai-e-vem visual nas trajetórias educacionais.
+ * Se `anchor` for nulo ou `points` tiver ≤1 elemento, retorna sem alteração.
  */
-async function loadEducatedAtIndex() {
-  const rows = await d3.csv(CSV_EDUCATED_AT_PATH);
-  const index = new Map();
-  for (const row of rows) {
-    const name = row['educated at'];
-    const coord = row['coordinate location'];
-    if (!name || !coord) continue;
-    const [latStr, lonStr] = String(coord).split(',').map(s => s.trim());
-    const lat = parseFloat(latStr);
-    const lon = parseFloat(lonStr);
-    if (isNaN(lat) || isNaN(lon)) continue;
-    index.set(normalizeInstitutionKey(name), { lat, lon });
+function nearestNeighborSort(points, anchor) {
+  if (points.length <= 1 || !anchor) return points;
+  const remaining = [...points];
+  const sorted = [];
+  let pos = anchor;
+  while (remaining.length > 0) {
+    let minDist = Infinity;
+    let minIdx = 0;
+    for (let k = 0; k < remaining.length; k++) {
+      const d = dist2(pos, remaining[k]);
+      if (d < minDist) { minDist = d; minIdx = k; }
+    }
+    sorted.push(remaining[minIdx]);
+    pos = remaining[minIdx];
+    remaining.splice(minIdx, 1);
   }
-  return index;
+  return sorted;
 }
 
 /**
- * Quebra um campo de acervos separado por `;`, aplica aliases e remove duplicatas.
+ * Quebra um campo de acervos separado por ` > `, aplica aliases e remove duplicatas.
  *
  * @param {string|null|undefined} val
  * @returns {string[]} lista de acervos únicos já normalizados
  */
 function splitSemicolon(val) {
   return [...new Set(
-    (val ?? '').split(';').map(s => s.trim()).filter(Boolean)
+    (val ?? '').split('>').map(s => s.trim()).filter(Boolean)
       .map(s => ACERVO_ALIASES[s] ?? s)
   )];
 }
@@ -192,7 +189,7 @@ async function loadArtworksByCreator() {
     const artwork = {
       id: wikidataId,
       creator,
-      museum: entry.museum ?? '',
+      museum: ACERVO_ALIASES[entry.museum ?? ''] ?? entry.museum ?? '',
       title: entry.title ?? '',
       year: typeof entry.year === 'number' ? entry.year : null,
       image: entry.image?.image ?? '',
@@ -223,9 +220,8 @@ async function loadArtworksByCreator() {
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
  */
 export async function loadData() {
-  const [rows, educatedAtIndex, artworksByCreator, acervoBubbles, topo] = await Promise.all([
+  const [rows, artworksByCreator, acervoBubbles, topo] = await Promise.all([
     d3.dsv(CSV_CREATORS_DELIMITER, CSV_CREATORS_PATH),
-    loadEducatedAtIndex(),
     loadArtworksByCreator(),
     loadAcervoBubbles(),
     d3.json(GEOJSON_COUNTRIES_PATH),
@@ -237,14 +233,12 @@ export async function loadData() {
   rows.forEach((row, i) => {
     const creator = row['creator']?.trim() ?? '';
     const acervo = row['acervo']?.trim() ?? '';
-    const museum_json = row['museum_json']?.trim() ?? '';
     const nationality = row['country of citizenship']?.trim() ?? '';
     const gender = row['sex or gender']?.trim() || 'unknown';
 
-    const educatedAt = [...new Set([
-      ...splitInstitutions(row['educated at']),
-      ...splitInstitutions(row['onde estudou']),
-    ])];
+    const educatedAt = splitGt(row['educated at']);
+    const eduLats   = splitGt(row['lat_educated_at']);
+    const eduLons   = splitGt(row['lon_educated_at']);
 
     const latBirth = parseFloat(row['lat_birth']);
     const lonBirth = parseFloat(row['lon_birth']);
@@ -256,7 +250,7 @@ export async function loadData() {
         lon: lonBirth,
         type: 'birth',
         place: row['place of birth']?.trim() ?? '',
-        acervos: splitSemicolon(museum_json || acervo),
+        acervos: splitSemicolon(acervo),
         educatedAt,
         nationality,
         gender,
@@ -290,93 +284,45 @@ export async function loadData() {
       byRow.get(i).death = b;
     }
 
-    // Múltiplas bolhas de educação, uma por instituição com coordenada no
-    // lookup. Instituições sem match são agrupadas em uma única bolha de
-    // fallback usando lat_educated_at/lon_educated_at do CSV principal.
-    const fallbackLat = parseFloat(row['lat_educated_at']);
-    const fallbackLon = parseFloat(row['lon_educated_at']);
-    const hasFallbackCoord = !isNaN(fallbackLat) && !isNaN(fallbackLon);
-    const educationAcervos = splitSemicolon(museum_json || acervo);
-    const educationScore = parseFloat(row['score_estudou']) || 0;
+    // Uma bolha por etapa formativa com coordenada válida embutida no CSV.
+    // As colunas lat_educated_at e lon_educated_at usam ' > ' como separador,
+    // alinhadas com 'educated at'. Etapas sem coordenada são ignoradas.
+    const educationAcervos = splitSemicolon(acervo);
     const educationConfidence = normalizeConfidence(row['confianca_educated_at']);
-    const educationDates = row['datas em que estudou']?.trim() ?? '';
-    const educationPlace = row['onde estudou']?.trim() || row['educated at']?.trim() || '';
-    const baseSchoolName = row['nome da escola']?.trim() ?? '';
-
     const educations = [];
-    const unmatched = [];
-
     for (let j = 0; j < educatedAt.length; j++) {
-      const institution = educatedAt[j];
-      const hit = educatedAtIndex.get(normalizeInstitutionKey(institution));
-      if (hit) {
-        educations.push({
-          id: `education-${i}-${j}`,
-          creator,
-          lat: hit.lat,
-          lon: hit.lon,
-          type: 'education',
-          place: '',
-          schoolName: institution,
-          acervos: educationAcervos,
-          educatedAt,
-          nationality,
-          gender,
-          score: educationScore,
-          confidence: educationConfidence,
-          dates: educationDates,
-        });
-      } else {
-        unmatched.push(institution);
-      }
+      const lat = parseFloat(eduLats[j]);
+      const lon = parseFloat(eduLons[j]);
+      if (isNaN(lat) || isNaN(lon)) continue;
+      educations.push({
+        id: `education-${i}-${j}`,
+        creator,
+        lat,
+        lon,
+        type: 'education',
+        place: '',
+        schoolName: educatedAt[j],
+        acervos: educationAcervos,
+        educatedAt,
+        nationality,
+        gender,
+        score: 0,
+        confidence: educationConfidence,
+        dates: '',
+      });
     }
 
-    if (hasFallbackCoord) {
-      if (unmatched.length > 0) {
-        educations.push({
-          id: `education-${i}-fallback`,
-          creator,
-          lat: fallbackLat,
-          lon: fallbackLon,
-          type: 'education',
-          place: '',
-          schoolName: unmatched.join(' / '),
-          acervos: educationAcervos,
-          educatedAt,
-          nationality,
-          gender,
-          score: educationScore,
-          confidence: educationConfidence,
-          dates: educationDates,
-          isFallback: true,
-        });
-      } else if (educations.length === 0) {
-        // Sem instituições parseadas, mas o CSV tem coord — preserva
-        // comportamento antigo de uma bolha com `nome da escola`.
-        educations.push({
-          id: `education-${i}-fallback`,
-          creator,
-          lat: fallbackLat,
-          lon: fallbackLon,
-          type: 'education',
-          place: educationPlace,
-          schoolName: baseSchoolName,
-          acervos: educationAcervos,
-          educatedAt,
-          nationality,
-          gender,
-          score: educationScore,
-          confidence: educationConfidence,
-          dates: educationDates,
-          isFallback: true,
-        });
-      }
-    }
+    // Reordena por nearest-neighbor (greedy a partir do nascimento) para
+    // minimizar vai-e-vem visual nas trajetórias.
+    const anchorBirth = (!isNaN(latBirth) && !isNaN(lonBirth))
+      ? { lat: latBirth, lon: lonBirth }
+      : null;
+    const sortedEducations = nearestNeighborSort(educations, anchorBirth);
 
-    if (educations.length > 0) {
-      for (const b of educations) bubbles.push(b);
+    if (sortedEducations.length > 0) {
+      for (const b of sortedEducations) bubbles.push(b);
       if (!byRow.has(i)) byRow.set(i, { creator });
-      byRow.get(i).educations = educations;
+      byRow.get(i).educations = sortedEducations;
     }
   });
 
