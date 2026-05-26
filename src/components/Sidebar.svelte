@@ -16,6 +16,7 @@
   export let selectedNationalities = new Set();
   export let isOpen = false;
   export let onClose = null;
+  export let onToggle = null;
 
   const dispatch = createEventDispatcher();
 
@@ -26,25 +27,57 @@
 </script>
 
 <aside class="sidebar" class:sidebar--open={isOpen}>
+
+  <div class="sidebar__inner">
+
+  <!-- Marca: logo + título + SOBRE + PT|EN (desktop) -->
+  <div class="sidebar__brand">
+    <img
+      class="sidebar__logo"
+      src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
+      alt="Atlas dos Acervos Digitais"
+    />
+    <div class="sidebar__brand-text">
+      <span class="sidebar__brand-title">Atlas Geopolítico</span>
+      <span class="sidebar__brand-subtitle">dos Acervos Digitais</span>
+    </div>
+    <div class="sidebar__brand-actions">
+      <button class="sidebar__action-btn">Sobre</button>
+      <div class="sidebar__lang">
+        <button class="sidebar__lang-btn sidebar__lang-btn--active">PT</button>
+        <button class="sidebar__lang-btn">EN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cabeçalho mobile: botão fechar (×) -->
   <div class="sidebar__header">
     <button class="sidebar__close" on:click={handleClose} aria-label="Fechar menu">
       ×
     </button>
   </div>
 
+  <!-- Intro desktop: descrição + ⓘ -->
+  <div class="sidebar__intro">
+    <p class="sidebar__description">
+      Explore os filtros e navegue pelas trajetórias de artistas dos acervos
+    </p>
+    <button class="sidebar__info-btn" aria-label="Sobre os filtros">ⓘ</button>
+  </div>
+
   <div class="sidebar__content">
+    <AcervoFilter
+      {acervos}
+      {activeAcervos}
+      on:change={e => dispatch('acervochange', e.detail)}
+    />
+
     <AutocompleteSelect
-      label="Artista"
+      label="Artistas"
       options={allCreators}
       value={selectedCreators}
       multiple={true}
       on:change={e => dispatch('creatorschange', e.detail)}
-    />
-
-    <GenderFilter
-      genders={allGenders}
-      {activeGenders}
-      on:change={e => dispatch('genderchange', e.detail)}
     />
 
     <AutocompleteSelect
@@ -63,46 +96,154 @@
       on:change={e => dispatch('nationalitieschange', e.detail)}
     />
 
-    <AcervoFilter
-      {acervos}
-      {activeAcervos}
-      on:change={e => dispatch('acervochange', e.detail)}
+    <GenderFilter
+      genders={allGenders}
+      {activeGenders}
+      on:change={e => dispatch('genderchange', e.detail)}
     />
   </div>
+
+  </div>
+
+  <!-- Botão colapso/expansão: absoluto, fora do inner, segue borda direita da sidebar -->
+  <button
+    class="sidebar__collapse-btn"
+    on:click={() => onToggle && onToggle()}
+    aria-label={isOpen ? 'Recolher painel' : 'Abrir painel'}
+  >{isOpen ? '«' : '›'}</button>
+
 </aside>
 
 <style lang="scss">
   .sidebar {
-    width: var(--sidebar-width, 220px);
+    width: var(--sidebar-width, 365px);
     flex-shrink: 0;
     border-right: 1px solid var(--bg-hl);
-    background: var(--bg);
+    background: linear-gradient(180deg, #121212 13.94%, #686868 100%);
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--bg-hl) transparent;
+    position: relative;
+
+    /* ─── Desktop: colapso via width ─────────────────────────────────── */
+    @media (min-width: 1024px) {
+      transition: width 200ms ease-out, border-color 200ms;
+      overflow: visible; /* permite que collapse-btn fique fora */
+
+      &:not(.sidebar--open) {
+        width: 0;
+        border-right-color: transparent;
+      }
+    }
 
     /* ─── Sidebar como drawer no mobile ──────────────────────────────── */
-    /* Em <1024px, torna-se um drawer overlay fixo */
     @media (max-width: 1023px) {
       position: fixed;
-      inset: var(--menu-height) 0 0 0;
+      inset: 0;
       width: 280px;
       z-index: 100;
       transform: translateX(-100%);
       transition: transform 200ms ease-out;
       border-right: 1px solid var(--bg-hl);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
 
-    &.sidebar--open {
-      @media (max-width: 1023px) {
+      &.sidebar--open {
         transform: translateX(0);
       }
     }
   }
 
+  /* Inner: clipa o conteúdo durante o colapso */
+  .sidebar__inner {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── Marca no topo da sidebar ─────────────────────────────────────── */
+  .sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--menu-height);
+    padding: 0 0 0 16px;
+    border-bottom: 1px solid var(--bg-hl);
+    flex-shrink: 0;
+  }
+
+  .sidebar__logo {
+    height: 44px;
+    width: auto;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .sidebar__brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sidebar__brand-title,
+  .sidebar__brand-subtitle {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: #D2D2D2;
+    white-space: nowrap;
+  }
+
+  .sidebar__brand-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-right: 36px; /* espaço para o collapse-btn absoluto (28px) + gap */
+  }
+
+  .sidebar__action-btn {
+    all: unset;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #BBBBBB;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover { color: var(--txt); }
+  }
+
+  .sidebar__lang {
+    display: flex;
+    gap: 6px;
+  }
+
+  .sidebar__lang-btn {
+    all: unset;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--txt-hl);
+    cursor: pointer;
+
+    &:hover { color: var(--txt); }
+  }
+
+  .sidebar__lang-btn--active {
+    color: var(--txt);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ─── Cabeçalho mobile (×) ─────────────────────────────────────────── */
   .sidebar__header {
     display: none;
     position: sticky;
@@ -130,14 +271,87 @@
     align-items: center;
     justify-content: center;
 
-    &:hover {
-      opacity: 0.7;
+    &:hover { opacity: 0.7; }
+  }
+
+  /* ─── Intro desktop: descrição + ⓘ | « ─────────────────────────────── */
+  .sidebar__intro {
+    display: none;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid var(--bg-hl);
+    flex-shrink: 0;
+
+    @media (min-width: 1024px) {
+      display: flex;
     }
   }
 
+  .sidebar__description {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    color: var(--txt-hl);
+    text-transform: uppercase;
+    margin: 0;
+    flex: 1;
+    padding: 0.875rem 0 0.875rem 1rem;
+  }
+
+  .sidebar__info-btn {
+    all: unset;
+    font-size: 0.875rem;
+    color: var(--txt-hl);
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    flex-shrink: 0;
+    padding: 0.875rem 0.25rem;
+
+    &:hover { color: var(--txt); }
+  }
+
+  /* Botão colapso/expansão — absoluto, fora do inner, segue borda da sidebar */
+  .sidebar__collapse-btn {
+    position: absolute;
+    right: -28px;
+    top: 0;
+    height: var(--menu-height);
+    width: 28px;
+    background: var(--bg);
+    border: 1px solid var(--bg-hl);
+    border-radius: 0;
+    color: var(--txt-hl);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    z-index: 10;
+    flex-shrink: 0;
+
+    @media (max-width: 1023px) {
+      display: none;
+    }
+
+    &:hover {
+      color: var(--txt);
+      border-color: var(--txt-l);
+    }
+  }
+
+  /* ─── Conteúdo ──────────────────────────────────────────────────────── */
   .sidebar__content {
     display: flex;
     flex-direction: column;
     flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-hl) transparent;
   }
 </style>

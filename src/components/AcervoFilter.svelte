@@ -33,16 +33,19 @@
   <ToggleGroup
     {items}
     active={activeAcervos}
-    layout="list"
+    layout="wrap"
     on:change={e => dispatch('change', e.detail)}
   />
 </div>
 
 <style lang="scss">
   .acervo-filter {
-    background: var(--bg);
     display: flex;
     flex-direction: column;
+
+    :global(.toggle-group) {
+      padding: 0.75rem 1rem;
+    }
   }
 
   .acervo-filter__header {

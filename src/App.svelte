@@ -54,8 +54,8 @@ import {
   let loading = true;
   let error = null;
 
-  // Estado da sidebar (mobile)
-  let sidebarOpen = false;
+  // Estado da sidebar: aberta por padrão em desktop (≥1024px), fechada em mobile
+  let sidebarOpen = typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
 
   /** Estado collapse do ArtworkStrip — controla `bottomInset` do WorldMap.
    * Inicializado do localStorage para persistir entre reloads. */
@@ -238,31 +238,31 @@ import {
   })();
 </script>
 
-<div class="layout">
+<div class="layout" class:layout--sb-closed={!sidebarOpen}>
+
+  <Sidebar
+    isOpen={sidebarOpen}
+    onClose={handleCloseSidebar}
+    onToggle={handleToggleSidebar}
+    acervos={allAcervos}
+    {activeAcervos}
+    {allGenders}
+    {activeGenders}
+    {allCreators}
+    {selectedCreators}
+    {allSchools}
+    {selectedSchools}
+    {allNationalities}
+    {selectedNationalities}
+    on:acervochange={handleAcervoChange}
+    on:genderchange={handleGenderChange}
+    on:creatorschange={handleCreatorsChange}
+    on:schoolschange={handleSchoolsChange}
+    on:nationalitieschange={handleNationalitiesChange}
+  />
+
+  <div class="main-area">
   <header class="header">
-    <button class="menu-toggle" on:click={handleToggleSidebar} aria-label="Menu">
-      <span class="menu-toggle__icon">☰</span>
-    </button>
-
-    <div class="header__brand">
-      <img
-        class="header__logo"
-        src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
-        alt="Atlas dos Acervos Digitais"
-      />
-      <div class="header__brand-text">
-        <span class="header__title">Atlas Geopolítico</span>
-        <span class="header__subtitle">dos Acervos Digitais</span>
-      </div>
-      <div class="header__brand-actions">
-        <button class="header__action-btn">Sobre</button>
-        <div class="header__lang">
-          <button class="header__lang-btn header__lang-btn--active">PT</button>
-          <button class="header__lang-btn">EN</button>
-        </div>
-      </div>
-    </div>
-
     <div class="header__controls">
       <Header
         {activeTypes}
@@ -301,25 +301,7 @@ import {
       ></div>
     {/if}
     
-    <Sidebar
-      isOpen={sidebarOpen}
-      onClose={handleCloseSidebar}
-      acervos={allAcervos}
-      {activeAcervos}
-      {allGenders}
-      {activeGenders}
-      {allCreators}
-      {selectedCreators}
-      {allSchools}
-      {selectedSchools}
-      {allNationalities}
-      {selectedNationalities}
-      on:acervochange={handleAcervoChange}
-      on:genderchange={handleGenderChange}
-      on:creatorschange={handleCreatorsChange}
-      on:schoolschange={handleSchoolsChange}
-      on:nationalitieschange={handleNationalitiesChange}
-    />
+    <!-- Tab de reabertura removida: collapse-btn na Sidebar é absoluto e sempre visível -->
 
     <main class="map-container">
       {#if loading}
@@ -351,15 +333,24 @@ import {
       {/if}
     </main>
   </div>
+  </div>
 </div>
 
 <style lang="scss">
   .layout {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     background: var(--bg);
     color: var(--txt);
+    overflow: hidden;
+  }
+
+  .main-area {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
   }
 
@@ -367,7 +358,7 @@ import {
     display: flex;
     align-items: center;
     gap: 30px;
-    padding: 0 1.5rem;
+    padding: 0 1.5rem 0 calc(1.5rem + 28px);
     height: var(--menu-height);
     background: var(--bg);
     color: var(--txt);
@@ -375,91 +366,6 @@ import {
     flex-shrink: 0;
     flex-wrap: nowrap;
     overflow: visible;
-  }
-
-  .header__brand {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-shrink: 0;
-  }
-
-  .header__logo {
-    height: 58px;
-    width: auto;
-    display: block;
-  }
-
-  .header__brand-text {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .header__title {
-    font-size: 1.0625rem;
-    font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: #D2D2D2;
-    white-space: nowrap;
-  }
-
-  .header__subtitle {
-    font-size: 1.0625rem;
-    font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: #D2D2D2;
-    white-space: nowrap;
-  }
-
-  .header__action-btn {
-    all: unset;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: #BBBBBB;
-    cursor: pointer;
-    white-space: nowrap;
-    align-self: stretch;
-
-    &:hover {
-      color: var(--txt);
-    }
-  }
-
-  .header__brand-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .header__lang {
-    display: flex;
-    gap: 6px;
-  }
-
-  .header__lang-btn {
-    all: unset;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: var(--txt-hl);
-    cursor: pointer;
-
-    &:hover {
-      color: var(--txt);
-    }
-  }
-
-  .header__lang-btn--active {
-    color: var(--txt);
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
   .header__controls {
@@ -485,16 +391,15 @@ import {
   }
 
   .content {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .map-container {
     flex: 1;
     overflow: hidden;
     position: relative;
+  }
+
+  .map-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
     background: var(--bg);
   }
 
@@ -511,27 +416,8 @@ import {
     color: #e44;
   }
 
-  /* ─── Menu toggle (hamburger button) ─────────────────────────────────── */
-  .menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--txt);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0 1rem;
-    flex-shrink: 0;
-  }
-
-  .menu-toggle:hover {
-    /* opacity: SIDEBAR_BACKDROP_OPACITY (0.8) */
-    opacity: 0.8;
-  }
-
-  .menu-toggle__icon {
-    display: block;
-    line-height: 1;
-  }
+  /* ─── Menu toggle (hamburger) — REMOVIDO nessa visão ─────────────────────── */
+  /* (hamburguer abandonado no redesign) */
 
   /* Sidebar backdrop (overlay quando sidebar aberta em mobile) ─────── */
   .sidebar-backdrop {
@@ -541,25 +427,13 @@ import {
     /* background: SIDEBAR_BACKDROP_COLOR (rgba(0, 0, 0, 0.5)) */
     background: rgba(0, 0, 0, 0.5);
     z-index: 99;
-    top: var(--menu-height);
+
   }
 
   /* Responsive: mobile (<BREAKPOINT_MOBILE: 1023px) ────────────────────────────────────── */
   @media (max-width: 1023px) {
-    .header {
-      padding: 0 1.5rem 0 0;
-    }
-    
-    .menu-toggle {
-      display: block;
-    }
-
     .sidebar-backdrop {
       display: block;
-    }
-
-    .content {
-      position: relative;
     }
 
     .header__controls {
