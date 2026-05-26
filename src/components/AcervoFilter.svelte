@@ -22,12 +22,7 @@
 
 <div class="acervo-filter">
   <div class="acervo-filter__header">
-    <span class="acervo-filter__title">Acervo</span>
-    <div class="acervo-filter__shortcuts">
-      <button class="shortcut" on:click={selectAll}>todos</button>
-      <span class="shortcut-sep">/</span>
-      <button class="shortcut" on:click={selectNone}>nenhum</button>
-    </div>
+    <span class="acervo-filter__title">Acervos</span>
   </div>
 
   <ToggleGroup
@@ -36,6 +31,12 @@
     layout="wrap"
     on:change={e => dispatch('change', e.detail)}
   />
+
+  <div class="acervo-filter__shortcuts">
+    <button class="shortcut" on:click={selectAll}>Selecionar todos</button>
+    <span class="shortcut-sep">/</span>
+    <button class="shortcut" on:click={selectNone}>Limpar seleção</button>
+  </div>
 </div>
 
 <style lang="scss">
@@ -49,31 +50,28 @@
   }
 
   .acervo-filter__header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
     padding: 1rem 1rem 0.5rem;
-    border-bottom: 1px solid var(--bg-hl);
     flex-shrink: 0;
   }
 
   .acervo-filter__title {
     font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--txt);
+    letter-spacing: -0.01em;
+    color: var(--txt-hl);
   }
 
   .acervo-filter__shortcuts {
     display: flex;
     align-items: center;
     gap: 3px;
+    padding: 0.25rem 1rem 0.75rem;
   }
 
   .shortcut {
     all: unset;
     font-size: 0.65rem;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.01em;
     color: var(--txt-hl);
     cursor: pointer;
     text-decoration: underline;

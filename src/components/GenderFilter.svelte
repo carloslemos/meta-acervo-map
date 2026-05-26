@@ -46,8 +46,8 @@
   .section-title {
     font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--txt);
+    letter-spacing: -0.01em;
+    color: var(--txt-hl);
   }
 
 

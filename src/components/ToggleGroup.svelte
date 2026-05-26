@@ -69,7 +69,7 @@
     border: 1px solid var(--bg-hl);
     color: var(--txt-hl);
     font-size: 0.7rem;
-    letter-spacing: 0.05em;
+    letter-spacing: -0.01em;
     cursor: pointer;
     box-sizing: border-box;
     transition: background 0.1s, color 0.1s, border-color 0.1s;
