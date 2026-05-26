@@ -148,12 +148,15 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 0.35rem 0.75rem;
-    border-radius: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.25rem;
     border: 1px solid var(--bg-hl);
-    color: var(--txt-l);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
     font-size: 0.875rem;
-    letter-spacing: 0.06em;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--txt-l);
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.12s, color 0.12s, border-color 0.12s;
@@ -176,8 +179,8 @@
   }
 
   .pill__dot {
-    width: 9px;
-    height: 9px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--accent);
     flex-shrink: 0;
