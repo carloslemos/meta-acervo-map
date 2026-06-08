@@ -21,6 +21,9 @@ import {
    */
   export let collapsed = false;
 
+  /** Quando true, renderiza como overlay flutuante de largura variável (mobile). */
+  export let mobile = false;
+
   const dispatch = createEventDispatcher();
 
   /** Distância (em px) até o fim do scroll vertical — controla o fade. */
@@ -142,6 +145,7 @@ import {
   <section
     class="artwork-strip"
     class:artwork-strip--collapsed={collapsed}
+    class:artwork-strip--mobile={mobile}
     aria-label="Obras dos artistas selecionados"
   >
     <button
@@ -236,8 +240,8 @@ import {
     background: var(--bg);
     color: var(--txt);
     pointer-events: auto;
-    /* height: ARTWORK_STRIP_HEIGHT_EXPANDED (220px) */
-    height: 220px;
+    /* height: ARTWORK_STRIP_HEIGHT_EXPANDED (124px) */
+    height: 124px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -250,6 +254,44 @@ import {
   .artwork-strip--collapsed {
     /* height: ARTWORK_STRIP_HEIGHT_COLLAPSED (36px) */
     height: 36px;
+  }
+
+  /* ── Mobile: overlay flutuante de largura variável ─────────────────── */
+  .artwork-strip--mobile {
+    left: auto;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-width: calc(100% - 24px);
+    border-radius: 8px;
+    border: 1px solid var(--bg-hl);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    /* height: ARTWORK_STRIP_HEIGHT_MOBILE_EXPANDED (65px) */
+    height: 65px;
+  }
+
+  .artwork-strip--mobile.artwork-strip--collapsed {
+    /* height: ARTWORK_STRIP_HEIGHT_MOBILE_COLLAPSED (31px) */
+    height: 31px;
+  }
+
+  /* No mobile a aba é mais baixa (31px) e a grid vira fileira horizontal. */
+  .artwork-strip--mobile .artwork-strip__header {
+    height: 31px;
+    padding: 0 12px;
+    font-size: 0.62rem;
+  }
+
+  .artwork-strip--mobile .artwork-strip__grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 34px;
+    padding: 4px 12px 6px;
+  }
+
+  .artwork-strip--mobile .artwork-strip__scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 
   /* ── Header clicável (chevron + label) ─────────────────────────────── */
@@ -331,7 +373,9 @@ import {
       transition: opacity 120ms linear;
     }
 
-    &--at-bottom::after {
+    /* `--at-bottom` é aplicada dinamicamente via class:; :global evita
+       falso aviso de seletor não utilizado, mantendo a base com escopo. */
+    &:global(.artwork-strip__scroll--at-bottom)::after {
       opacity: 0;
     }
   }
@@ -377,7 +421,9 @@ import {
     transition: outline 0.1s, opacity 180ms;
   }
 
-  .artwork__img--loaded {
+  /* `--loaded` é adicionada via classList.add em JS (lazy-load); :global
+     evita falso aviso de seletor não utilizado. */
+  .artwork__img:global(.artwork__img--loaded) {
     animation: artwork-fadein 180ms ease-out;
   }
 

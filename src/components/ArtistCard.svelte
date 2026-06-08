@@ -47,7 +47,7 @@
 </script>
 
 {#if artist}
-  <aside class="artist-card" role="dialog" aria-label="Detalhes do artista">
+  <div class="artist-card" role="dialog" aria-label="Detalhes do artista">
     <header class="artist-card__header">
       <h2 class="artist-card__name">{creatorName}</h2>
       <button class="artist-card__close" on:click={close} aria-label="Fechar">×</button>
@@ -138,7 +138,7 @@
       {/if}
 
     </div>
-  </aside>
+  </div>
 {/if}
 
 <style lang="scss">

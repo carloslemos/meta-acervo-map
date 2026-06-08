@@ -1,8 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import AcervoFilter from './AcervoFilter.svelte';
-  import AutocompleteSelect from './AutocompleteSelect.svelte';
-  import GenderFilter from './GenderFilter.svelte';
+  import SidebarFilters from './SidebarFilters.svelte';
 
   export let acervos = [];
   export let activeAcervos = new Set();
@@ -66,43 +64,22 @@
   </div>
 
   <div class="sidebar__content">
-    <AcervoFilter
+    <SidebarFilters
       {acervos}
       {activeAcervos}
-      on:change={e => dispatch('acervochange', e.detail)}
-    />
-
-    <AutocompleteSelect
-      label="Artistas"
-      placeholder="Selecionar artistas"
-      options={allCreators}
-      value={selectedCreators}
-      multiple={true}
-      on:change={e => dispatch('creatorschange', e.detail)}
-    />
-
-    <AutocompleteSelect
-      label="Escola"
-      placeholder="Selecionar escolas"
-      options={allSchools}
-      value={selectedSchools}
-      multiple={true}
-      on:change={e => dispatch('schoolschange', e.detail)}
-    />
-
-    <AutocompleteSelect
-      label="Nacionalidade"
-      placeholder="Selecionar nacionalidade"
-      options={allNationalities}
-      value={selectedNationalities}
-      multiple={true}
-      on:change={e => dispatch('nationalitieschange', e.detail)}
-    />
-
-    <GenderFilter
-      genders={allGenders}
+      {allGenders}
       {activeGenders}
-      on:change={e => dispatch('genderchange', e.detail)}
+      {allCreators}
+      {selectedCreators}
+      {allSchools}
+      {selectedSchools}
+      {allNationalities}
+      {selectedNationalities}
+      on:acervochange={e => dispatch('acervochange', e.detail)}
+      on:genderchange={e => dispatch('genderchange', e.detail)}
+      on:creatorschange={e => dispatch('creatorschange', e.detail)}
+      on:schoolschange={e => dispatch('schoolschange', e.detail)}
+      on:nationalitieschange={e => dispatch('nationalitieschange', e.detail)}
     />
   </div>
 
@@ -127,8 +104,8 @@
     flex-direction: column;
     position: relative;
 
-    /* ─── Desktop: colapso via width ─────────────────────────────────── */
-    @media (min-width: 1024px) {
+    /* ─── Tablet + Desktop: colapso via width (≥ 760px) ──────────────── */
+    @media (min-width: 760px) {
       transition: width 200ms ease-out, border-color 200ms;
       overflow: visible; /* permite que collapse-btn fique fora */
 
@@ -138,8 +115,8 @@
       }
     }
 
-    /* ─── Sidebar como drawer no mobile ──────────────────────────────── */
-    @media (max-width: 1023px) {
+    /* ─── Sidebar como drawer no mobile (< 760px) ────────────────────── */
+    @media (max-width: 759px) {
       position: fixed;
       inset: 0;
       width: 280px;
@@ -256,7 +233,7 @@
     z-index: 10;
     padding: 0.5rem;
 
-    @media (max-width: 1023px) {
+    @media (max-width: 759px) {
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -285,7 +262,7 @@
     border-bottom: 1px solid var(--bg-hl);
     flex-shrink: 0;
 
-    @media (min-width: 1024px) {
+    @media (min-width: 760px) {
       display: flex;
     }
   }
@@ -338,7 +315,7 @@
     z-index: 10;
     flex-shrink: 0;
 
-    @media (max-width: 1023px) {
+    @media (max-width: 759px) {
       display: none;
     }
 

@@ -21,13 +21,22 @@
   --death-color: #2ec09c;  /* verde água */
   --edu-color: #e89bd3;    /* rosa */
   --menu-height: 98px;
-  --sidebar-width: 365px;  /* largura da sidebar no desktop (≥1024px) */
+  --sidebar-width: 365px;  /* largura da sidebar no desktop (≥1380px) */
   font-size: 0.875rem; /* 14px */
 }
 
-@media (max-width: 1023px) {
+/* Tablet: 760–1379px — sidebar mais estreita (302px), header completo */
+@media (max-width: 1379px) {
   :root {
-    --sidebar-width: 0px;  /* sidebar vira drawer overlay; faixa ocupa largura cheia */
+    --sidebar-width: 302px;  /* SIDEBAR_WIDTH_TABLET */
+  }
+}
+
+/* Mobile: < 760px — sidebar vira FilterAccordion overlay; header simplificado */
+@media (max-width: 759px) {
+  :root {
+    --sidebar-width: 0px;     /* faixa ocupa largura cheia */
+    --menu-height: 90px;      /* MOBILE_HEADER_HEIGHT */
   }
 }
 

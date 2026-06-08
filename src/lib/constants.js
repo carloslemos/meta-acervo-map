@@ -167,11 +167,17 @@ export const PROJECTION_2D_BASE_SCALE = 168;
 
 // ─── Artwork Strip: dimensões e timing ────────────────────────────────────────
 
-/** Altura da faixa de obras quando expandida (px). */
-export const ARTWORK_STRIP_HEIGHT_EXPANDED = 220;
+/** Altura da faixa de obras quando expandida em tablet/desktop (px). */
+export const ARTWORK_STRIP_HEIGHT_EXPANDED = 124;
 
-/** Altura da faixa de obras quando colapsada (só header) (px). */
+/** Altura da faixa de obras quando colapsada (só header) em tablet/desktop (px). */
 export const ARTWORK_STRIP_HEIGHT_COLLAPSED = 36;
+
+/** Altura da faixa de obras quando expandida no mobile (overlay flutuante) (px). */
+export const ARTWORK_STRIP_HEIGHT_MOBILE_EXPANDED = 65;
+
+/** Altura da aba/botão de abertura da faixa de obras no mobile (px). */
+export const ARTWORK_STRIP_HEIGHT_MOBILE_COLLAPSED = 31;
 
 /** Duração da transição de altura ao expandir/colapsar (ms). */
 export const ARTWORK_STRIP_TRANSITION_DURATION = 200;
@@ -184,11 +190,53 @@ export const ARTWORK_STRIP_FADE_GRADIENT = 'linear-gradient(180deg, rgba(0, 0, 0
 
 // ─── Layout: dimensões e breakpoints ──────────────────────────────────────────
 
-/** Breakpoint mobile/desktop em pixels (max-width para mobile). */
+/**
+ * Breakpoints de layout (referência Figma node 505-4840 "Tablet e Mobile").
+ * Três faixas: mobile (< 760), tablet (760–1379), desktop (≥ 1380).
+ * - Mobile: header simplificado + FilterAccordion sobreposto ao mapa.
+ * - Tablet: layout similar ao desktop, sidebar mais estreita (302px).
+ * - Desktop: sidebar 365px, header completo.
+ */
+export const BREAKPOINT_TABLET = 760;
+export const BREAKPOINT_DESKTOP = 1380;
+
+/**
+ * @deprecated Mantido para compatibilidade. Use BREAKPOINT_TABLET para
+ * separar mobile (< 760) de tablet/desktop.
+ */
 export const BREAKPOINT_MOBILE = 1023;
 
-/** Largura da sidebar em desktop (px). */
-export const SIDEBAR_WIDTH_DESKTOP = 220;
+/**
+ * Classifica uma largura de viewport em uma faixa de layout.
+ * @param {number} width largura em px (ex: window.innerWidth)
+ * @returns {'mobile' | 'tablet' | 'desktop'}
+ */
+export function getBreakpoint(width) {
+  if (width < BREAKPOINT_TABLET) return 'mobile';
+  if (width < BREAKPOINT_DESKTOP) return 'tablet';
+  return 'desktop';
+}
+
+/** Largura da sidebar em desktop (≥ 1380px) (px). */
+export const SIDEBAR_WIDTH_DESKTOP = 365;
+
+/** Largura da sidebar em tablet (760–1379px) (px). */
+export const SIDEBAR_WIDTH_TABLET = 302;
+
+/** Altura do header simplificado em mobile (< 760px) (px). */
+export const MOBILE_HEADER_HEIGHT = 90;
+
+/** Altura de cada cabeçalho de nível do FilterAccordion em mobile (px). */
+export const ACCORDION_ITEM_HEIGHT = 52;
+
+/** Padding lateral (esquerda/direita) dos componentes em mobile (px). */
+export const MOBILE_PADDING_X = 20;
+
+/** Duração da animação de expand/collapse do FilterAccordion (ms). */
+export const ACCORDION_ANIMATION_DURATION = 300;
+
+/** Curva de easing da animação do FilterAccordion. */
+export const ACCORDION_ANIMATION_EASING = 'ease-out';
 
 /** Largura do card de artista em desktop (px). */
 export const ARTIST_CARD_WIDTH = 360;

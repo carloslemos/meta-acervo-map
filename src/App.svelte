@@ -2,6 +2,9 @@
   import { onMount } from 'svelte';
   import WorldMap from './components/WorldMap.svelte';
   import Header from './components/Header.svelte';
+  import MobileHeader from './components/MobileHeader.svelte';
+  import FilterAccordion from './components/FilterAccordion.svelte';
+  import SidebarFilters from './components/SidebarFilters.svelte';
   import ProjectionToggle from './components/ProjectionToggle.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import ArtistCard from './components/ArtistCard.svelte';
@@ -13,10 +16,17 @@ import {
   UNDATED_YEAR,
   ARTWORK_STRIP_HEIGHT_EXPANDED,
   ARTWORK_STRIP_HEIGHT_COLLAPSED,
-  BREAKPOINT_MOBILE,
-  SIDEBAR_BACKDROP_OPACITY,
-  SIDEBAR_BACKDROP_COLOR,
+  ARTWORK_STRIP_HEIGHT_MOBILE_EXPANDED,
+  ARTWORK_STRIP_HEIGHT_MOBILE_COLLAPSED,
+  BREAKPOINT_TABLET,
+  getBreakpoint,
 } from './lib/constants.js';
+
+  /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
+  const ACCORDION_ITEMS = [
+    { id: 'level1', label: 'Acervos e Artistas' },
+    { id: 'level2', label: 'Visualizações e Filtros' },
+  ];
 
   const LS_STRIP_KEY = 'meta-acervo:artwork-strip-collapsed';
 
@@ -54,17 +64,29 @@ import {
   let loading = true;
   let error = null;
 
-  // Estado da sidebar: aberta por padrão em desktop (≥1024px), fechada em mobile
-  let sidebarOpen = typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
+  // Estado da sidebar: aberta por padrão em tablet/desktop (≥760px), fechada em mobile
+  let sidebarOpen = typeof window !== 'undefined' ? window.innerWidth >= BREAKPOINT_TABLET : false;
+
+  /** Largura da viewport (px), sincronizada via `bind:innerWidth`. */
+  let viewportWidth = typeof window !== 'undefined' ? window.innerWidth : BREAKPOINT_TABLET;
+  /** Faixa de layout atual: 'mobile' | 'tablet' | 'desktop'. */
+  $: breakpoint = getBreakpoint(viewportWidth);
+  $: isMobile = breakpoint === 'mobile';
+
+  /** Nível do FilterAccordion expandido no mobile (null = ambos colapsados).
+   * Reseta a cada carregamento de página; mantém estado ao redimensionar. */
+  let accordionExpandedId = null;
+  $: accordionOpen = accordionExpandedId !== null;
 
   /** Estado collapse do ArtworkStrip — controla `bottomInset` do WorldMap.
    * Inicializado do localStorage para persistir entre reloads. */
   let artworkStripCollapsed = readCollapsed();
   $: saveCollapsed(artworkStripCollapsed);
-  /** Altura ocupada pela faixa: ARTWORK_STRIP_HEIGHT_EXPANDED quando expandida,
-   * ARTWORK_STRIP_HEIGHT_COLLAPSED quando colapsada.
+  /** Altura ocupada pela faixa, sensível ao breakpoint (mobile usa overlay menor).
    * Quando não há obras, a faixa não renderiza e o inset é 0. */
-  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? ARTWORK_STRIP_HEIGHT_COLLAPSED : ARTWORK_STRIP_HEIGHT_EXPANDED);
+  $: stripCollapsedH = isMobile ? ARTWORK_STRIP_HEIGHT_MOBILE_COLLAPSED : ARTWORK_STRIP_HEIGHT_COLLAPSED;
+  $: stripExpandedH = isMobile ? ARTWORK_STRIP_HEIGHT_MOBILE_EXPANDED : ARTWORK_STRIP_HEIGHT_EXPANDED;
+  $: artworkStripInset = artworksForStrip.length === 0 ? 0 : (artworkStripCollapsed ? stripCollapsedH : stripExpandedH);
 
   onMount(async () => {
     try {
@@ -241,69 +263,88 @@ import {
   })();
 </script>
 
-<div class="layout" class:layout--sb-closed={!sidebarOpen}>
+<svelte:window bind:innerWidth={viewportWidth} />
 
-  <Sidebar
-    isOpen={sidebarOpen}
-    onClose={handleCloseSidebar}
-    onToggle={handleToggleSidebar}
-    acervos={allAcervos}
-    {activeAcervos}
-    {allGenders}
-    {activeGenders}
-    {allCreators}
-    {selectedCreators}
-    {allSchools}
-    {selectedSchools}
-    {allNationalities}
-    {selectedNationalities}
-    on:acervochange={handleAcervoChange}
-    on:genderchange={handleGenderChange}
-    on:creatorschange={handleCreatorsChange}
-    on:schoolschange={handleSchoolsChange}
-    on:nationalitieschange={handleNationalitiesChange}
-  />
+<div class="layout" class:layout--sb-closed={!sidebarOpen} class:layout--mobile={isMobile}>
+
+  {#if !isMobile}
+    <Sidebar
+      isOpen={sidebarOpen}
+      onClose={handleCloseSidebar}
+      onToggle={handleToggleSidebar}
+      acervos={allAcervos}
+      {activeAcervos}
+      {allGenders}
+      {activeGenders}
+      {allCreators}
+      {selectedCreators}
+      {allSchools}
+      {selectedSchools}
+      {allNationalities}
+      {selectedNationalities}
+      on:acervochange={handleAcervoChange}
+      on:genderchange={handleGenderChange}
+      on:creatorschange={handleCreatorsChange}
+      on:schoolschange={handleSchoolsChange}
+      on:nationalitieschange={handleNationalitiesChange}
+    />
+  {/if}
 
   <div class="main-area">
-  <header class="header">
-    <div class="header__controls">
-      <Header
-        {activeTypes}
-        {selectedLocalidade}
-        localidades={allLocalidades}
-        {showTrajectories}
-        on:typeschange={handleFilterChange}
-        on:localidadechange={handleLocalidadeChange}
-        on:trajectorieschange={handleTrajectoriesChange}
-      />
+  {#if isMobile}
+    <MobileHeader />
+
+    <div class="mobile-filters" class:mobile-filters--open={accordionOpen}>
+      <FilterAccordion items={ACCORDION_ITEMS} bind:expandedId={accordionExpandedId}>
+        <div slot="level1" class="mobile-filters__panel">
+          <SidebarFilters
+            acervos={allAcervos}
+            {activeAcervos}
+            {allGenders}
+            {activeGenders}
+            {allCreators}
+            {selectedCreators}
+            {allSchools}
+            {selectedSchools}
+            {allNationalities}
+            {selectedNationalities}
+            on:acervochange={handleAcervoChange}
+            on:genderchange={handleGenderChange}
+            on:creatorschange={handleCreatorsChange}
+            on:schoolschange={handleSchoolsChange}
+            on:nationalitieschange={handleNationalitiesChange}
+          />
+        </div>
+        <div slot="level2" class="mobile-filters__panel mobile-filters__panel--header">
+          <Header
+            {activeTypes}
+            {selectedLocalidade}
+            localidades={allLocalidades}
+            {showTrajectories}
+            on:typeschange={handleFilterChange}
+            on:localidadechange={handleLocalidadeChange}
+            on:trajectorieschange={handleTrajectoriesChange}
+          />
+        </div>
+      </FilterAccordion>
     </div>
-
-  </header>
-
-  <div class="subheader">
-    <Header
-      {activeTypes}
-      {selectedLocalidade}
-      localidades={allLocalidades}
-      {showTrajectories}
-      on:typeschange={handleFilterChange}
-      on:localidadechange={handleLocalidadeChange}
-      on:trajectorieschange={handleTrajectoriesChange}
-    />
-  </div>
+  {:else}
+    <header class="header">
+      <div class="header__controls">
+        <Header
+          {activeTypes}
+          {selectedLocalidade}
+          localidades={allLocalidades}
+          {showTrajectories}
+          on:typeschange={handleFilterChange}
+          on:localidadechange={handleLocalidadeChange}
+          on:trajectorieschange={handleTrajectoriesChange}
+        />
+      </div>
+    </header>
+  {/if}
 
   <div class="content">
-    {#if sidebarOpen}
-      <div 
-        class="sidebar-backdrop" 
-        role="presentation" 
-        on:click={handleCloseSidebar}
-        on:keydown={(e) => e.key === 'Escape' && handleCloseSidebar()}
-      ></div>
-    {/if}
-    
-    <!-- Tab de reabertura removida: collapse-btn na Sidebar é absoluto e sempre visível -->
-
     <main class="map-container" style="--artwork-strip-inset: {artworkStripInset}px">
       {#if loading}
         <div class="state-message">Carregando dados…</div>
@@ -333,6 +374,7 @@ import {
         <ArtworkStrip
           artworks={artworksForStrip}
           selectedCreator={selectedArtist?.creator ?? null}
+          mobile={isMobile}
           bind:collapsed={artworkStripCollapsed}
           on:artistselect={handleArtistSelect}
         />
@@ -383,17 +425,47 @@ import {
     min-width: 0;
   }
 
-  /* ─── Subheader para filtros (mobile) ──────────────────────────────── */
-  .subheader {
-    display: none;
-    background: var(--txt);
-    color: var(--bg);
-    border-bottom: 1px solid var(--bg-hl);
-    padding: 0.75rem 1.5rem;
-    gap: 16px;
+  /* ─── Filtros mobile (FilterAccordion sobre o mapa) ─────────────────── */
+  .mobile-filters {
     flex-shrink: 0;
-    flex-wrap: wrap;
-    align-items: center;
+    position: relative;
+    z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--bg-hl);
+  }
+
+  /* Quando um nível está expandido, o accordion vira overlay e cobre o mapa. */
+  .mobile-filters--open {
+    position: absolute;
+    top: var(--menu-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    border-bottom: none;
+  }
+
+  .mobile-filters__panel {
+    padding: 0 20px 20px; /* MOBILE_PADDING_X */
+  }
+
+  .mobile-filters__panel--header {
+    padding-top: 16px;
+  }
+
+  /* No mobile, o Header (controles) empilha verticalmente dentro do accordion. */
+  .mobile-filters__panel--header :global(.header-bar) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  /* A seção de localidade usa flex-basis (345px) para largura no desktop;
+     em coluna isso vira altura e cria um vão — neutralizar no mobile. */
+  .mobile-filters__panel--header :global(.header-section--locality) {
+    flex: none;
   }
 
   .content {
@@ -428,34 +500,5 @@ import {
 
   .state-message--error {
     color: #e44;
-  }
-
-  /* ─── Menu toggle (hamburger) — REMOVIDO nessa visão ─────────────────────── */
-  /* (hamburguer abandonado no redesign) */
-
-  /* Sidebar backdrop (overlay quando sidebar aberta em mobile) ─────── */
-  .sidebar-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    /* background: SIDEBAR_BACKDROP_COLOR (rgba(0, 0, 0, 0.5)) */
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 99;
-
-  }
-
-  /* Responsive: mobile (<BREAKPOINT_MOBILE: 1023px) ────────────────────────────────────── */
-  @media (max-width: 1023px) {
-    .sidebar-backdrop {
-      display: block;
-    }
-
-    .header__controls {
-      display: none;
-    }
-
-    .subheader {
-      display: flex;
-    }
   }
 </style>
