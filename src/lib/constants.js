@@ -268,7 +268,7 @@ export const TRANSITION_SLOW = '300ms';
  * CSV principal com criadores: lat/lon de nascimento, morte, estudo.
  * Versão fixa (v4). Se mudar, atualizar apenas aqui.
  */
-export const CSV_CREATORS_PATH = 'atlas_ma_0525_v4.csv';
+export const CSV_CREATORS_PATH = 'atlas_ma_0610_v2.csv';
 
 /**
  * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.
