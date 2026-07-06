@@ -10,6 +10,7 @@
   import ArtistCard from './components/ArtistCard.svelte';
   import ArtworkStrip from './components/ArtworkStrip.svelte';
   import MapStats from './components/MapStats.svelte';
+  import TutorialBox from './components/TutorialBox.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
 import {
@@ -20,6 +21,13 @@ import {
   ARTWORK_STRIP_HEIGHT_MOBILE_COLLAPSED,
   BREAKPOINT_TABLET,
   getBreakpoint,
+  LS_TUTORIAL_KEY,
+  TUTORIAL_MAP_TITLE,
+  TUTORIAL_MAP_TEXT_NAV,
+  TUTORIAL_MAP_TEXT_ZOOM,
+  TUTORIAL_MAP_TEXT_MOBILE_SELECT,
+  TUTORIAL_MAP_TEXT_MOBILE_NAV,
+  TUTORIAL_MAP_TEXT_MOBILE_ZOOM,
 } from './lib/constants.js';
 
   /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
@@ -38,6 +46,22 @@ import {
   /** Persiste estado collapsed sem lançar exceção (quota / modo privado). */
   function saveCollapsed(val) {
     try { localStorage.setItem(LS_STRIP_KEY, String(val)); } catch { /* silencioso */ }
+  }
+
+  // ── Tutorial / Onboarding ─────────────────────────────────────────────────────
+
+  let tutorialDismissed = (() => {
+    try { return localStorage.getItem(LS_TUTORIAL_KEY) === 'true'; } catch { return false; }
+  })();
+
+  function handleTutorialDismiss() {
+    tutorialDismissed = true;
+    try { localStorage.setItem(LS_TUTORIAL_KEY, 'true'); } catch { /* silencioso */ }
+  }
+
+  function handleTutorialReopen() {
+    tutorialDismissed = false;
+    try { localStorage.removeItem(LS_TUTORIAL_KEY); } catch { /* silencioso */ }
   }
 
   let bubbles = [];
@@ -287,6 +311,8 @@ import {
       on:creatorschange={handleCreatorsChange}
       on:schoolschange={handleSchoolsChange}
       on:nationalitieschange={handleNationalitiesChange}
+      tutorialActive={!tutorialDismissed}
+      on:tutorialreopen={handleTutorialReopen}
     />
   {/if}
 
@@ -324,6 +350,8 @@ import {
             on:typeschange={handleFilterChange}
             on:localidadechange={handleLocalidadeChange}
             on:trajectorieschange={handleTrajectoriesChange}
+            tutorialActive={!tutorialDismissed}
+            on:tutorialreopen={handleTutorialReopen}
           />
         </div>
       </FilterAccordion>
@@ -339,6 +367,8 @@ import {
           on:typeschange={handleFilterChange}
           on:localidadechange={handleLocalidadeChange}
           on:trajectorieschange={handleTrajectoriesChange}
+          tutorialActive={!tutorialDismissed}
+          on:tutorialreopen={handleTutorialReopen}
         />
       </div>
     </header>
@@ -361,6 +391,24 @@ import {
           bottomInset={artworkStripInset}
           on:artistclick={handleArtistClick}
         />
+        {#if !tutorialDismissed}
+          <div class="tutorial-overlay tutorial-overlay--center">
+            <TutorialBox title={TUTORIAL_MAP_TITLE} on:dismiss={handleTutorialDismiss}>
+              {#if isMobile}
+                <p><strong>Seleção:</strong> {TUTORIAL_MAP_TEXT_MOBILE_SELECT}</p>
+                <p><strong>Navegação:</strong> {TUTORIAL_MAP_TEXT_MOBILE_NAV}</p>
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-mobile.png" alt="" />
+                <p><strong>Zoom:</strong> {TUTORIAL_MAP_TEXT_MOBILE_ZOOM}</p>
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-mobile.png" alt="" />
+              {:else}
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-desktop.png" alt="" />
+                <p><strong>Navegação:</strong> {TUTORIAL_MAP_TEXT_NAV}</p>
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-desktop.png" alt="" />
+                <p><strong>Zoom:</strong> {TUTORIAL_MAP_TEXT_ZOOM}</p>
+              {/if}
+            </TutorialBox>
+          </div>
+        {/if}
         <ArtistCard
           artist={selectedArtist}
           allBubbles={bubbles}
@@ -371,6 +419,19 @@ import {
           <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
         </div>
         <MapStats stats={statsBlock} />
+        {#if isMobile}
+          <button
+            class="tutorial-reopen-mobile"
+            class:tutorial-reopen-mobile--active={!tutorialDismissed}
+            style="bottom: {artworkStripInset + 12}px"
+            on:click={handleTutorialReopen}
+            aria-label="Tutorial"
+          >
+            <svg width="30" height="30" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
+            </svg>
+          </button>
+        {/if}
         <ArtworkStrip
           artworks={artworksForStrip}
           selectedCreator={selectedArtist?.creator ?? null}
@@ -487,6 +548,56 @@ import {
     right: 16px;
     z-index: 10; /* acima do canvas, abaixo do ArtistCard (z-index: 20) */
     pointer-events: none;
+  }
+
+  /* ─── Tutorial overlays (Boxes 2 e 3) ──────────────────────────────── */
+  .tutorial-overlay {
+    position: absolute;
+    z-index: 15; /* acima do map-stats (10), abaixo do ArtistCard (20) */
+    pointer-events: none; /* passa cliques ao canvas; TutorialBox tem pointer-events: auto */
+  }
+
+  .tutorial-overlay--center {
+    /* Desktop: canto superior esquerdo do mapa (alinhado à imagem handoff) */
+    top: 16px;
+    left: 16px;
+  }
+
+  /* Mobile: centraliza na área visível do mapa */
+  @media (max-width: 759px) {
+    .tutorial-overlay--center {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .tutorial-overlay--center :global(.tutorial-box) {
+      width: 286px;
+      padding: 16px 20px;
+    }
+  }
+
+  /* Ilustrações (mouse/gestos) dentro da caixa de tutorial */
+  .tutorial-illo {
+    display: block;
+    margin: 2px auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Mobile: botão flutuante ⓘ para reabrir tutorial (canto inferior-esquerdo do mapa) */
+  .tutorial-reopen-mobile {
+    all: unset;
+    position: absolute;
+    left: 20px;
+    z-index: 15;
+    cursor: pointer;
+    line-height: 0;
+    transition: filter 0.12s;
+  }
+
+  .tutorial-reopen-mobile--active :global(svg) {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.65));
   }
 
   .state-message {

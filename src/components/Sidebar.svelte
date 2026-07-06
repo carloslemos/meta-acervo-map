@@ -15,6 +15,7 @@
   export let isOpen = false;
   export let onClose = null;
   export let onToggle = null;
+  export let tutorialActive = false;
 
   const dispatch = createEventDispatcher();
 
@@ -60,7 +61,11 @@
     <p class="sidebar__description">
       Explore os filtros e navegue pelas trajetórias de artistas dos acervos
     </p>
-    <button class="sidebar__info-btn" aria-label="Sobre os filtros">ⓘ</button>
+    <button class="sidebar__info-btn" class:sidebar__info-btn--active={tutorialActive} aria-label="Reabrir tutorial" on:click={() => dispatch('tutorialreopen')}>
+      <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
+      </svg>
+    </button>
   </div>
 
   <div class="sidebar__content">
@@ -294,6 +299,10 @@
     padding: 0.875rem 0.25rem;
 
     &:hover { color: var(--txt); }
+  }
+
+  .sidebar__info-btn--active :global(svg) {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
   }
 
   /* Botão colapso/expansão — absoluto, fora do inner, segue borda da sidebar */

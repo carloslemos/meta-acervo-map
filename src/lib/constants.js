@@ -290,3 +290,32 @@ export const GEOJSON_COUNTRIES_PATH = 'countries-110m.json';
 
 /** Delimitador do CSV de criadores (ponto-e-vírgula). */
 export const CSV_CREATORS_DELIMITER = ';';
+
+// ─── Tutorial / Onboarding ────────────────────────────────────────────────────
+
+/** Chave localStorage para persistir o estado dismissed do tutorial. */
+export const LS_TUTORIAL_KEY = 'meta-acervo:tutorial-dismissed';
+
+/** Texto da caixa de tutorial da sidebar (Box 1). */
+export const TUTORIAL_SIDEBAR_TEXT = 'Explore os filtros e navegue pelas trajetórias dos artistas dos acervos';
+
+/** Título da caixa de tutorial do centro do mapa (Box 2). */
+export const TUTORIAL_MAP_TITLE = 'Como navegar';
+
+/** Instrução de navegação desktop — Box 2 (texto após o label bold). */
+export const TUTORIAL_MAP_TEXT_NAV = 'Para girar o globo, clique e segure o botão esquerdo do mouse e arraste.';
+
+/** Instrução de zoom desktop — Box 2 (texto após o label bold). */
+export const TUTORIAL_MAP_TEXT_ZOOM = 'Use o scroll do mouse ou clique nos botões + e − para aproximar ou afastar.';
+
+/** Instrução de seleção mobile — Box 2. */
+export const TUTORIAL_MAP_TEXT_MOBILE_SELECT = 'Escolha categorias e visualizações para ver as trajetórias dos artistas.';
+
+/** Instrução de navegação mobile — Box 2. */
+export const TUTORIAL_MAP_TEXT_MOBILE_NAV = 'Deslize um dedo pela tela para girar o globo.';
+
+/** Instrução de zoom mobile — Box 2. */
+export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM = 'Toque nos botões + e − ou junte e afaste dois dedos para aproximar e afastar.';
+
+/** Texto da caixa de tutorial do artwork strip (Box 3). */
+export const TUTORIAL_STRIP_TEXT = 'Obras dos artistas nos acervos selecionados';
