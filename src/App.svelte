@@ -605,7 +605,7 @@ import {
     align-items: center;
     justify-content: center;
     height: 100%;
-    font-size: 0.85rem;
+    font-size: var(--font-size-xs);
     color: var(--txt-hl);
   }
 

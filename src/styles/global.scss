@@ -8,21 +8,83 @@
 }
 
 :root {
-  /* Paleta escura — referência Figma `q7qOSGJ47dlLKvBE5lyIGo` (Versão 1). */
-  --bg: #0a0a0a;       /* fundo principal da página / header / sphere overlay */
-  --bg-l: #1a1a1a;     /* superfície elevada (header de cards, hover de itens) */
-  --bg-c: rgba(0.1, 0.1, 0.1, 0.2);     /* background de cards e outros elementos em overlay ao mapa */
-  --bg-m: #272727;     /* Neutral 100 — fundo de inputs */
-  --bg-hl: #3a3a3a;    /* bordas e separadores */
-  --txt: #f4f4f4;      /* texto primário */
-  --txt-l: #b0b0b0;    /* texto secundário */
-  --txt-hl: #707070;   /* texto muted */
-  --birth-color: #f5e51c;  /* amarelo */
-  --death-color: #2ec09c;  /* verde água */
-  --edu-color: #e89bd3;    /* rosa */
+  /* ─── Tokens brutos — paleta "Atlas" (Figma Spectral, atualizado 20/05/2026) ───
+     Fonte: nó 1:7358 do arquivo Figma 65VY0RJh4omVZFM7FCBbAL ("Colors").
+     Não referenciar estes tokens diretamente nos componentes: usar os aliases
+     semânticos abaixo. */
+
+  /* Cores principais */
+  --color-white:  #ffffff;
+  --color-black:  #121212;
+  --color-yellow: #f0e442;  /* birth — Nascimento */
+  --color-pink:   #cc79a7;  /* education — Estudos */
+  --color-green:  #009e74;  /* death — Morte */
+
+  /* Escala neutra (Neutral/10 → Neutral/100) */
+  --neutral-10:  #e8e8e8;
+  --neutral-20:  #d2d2d2;
+  --neutral-30:  #bbbbbb;
+  --neutral-40:  #a5a5a5;
+  --neutral-50:  #8e8e8e;
+  --neutral-60:  #787878;
+  --neutral-70:  #616161;
+  --neutral-80:  #4b4b4b;
+  --neutral-90:  #383838;
+  --neutral-100: #272727;
+
+  /* ─── Aliases semânticos (referenciados nos componentes) ─── */
+  --bg:    var(--color-black);      /* fundo principal da página / header / sphere overlay */
+  --bg-l:  var(--neutral-100);      /* superfície elevada (header de cards, hover de itens) */
+  --bg-c:  rgba(18, 18, 18, 0.8);   /* Background-Card #121212 @ 0.8 — cards em overlay ao mapa */
+  --bg-m:  var(--neutral-100);      /* fundo de inputs */
+  --bg-hl: var(--neutral-90);       /* bordas e separadores */
+  --txt:    var(--neutral-10);      /* texto primário */
+  --txt-l:  var(--neutral-30);      /* texto secundário */
+  --txt-hl: var(--neutral-60);      /* texto muted */
+  --birth-color: var(--color-yellow);
+  --death-color: var(--color-green);
+  --edu-color:   var(--color-pink);
+  --accent:      var(--color-yellow); /* destaque (fallback; pills sobrescrevem via TYPE_COLOR) */
+
+  /* ─── Tipografia — tokens (Figma specimen "Atlas", nó 1:6704) ─────────────────
+     Todos os estilos do design usam JetBrains Mono, line-height 140%, caixa alta
+     e letter-spacing -1% (H1 → Label). Variam apenas tamanho e peso.
+     Pesos do design: Regular (400), Medium (500), Bold (700). */
+
+  --font-family-base: 'JetBrains Mono', monospace;
+
+  /* Tamanhos — px exatos do Figma; escala ascendente 2xs → 2xl */
+  --font-size-2xs:  10px;  /* Label */
+  --font-size-xs:   12px;  /* Body-XSmall */
+  --font-size-sm:   13px;  /* Body-Small */
+  --font-size-md:   14px;  /* Body-Medium (padrão) */
+  --font-size-lg:   15px;  /* Body-Large · H3 */
+  --font-size-xl:   16px;  /* Body-XLarge · H2 */
+  --font-size-2xl:  17px;  /* H1 */
+
+  /* Pesos */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;  /* fora do specimen; usado em pills/inputs do app */
+  --font-weight-bold:     700;
+
+  /* Line-height — design usa 1.4 (140%); demais steps para casos de layout */
+  --line-height-none:    1;
+  --line-height-tight:   1.2;
+  --line-height-snug:    1.3;
+  --line-height-normal:  1.4;   /* padrão do design */
+  --line-height-relaxed: 1.5;
+
+  /* Letter-spacing — design usa -0.01em (-1%); -0.02em em Body-Medium Bold */
+  --letter-spacing-tighter: -0.02em;
+  --letter-spacing-tight:   -0.01em;   /* padrão do design */
+  --letter-spacing-normal:  0;
+  --letter-spacing-wide:    0.04em;
+  --letter-spacing-wider:   0.08em;
+
   --menu-height: 98px;
   --sidebar-width: 365px;  /* largura da sidebar no desktop (≥1380px) */
-  font-size: 0.875rem; /* 14px */
+  // font-size: 0.875rem; /* 14px */
 }
 
 /* Tablet: 760–1379px — sidebar mais estreita (302px), header completo */
@@ -47,8 +109,10 @@ body {
   overflow: hidden;
   background-color: var(--bg);
   color: var(--txt);
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 400;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-tight);
   text-transform: uppercase;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

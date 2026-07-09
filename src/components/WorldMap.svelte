@@ -694,7 +694,7 @@
       if (countriesMesh) {
         bgCtx.beginPath();
         geoPath(countriesMesh);
-        bgCtx.strokeStyle = isGlobe ? '#0a0a0a' : '#3a3a3a';
+        bgCtx.strokeStyle = isGlobe ? '#121212' : '#383838';
         bgCtx.lineWidth = 0.5;
         bgCtx.stroke();
       }
@@ -934,7 +934,7 @@
           const FONT_SIZE = 10;
           ctx.save();
           ctx.globalAlpha = 1;
-          ctx.font = `500 ${FONT_SIZE}px "Roboto Mono", monospace`;
+          ctx.font = `500 ${FONT_SIZE}px "JetBrains Mono", monospace`;
           ctx.textBaseline = 'alphabetic';
           const tw = ctx.measureText(label).width;
           const boxW = tw + PAD * 2;

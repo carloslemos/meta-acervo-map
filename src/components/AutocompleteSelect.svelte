@@ -167,18 +167,18 @@
   }
 
   .section-title {
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);
   }
 
   .clear-btn {
     all: unset;
-    font-size: 0.65rem;
+    font-size: var(--font-size-2xs);
     color: var(--txt-hl);
     cursor: pointer;
-    line-height: 1;
+    line-height: var(--line-height-none);
 
     &:hover {
       color: var(--txt);
@@ -197,9 +197,9 @@
     padding: 0.45rem 2rem 0.45rem 0.6rem;
     border: 1px solid var(--bg-hl);
     border-radius: 0.25rem;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
     color: var(--txt-l);
     background: var(--bg-m);
@@ -256,8 +256,8 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0.35rem 0.6rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.04em;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
     color: var(--txt-l);
     cursor: pointer;
@@ -292,19 +292,19 @@
     background: var(--txt);
     color: var(--bg);
     border-radius: 0.2rem;
-    font-size: 0.62rem;
-    font-family: 'Roboto Mono', monospace;
-    letter-spacing: 0.04em;
+    font-size: var(--font-size-xs);
+    font-family: var(--font-family-base);
+    letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
-    line-height: 1.4;
+    line-height: var(--line-height-normal);
   }
 
   .chip__remove {
     all: unset;
-    font-size: 0.55rem;
+    font-size: var(--font-size-2xs);
     cursor: pointer;
     opacity: 0.7;
-    line-height: 1;
+    line-height: var(--line-height-none);
 
     &:hover {
       opacity: 1;

@@ -112,9 +112,9 @@
   }
 
   .accordion-header__label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8125rem;
-    font-weight: 700;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--txt);

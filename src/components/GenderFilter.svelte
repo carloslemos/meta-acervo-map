@@ -44,9 +44,9 @@
   }
 
   .section-title {
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);
   }
 

@@ -76,14 +76,14 @@
   }
 
   .map-btn--active {
-    background: #a5a5a5;
-    border-color: #a5a5a5;
-    color: #000;
+    background: var(--neutral-40);
+    border-color: var(--neutral-40);
+    color: var(--color-black);
 
     &:hover {
-      background: #a5a5a5;
-      border-color: #a5a5a5;
-      color: #000;
+      background: var(--neutral-40);
+      border-color: var(--neutral-40);
+      color: var(--color-black);
       cursor: default;
     }
   }

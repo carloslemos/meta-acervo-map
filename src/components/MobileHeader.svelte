@@ -54,11 +54,11 @@
 
   .mobile-header__title,
   .mobile-header__subtitle {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: #d2d2d2;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-snug);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--neutral-20);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -74,11 +74,11 @@
 
   .mobile-header__action-btn {
     all: unset;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: #bbbbbb;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--neutral-30);
     cursor: pointer;
     white-space: nowrap;
 
@@ -92,9 +92,9 @@
 
   .mobile-header__lang-btn {
     all: unset;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);
     cursor: pointer;
 
@@ -103,7 +103,7 @@
 
   .mobile-header__lang-btn--active {
     color: var(--txt);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-decoration: underline;
     text-underline-offset: 3px;
   }

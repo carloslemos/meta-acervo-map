@@ -22,11 +22,11 @@
     flex-direction: column;
     gap: 0;
     pointer-events: none;
-    font-family: "Roboto Mono", monospace;
+    font-family: var(--font-family-base);
     font-style: normal;
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 20px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.64);
   }

@@ -104,7 +104,7 @@
     width: var(--sidebar-width, 365px);
     flex-shrink: 0;
     border-right: 1px solid var(--bg-hl);
-    background: linear-gradient(180deg, #121212 13.94%, #686868 100%);
+    background: linear-gradient(180deg, var(--color-black) 13.94%, #686868 100%);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -175,11 +175,11 @@
 
   .sidebar__brand-title,
   .sidebar__brand-subtitle {
-    font-size: 0.9375rem;
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: #D2D2D2;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-snug);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--neutral-20);
     white-space: nowrap;
   }
 
@@ -194,11 +194,11 @@
 
   .sidebar__action-btn {
     all: unset;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
-    color: #BBBBBB;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--neutral-30);
     cursor: pointer;
     white-space: nowrap;
 
@@ -212,9 +212,9 @@
 
   .sidebar__lang-btn {
     all: unset;
-    font-size: 0.875rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);
     cursor: pointer;
 
@@ -223,7 +223,7 @@
 
   .sidebar__lang-btn--active {
     color: var(--txt);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
@@ -248,7 +248,7 @@
   .sidebar__close {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
     color: var(--txt);
     cursor: pointer;
     padding: 0.5rem 0.75rem;
@@ -273,11 +273,11 @@
   }
 
   .sidebar__description {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6875rem;
-    font-weight: 400;
-    line-height: 1.5;
-    letter-spacing: -0.01em;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-relaxed);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);
     text-transform: uppercase;
     margin: 0;
@@ -287,10 +287,10 @@
 
   .sidebar__info-btn {
     all: unset;
-    font-size: 0.875rem;
+    font-size: var(--font-size-md);
     color: var(--txt-hl);
     cursor: pointer;
-    line-height: 1;
+    line-height: var(--line-height-none);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -320,7 +320,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
     z-index: 10;
     flex-shrink: 0;
 

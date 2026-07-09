@@ -6,12 +6,13 @@
 
 // ─── Cores e rótulos por tipo de bubble ──────────────────────────────────────
 
-// Paleta canônica do tema escuro (referência Figma `q7qOSGJ47dlLKvBE5lyIGo`).
+// Paleta canônica do tema escuro (referência Figma 65VY0RJh4omVZFM7FCBbAL, nó 1:7358).
+// Espelha os tokens de cor em src/styles/global.scss (--birth/-death/-edu-color).
 // Estas cores são usadas tanto nas bubbles do mapa quanto nas pills do header.
 export const TYPE_COLOR = {
-  birth:     '#f5e51c',  // amarelo — Nascimento
-  death:     '#2ec09c',  // verde água — Morte
-  education: '#e89bd3',  // rosa — Estudo
+  birth:     '#f0e442',  // amarelo — Nascimento
+  death:     '#009e74',  // verde — Morte
+  education: '#cc79a7',  // rosa — Estudo
   acervo:    '#ffffff',  // branco — Acervo
 };
 

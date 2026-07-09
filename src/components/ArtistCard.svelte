@@ -184,17 +184,17 @@
 
   .artist-card__name {
     margin: 0;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-tight);
   }
 
   .artist-card__close {
     all: unset;
     color: var(--txt-hl);
-    font-size: 1.4rem;
-    line-height: 1;
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-none);
     cursor: pointer;
     flex-shrink: 0;
     margin-top: 1px;
@@ -217,9 +217,9 @@
 
   .section__label {
     margin: 0 0 5px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
     color: var(--txt-hl);
   }
@@ -241,18 +241,18 @@
 
   .section__dot {
     flex-shrink: 0;
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     margin-top: 3px;
-    line-height: 1;
+    line-height: var(--line-height-none);
   }
 
   .section__text {
     margin: 0;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--txt);
-    line-height: 1.35;
+    line-height: var(--line-height-normal);
   }
 
   .section__right {
@@ -266,24 +266,24 @@
   /* ─── Badge de confiança ────────────────────────────────────────────── */
 
   .badge {
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
     padding: 2px 6px;
     border-radius: 2px;
     border: 1px solid var(--bg-hl);
     color: var(--txt-l);
     white-space: nowrap;
-    line-height: 1.4;
+    line-height: var(--line-height-normal);
   }
 
   .info-btn {
     all: unset;
-    font-size: 14px;
+    font-size: var(--font-size-md);
     color: var(--txt-hl);
     cursor: pointer;
-    line-height: 1;
+    line-height: var(--line-height-none);
 
     &:hover { color: var(--txt); }
   }
@@ -298,10 +298,10 @@
 
   .artwork {
     margin-bottom: 5px;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-normal);
     color: var(--txt-l);
 
     a {

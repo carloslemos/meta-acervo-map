@@ -279,7 +279,7 @@ import {
   .artwork-strip--mobile .artwork-strip__header {
     height: 31px;
     padding: 0 12px;
-    font-size: 0.62rem;
+    font-size: var(--font-size-xs);
   }
 
   .artwork-strip--mobile .artwork-strip__grid {
@@ -304,8 +304,8 @@ import {
     padding: 0 20px;
     cursor: pointer;
     color: var(--txt-l);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wider);
     text-transform: uppercase;
     flex-shrink: 0;
     box-sizing: border-box;
@@ -437,7 +437,7 @@ import {
     align-items: center;
     justify-content: center;
     color: var(--txt-l);
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
   }
 
   /* ── Tooltip rico das obras ─────────────────────────────────────────── */
@@ -451,8 +451,8 @@ import {
     padding: 8px 12px;
     max-width: 220px;
     pointer-events: none;
-    font-size: 0.78rem;
-    line-height: 1.4;
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-normal);
 
     p {
       margin: 0;
@@ -460,7 +460,7 @@ import {
   }
 
   :global(.artwork-tip__title) {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     margin-bottom: 2px !important;
   }
 
@@ -476,7 +476,7 @@ import {
 
   :global(.artwork-tip__museum) {
     margin-top: 2px !important;
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     color: var(--txt-hl);
   }
 </style>

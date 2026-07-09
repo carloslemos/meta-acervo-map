@@ -68,8 +68,8 @@
     border-radius: 0.25rem;
     border: 1px solid var(--bg-hl);
     color: var(--txt-hl);
-    font-size: 0.7rem;
-    letter-spacing: -0.01em;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-tight);
     cursor: pointer;
     box-sizing: border-box;
     transition: background 0.1s, color 0.1s, border-color 0.1s;
