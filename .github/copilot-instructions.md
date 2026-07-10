@@ -199,3 +199,48 @@ if (height > ARTWORK_STRIP_HEIGHT_EXPANDED) { ... }
 2. Adicionar entrada em `TYPE_COLOR` e `TYPE_LABEL` em **`src/lib/constants.js`** (única fonte de verdade)
 3. Adicionar entrada em `FILTERS` (`FilterControls.svelte`) com `disabled: false` se houver dados
 4. Verificar cobertura dos dados antes — ver skill `/csv-data`
+
+## Gerenciamento de projeto — GitHub Issues
+
+O rastreador oficial do projeto é o **GitHub Issues** no repositório [`carloslemos/meta-acervo-map`](https://github.com/carloslemos/meta-acervo-map).
+
+### Labels canônicos
+
+| Label | Uso |
+|---|---|
+| `spec` | Issue é uma especificação completa (PRD), gerada pela skill `/para-spec` |
+| `ready-for-agent` | Ticket pronto para ser implementado por um agente de IA |
+| `enhancement` | Nova funcionalidade ou melhoria |
+| `bug` | Comportamento incorreto |
+| `data` | Relacionado ao dataset CSV ou geolocalização |
+| `design` | Relacionado à UI, visual ou projeção do mapa |
+| `refactor` | Melhoria interna sem mudança de comportamento visível |
+
+### Workflow de planejamento
+
+Use as skills de engenharia nesta ordem:
+
+1. **`/refinar-com-docs`** — Afiar a ideia com entrevista e criar ADRs/glossário
+2. **`/para-spec`** → publica issue com label `spec` no GitHub
+3. **`/para-tickets`** → quebra a spec em issues de implementação com label `ready-for-agent`
+4. **`/melhorar-arquitetura`** — Identificar fricção arquitetural antes de implementar
+5. **`/design-de-modulos`** — Vocabulário compartilhado para projetar interfaces durante a implementação
+
+### Convenções de issues
+
+- **Título de spec:** `[spec] <título descritivo>`
+- **Título de ticket:** `[feat]` / `[fix]` / `[refactor]` / `[data]` + título descritivo curto
+- **Relações de bloqueio:** usar campo "Blocked by" ou sub-issues nativos do GitHub quando disponível
+- **Caminhos de arquivo** não devem aparecer em issues — eles ficam desatualizados; use o vocabulário de domínio
+- **Vocabulário de domínio obrigatório em issues:** "bubble", "trajetória", "acervo", "criador", "filtro", "projeção", "costura"
+
+### Skills disponíveis
+
+| Skill | Descrição curta |
+|---|---|
+| `/csv-data` | Auditoria e cobertura do dataset CSV |
+| `/design-de-modulos` | Vocabulário para projetar módulos profundos |
+| `/refinar-com-docs` | Entrevista para afiar planos e criar ADRs |
+| `/melhorar-arquitetura` | Varredura de fricção arquitetural com relatório HTML |
+| `/para-spec` | Converte conversa em spec publicada no GitHub |
+| `/para-tickets` | Quebra spec/plano em tickets tracer-bullet no GitHub |
