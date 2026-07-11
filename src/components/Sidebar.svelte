@@ -104,7 +104,7 @@
     width: var(--sidebar-width, 365px);
     flex-shrink: 0;
     border-right: 1px solid var(--bg-hl);
-    background: var(--sidebar-bg);
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -154,7 +154,9 @@
     gap: 12px;
     height: var(--menu-height);
     padding: 0 0 0 16px;
-    border-bottom: 1px solid var(--bg-hl);
+    /* Brand fica sempre escuro (--chrome-bg) em ambos os temas. */
+    background: var(--chrome-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     flex-shrink: 0;
   }
 
@@ -163,11 +165,7 @@
     width: auto;
     display: block;
     flex-shrink: 0;
-  }
-
-  /* Logo é branco monocromático; no tema claro inverte para preto. */
-  :global([data-theme="light"]) .sidebar__logo {
-    filter: invert(1);
+    /* Chrome é sempre escuro — logo branco sempre legível; sem invert. */
   }
 
   .sidebar__brand-text {
@@ -184,7 +182,7 @@
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-snug);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt);
+    color: var(--chrome-txt);
     white-space: nowrap;
   }
 
@@ -203,11 +201,11 @@
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-l);
+    color: var(--chrome-txt-l);
     cursor: pointer;
     white-space: nowrap;
 
-    &:hover { color: var(--txt); }
+    &:hover { color: var(--chrome-txt); }
   }
 
   .sidebar__lang {
@@ -220,14 +218,14 @@
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-hl);
+    color: var(--chrome-txt-l);
     cursor: pointer;
 
-    &:hover { color: var(--txt); }
+    &:hover { color: var(--chrome-txt); }
   }
 
   .sidebar__lang-btn--active {
-    color: var(--txt);
+    color: var(--chrome-txt);
     font-weight: var(--font-weight-bold);
     text-decoration: underline;
     text-underline-offset: 3px;
