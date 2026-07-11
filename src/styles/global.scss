@@ -87,6 +87,21 @@
   // font-size: 0.875rem; /* 14px */
 }
 
+/* ─── Tema claro — redefine os aliases semânticos para paleta clara ──────────
+   Aplicado via data-theme="light" no <html> por App.svelte.
+   Os tokens brutos (--color-*, --neutral-*) permanecem os mesmos; apenas
+   os aliases são remapeados. */
+[data-theme="light"] {
+  --bg:    var(--color-white);      /* fundo principal (#ffffff) */
+  --bg-l:  var(--neutral-10);       /* superfície elevada (#e8e8e8) */
+  --bg-c:  rgba(255, 255, 255, 0.85); /* cards em overlay ao mapa */
+  --bg-m:  var(--neutral-10);       /* fundo de inputs */
+  --bg-hl: var(--neutral-20);       /* bordas e separadores (#d2d2d2) */
+  --txt:    var(--color-black);     /* texto primário (#121212) */
+  --txt-l:  var(--neutral-70);      /* texto secundário (#616161) */
+  --txt-hl: var(--neutral-40);      /* texto muted (#a5a5a5) */
+}
+
 /* Tablet: 760–1379px — sidebar mais estreita (302px), header completo */
 @media (max-width: 1379px) {
   :root {

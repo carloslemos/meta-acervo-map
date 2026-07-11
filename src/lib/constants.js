@@ -16,6 +16,15 @@ export const TYPE_COLOR = {
   acervo:    '#ffffff',  // branco — Acervo
 };
 
+// Tom mais brilhante/saturado por tipo — usado em estado hover das pills e
+// nos botões do overlay. Sempre distinto (mais vivo) do tom base em TYPE_COLOR.
+export const TYPE_COLOR_HOVER = {
+  birth:     '#f5e51c',  // amarelo saturado — Nascimento hover
+  death:     '#2ec09c',  // verde-água — Morte hover
+  education: '#e89bd3',  // rosa claro — Estudo hover
+  acervo:    '#bbbbbb',  // neutro-30 — Acervo hover
+};
+
 export const TYPE_LABEL = {
   birth:     'Nascimento',
   death:     'Morte',

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`TYPE_COLOR_HOVER — par distinto por tipo snapshot de TYPE_COLOR_HOVER 1`] = `
+{
+  "acervo": "#bbbbbb",
+  "birth": "#f5e51c",
+  "death": "#2ec09c",
+  "education": "#e89bd3",
+}
+`;

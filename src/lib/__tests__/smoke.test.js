@@ -1,5 +1,6 @@
 import {
   TYPE_COLOR,
+  TYPE_COLOR_HOVER,
   BUBBLE_RADIUS,
   CENTRAL_ROTATION,
   TRAJECTORY_FLOW_ENABLED,
@@ -43,5 +44,22 @@ describe('WorldMap — smoke: constantes de inicialização', () => {
   test('fatores de escala da projeção são positivos', () => {
     expect(PROJECTION_3D_SCALE_FACTOR).toBeGreaterThan(0);
     expect(PROJECTION_2D_BASE_SCALE).toBeGreaterThan(0);
+  });
+});
+
+describe('TYPE_COLOR_HOVER — par distinto por tipo', () => {
+  const TIPOS = ['birth', 'death', 'education', 'acervo'];
+
+  test('TYPE_COLOR_HOVER tem as mesmas chaves que TYPE_COLOR', () => {
+    expect(Object.keys(TYPE_COLOR_HOVER)).toEqual(expect.arrayContaining(TIPOS));
+    expect(Object.keys(TYPE_COLOR_HOVER)).toHaveLength(TIPOS.length);
+  });
+
+  test.each(TIPOS)('hover de "%s" é distinto do tom base', (tipo) => {
+    expect(TYPE_COLOR_HOVER[tipo]).not.toBe(TYPE_COLOR[tipo]);
+  });
+
+  test('snapshot de TYPE_COLOR_HOVER', () => {
+    expect(TYPE_COLOR_HOVER).toMatchSnapshot();
   });
 });
