@@ -164,6 +164,12 @@ export const TRAJECTORY_FLOW_COLOR_NORMAL = '#f4f6f8';
 /** Cor do ponto de fluxo destacado (amber/laranja). */
 export const TRAJECTORY_FLOW_COLOR_HIGHLIGHT = '#ffffff';
 
+/** Cor do ponto de fluxo em repouso no tema claro (cinza escuro — contraste sobre fundo claro). */
+export const TRAJECTORY_FLOW_COLOR_NORMAL_LIGHT = '#4b4b4b';
+
+/** Cor do fio/ponto de destaque de trajetória no tema claro (preto — contraste sobre fundo claro). */
+export const TRAJECTORY_FLOW_COLOR_HIGHLIGHT_LIGHT = '#121212';
+
 // ─── Morph entre projeções (2D ↔ 3D) ──────────────────────────────────────────
 
 /** Ativa/desativa animação de morph entre projeções. False = troca instantânea. */

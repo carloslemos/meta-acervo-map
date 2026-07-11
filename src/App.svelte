@@ -442,6 +442,8 @@ import {
         />
         <div class="map-overlay-right">
           <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
+        </div>
+        <div class="map-overlay-theme">
           <ThemeToggle {theme} on:themechange={handleThemeChange} />
         </div>
         <MapStats stats={statsBlock} />
@@ -573,6 +575,18 @@ import {
     top: 16px;
     right: 16px;
     z-index: 10; /* acima do canvas, abaixo do ArtistCard (z-index: 20) */
+    pointer-events: none;
+  }
+
+  /* Toggle de tema (sol/lua) — centralizado verticalmente na área visível
+     do mapa (descontando a faixa de obras na base), na borda direita.
+     Referência Figma modo claro. */
+  .map-overlay-theme {
+    position: absolute;
+    top: calc((100% - var(--artwork-strip-inset, 0px)) / 2);
+    right: 16px;
+    transform: translateY(-50%);
+    z-index: 10;
     pointer-events: none;
   }
 

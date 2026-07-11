@@ -63,7 +63,7 @@
     </p>
     <button class="sidebar__info-btn" class:sidebar__info-btn--active={tutorialActive} aria-label="Reabrir tutorial" on:click={() => dispatch('tutorialreopen')}>
       <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
+        <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="currentColor"/>
       </svg>
     </button>
   </div>
@@ -104,7 +104,7 @@
     width: var(--sidebar-width, 365px);
     flex-shrink: 0;
     border-right: 1px solid var(--bg-hl);
-    background: linear-gradient(180deg, var(--color-black) 13.94%, #686868 100%);
+    background: var(--sidebar-bg);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -165,6 +165,11 @@
     flex-shrink: 0;
   }
 
+  /* Logo é branco monocromático; no tema claro inverte para preto. */
+  :global([data-theme="light"]) .sidebar__logo {
+    filter: invert(1);
+  }
+
   .sidebar__brand-text {
     display: flex;
     flex-direction: column;
@@ -179,7 +184,7 @@
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-snug);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--neutral-20);
+    color: var(--txt);
     white-space: nowrap;
   }
 
@@ -198,7 +203,7 @@
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--neutral-30);
+    color: var(--txt-l);
     cursor: pointer;
     white-space: nowrap;
 
@@ -302,7 +307,7 @@
   }
 
   .sidebar__info-btn--active :global(svg) {
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+    filter: drop-shadow(0 0 6px var(--txt-hl));
   }
 
   /* Botão colapso/expansão — absoluto, fora do inner, segue borda da sidebar */

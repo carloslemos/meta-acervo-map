@@ -52,7 +52,7 @@
           type="button"
           class="pill"
           class:pill--active={activeTypes.has(filter.type)}
-          style="--accent: {filter.color}; --accent-hover: {filter.colorHover}"
+          style="--accent: {filter.type === 'acervo' ? 'var(--pill-neutral)' : filter.color}; --accent-hover: {filter.type === 'acervo' ? 'var(--pill-neutral-hover)' : filter.colorHover}"
           aria-pressed={activeTypes.has(filter.type)}
           on:click={() => toggleType(filter.type)}
         >

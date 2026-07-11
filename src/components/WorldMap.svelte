@@ -12,6 +12,8 @@
   TRAJECTORY_FLOW_DOT_RADIUS,
   TRAJECTORY_FLOW_COLOR_NORMAL,
   TRAJECTORY_FLOW_COLOR_HIGHLIGHT,
+  TRAJECTORY_FLOW_COLOR_NORMAL_LIGHT,
+  TRAJECTORY_FLOW_COLOR_HIGHLIGHT_LIGHT,
   PROJECTION_MORPH_ENABLED,
   PROJECTION_MORPH_DURATION,
   PROJECTION_3D_SCALE_FACTOR,
@@ -652,8 +654,8 @@
       /* Gradiente vertical: tema escuro topo preto → cinza; claro neutro → branco */
       const vertGrad = bgCtx.createLinearGradient(0, 0, 0, height);
       if (isLight) {
-        vertGrad.addColorStop(0, 'rgba(210, 210, 210, 1)');
-        vertGrad.addColorStop(1, 'rgba(245, 245, 245, 1)');
+        vertGrad.addColorStop(0, 'rgba(240, 240, 240, 1)');
+        vertGrad.addColorStop(1, 'rgba(248, 248, 248, 1)');
       } else {
         vertGrad.addColorStop(0,    'rgba(0, 0, 0, 1)');
         vertGrad.addColorStop(1,    'rgba(94, 94, 94, 1)');
@@ -669,9 +671,10 @@
         glowCx, glowCy, glowSc * 2.4
       );
       if (isLight) {
-        glow.addColorStop(0,   'rgba(200, 200, 200, 1)');
-        glow.addColorStop(0.3, 'rgba(200, 200, 200, 0.3)');
-        glow.addColorStop(1,   'rgba(200, 200, 200, 0)');
+        /* Brilho sutil (clareia levemente ao redor da esfera) — evita halo cinza. */
+        glow.addColorStop(0,   'rgba(255, 255, 255, 0.55)');
+        glow.addColorStop(0.4, 'rgba(255, 255, 255, 0.18)');
+        glow.addColorStop(1,   'rgba(255, 255, 255, 0)');
       } else {
         glow.addColorStop(0,   'rgba(94, 94, 94, 1)');
         glow.addColorStop(0.3, 'rgba(94, 94, 94, 0.3)');
@@ -682,17 +685,17 @@
 
       bgCtx.beginPath();
       geoPath(SPHERE);
-      bgCtx.fillStyle = isLight ? '#f0f0f0' : '#141414';
+      bgCtx.fillStyle = isLight ? '#ececec' : '#141414';
       bgCtx.fill();
-      bgCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.18)';
+      bgCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.18)';
       bgCtx.lineWidth = 0.6;
       bgCtx.stroke();
     } else {
       /* Fundo do mapa 2D */
       const vertGrad2d = bgCtx.createLinearGradient(0, 0, 0, height);
       if (isLight) {
-        vertGrad2d.addColorStop(0, 'rgba(220, 220, 220, 1)');
-        vertGrad2d.addColorStop(1, 'rgba(245, 245, 245, 1)');
+        vertGrad2d.addColorStop(0, 'rgba(240, 240, 240, 1)');
+        vertGrad2d.addColorStop(1, 'rgba(248, 248, 248, 1)');
       } else {
         vertGrad2d.addColorStop(0, 'rgba(0, 0, 0, 1)');
         vertGrad2d.addColorStop(1, 'rgba(94, 94, 94, 1)');
@@ -705,7 +708,8 @@
       bgCtx.beginPath();
       geoPath(countriesFeature);
       if (isLight) {
-        bgCtx.fillStyle = isGlobe ? '#c8c8c8' : 'rgba(180, 180, 180, 1)';
+        /* Continentes escuros (carvão) sobre esfera/fundo claro — alto contraste. */
+        bgCtx.fillStyle = isGlobe ? '#4b4b4b' : 'rgba(75, 75, 75, 1)';
       } else {
         bgCtx.fillStyle = isGlobe ? '#404040' : 'rgba(125, 125, 125, 1)';
       }
@@ -715,7 +719,8 @@
         bgCtx.beginPath();
         geoPath(countriesMesh);
         if (isLight) {
-          bgCtx.strokeStyle = isGlobe ? '#e0e0e0' : '#d0d0d0';
+          /* Bordas internas mais escuras que o preenchimento — definição sutil. */
+          bgCtx.strokeStyle = isGlobe ? '#2a2a2a' : '#2a2a2a';
         } else {
           bgCtx.strokeStyle = isGlobe ? '#121212' : '#383838';
         }
@@ -736,19 +741,29 @@
 
       /* Sombra interna — borda escura (efeito atmosférico / profundidade) */
       const rim = bgCtx.createRadialGradient(cx, cy, sc * 0.42, cx, cy, sc);
-      rim.addColorStop(0,    'rgba(0,0,0,0)');
-      rim.addColorStop(0.65, 'rgba(0,0,0,0.10)');
-      rim.addColorStop(1,    'rgba(0,0,0,0.58)');
+      if (isLight) {
+        /* Rim bem sutil no tema claro — evita aspecto de esfera metálica. */
+        rim.addColorStop(0,    'rgba(0,0,0,0)');
+        rim.addColorStop(0.7,  'rgba(0,0,0,0.03)');
+        rim.addColorStop(1,    'rgba(0,0,0,0.16)');
+      } else {
+        rim.addColorStop(0,    'rgba(0,0,0,0)');
+        rim.addColorStop(0.65, 'rgba(0,0,0,0.10)');
+        rim.addColorStop(1,    'rgba(0,0,0,0.58)');
+      }
       bgCtx.fillStyle = rim;
       bgCtx.fillRect(0, 0, width, height);
 
-      /* Brilho fixo superior-central — dá tridimensionalidade à esfera */
-      const halo = bgCtx.createRadialGradient(cx, cy - sc * 0.30, 0, cx, cy - sc * 0.30, sc * 0.80);
-      halo.addColorStop(0,   'rgba(255,255,255,0.07)');
-      halo.addColorStop(0.5, 'rgba(255,255,255,0.02)');
-      halo.addColorStop(1,   'rgba(255,255,255,0)');
-      bgCtx.fillStyle = halo;
-      bgCtx.fillRect(0, 0, width, height);
+      /* Brilho fixo superior-central — dá tridimensionalidade à esfera.
+         Só no tema escuro; num globo claro o brilho branco não aparece. */
+      if (!isLight) {
+        const halo = bgCtx.createRadialGradient(cx, cy - sc * 0.30, 0, cx, cy - sc * 0.30, sc * 0.80);
+        halo.addColorStop(0,   'rgba(255,255,255,0.07)');
+        halo.addColorStop(0.5, 'rgba(255,255,255,0.02)');
+        halo.addColorStop(1,   'rgba(255,255,255,0)');
+        bgCtx.fillStyle = halo;
+        bgCtx.fillRect(0, 0, width, height);
+      }
 
       bgCtx.restore();
     }
@@ -764,6 +779,14 @@
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
+
+    // Cores de trajetória adaptáveis ao tema (contraste sobre fundo claro/escuro).
+    const flowHighlightColor = theme === 'light'
+      ? TRAJECTORY_FLOW_COLOR_HIGHLIGHT_LIGHT
+      : TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
+    const flowNormalColor = theme === 'light'
+      ? TRAJECTORY_FLOW_COLOR_NORMAL_LIGHT
+      : TRAJECTORY_FLOW_COLOR_NORMAL;
 
     // Trajetórias — agrupadas por estilo para reduzir trocas de strokeStyle.
     if (positionedTrajectories.length) {
@@ -802,7 +825,7 @@
             hasHighlight = true;
           }
           if (hasHighlight) {
-            ctx.strokeStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
+            ctx.strokeStyle = flowHighlightColor;
             ctx.lineWidth = 1.6;
             ctx.globalAlpha = 1;
             ctx.stroke();
@@ -836,7 +859,7 @@
           ctx.stroke(defaultPath);
         }
         if (hasHighlight) {
-          ctx.strokeStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
+          ctx.strokeStyle = flowHighlightColor;
           ctx.lineWidth = 1.6;
           ctx.globalAlpha = 1;
           ctx.stroke(highlightPath);
@@ -890,12 +913,12 @@
 
       if (hasNormal) {
         ctx.globalAlpha = isHovering ? 0.05 : 0.3;
-        ctx.fillStyle = TRAJECTORY_FLOW_COLOR_NORMAL;
+        ctx.fillStyle = flowNormalColor;
         ctx.fill(normalPath);
       }
       if (hasHighlight) {
         ctx.globalAlpha = 1;
-        ctx.fillStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
+        ctx.fillStyle = flowHighlightColor;
         ctx.fill(highlightPath);
       }
       ctx.globalAlpha = 1;
@@ -906,6 +929,9 @@
     const fillByColor = new Map(); // color → Path2D
     const highlightArcs = [];      // {x, y, color}
     const dimAlpha = isHovering ? 0.25 : 0.85;
+    // Halo/traço das bubbles adaptáveis ao tema (contraste sobre fundo claro/escuro).
+    const bubbleHaloColor = theme === 'light' ? '#121212' : '#ffffff';
+    const bubbleStrokeColor = theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
 
     for (const { bubble, x, y } of positionedBubbles) {
       const color = TYPE_COLOR[bubble.type];
@@ -923,7 +949,7 @@
 
     // Fills agrupados
     ctx.globalAlpha = dimAlpha;
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.strokeStyle = bubbleStrokeColor;
     ctx.lineWidth = 0.1;
     for (const [color, path] of fillByColor) {
       ctx.fillStyle = color;
@@ -931,14 +957,14 @@
       ctx.stroke(path);
     }
 
-    // Bubbles destacadas — desenhadas individualmente com halo branco externo
+    // Bubbles destacadas — desenhadas individualmente com halo externo
     if (highlightArcs.length) {
       ctx.globalAlpha = 1;
       for (const a of highlightArcs) {
-        // Anel branco externo (halo)
+        // Anel externo (halo) — cor adaptável ao tema
         ctx.beginPath();
         ctx.arc(a.x, a.y, BUBBLE_RADIUS + BUBBLE_HIGHLIGHT_RING_WIDTH, 0, TAU);
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = bubbleHaloColor;
         ctx.fill();
         
         // Fill colorido interno

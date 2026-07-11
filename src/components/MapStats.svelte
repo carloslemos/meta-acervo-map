@@ -31,6 +31,11 @@
     color: rgba(255, 255, 255, 0.64);
   }
 
+  /* Tema claro: inverte para texto escuro (contraste sobre fundo claro). */
+  :global([data-theme="light"]) .map-stats {
+    color: rgba(0, 0, 0, 0.64);
+  }
+
   .map-stats__line {
     margin: 0;
   }
