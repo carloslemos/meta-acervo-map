@@ -32,8 +32,8 @@
     gap: 12px;
     height: var(--menu-height); /* 90px em mobile */
     padding: 0 20px; /* MOBILE_PADDING_X */
-    background: var(--bg);
-    border-bottom: 1px solid var(--bg-hl);
+    background: var(--chrome-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     flex-shrink: 0;
   }
 
@@ -58,7 +58,7 @@
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-snug);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--neutral-20);
+    color: var(--chrome-txt);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -78,11 +78,11 @@
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--neutral-30);
+    color: var(--chrome-txt-l);
     cursor: pointer;
     white-space: nowrap;
 
-    &:hover { color: var(--txt); }
+    &:hover { color: var(--chrome-txt); }
   }
 
   .mobile-header__lang {
@@ -95,14 +95,14 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-hl);
+    color: var(--chrome-txt-l);
     cursor: pointer;
 
-    &:hover { color: var(--txt); }
+    &:hover { color: var(--chrome-txt); }
   }
 
   .mobile-header__lang-btn--active {
-    color: var(--txt);
+    color: var(--chrome-txt);
     font-weight: var(--font-weight-bold);
     text-decoration: underline;
     text-underline-offset: 3px;
