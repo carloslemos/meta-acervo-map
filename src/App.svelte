@@ -497,9 +497,9 @@ import {
     gap: 30px;
     padding: 0 1.5rem 0 calc(1.5rem + 28px);
     height: var(--menu-height);
-    background: var(--bg);
-    color: var(--txt);
-    border-bottom: 1px solid var(--bg-hl);
+    background: var(--chrome-bg);
+    color: var(--chrome-txt);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     flex-shrink: 0;
     flex-wrap: nowrap;
     overflow: visible;
