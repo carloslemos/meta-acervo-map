@@ -315,10 +315,10 @@
     top: 0;
     height: var(--menu-height);
     width: 28px;
-    background: var(--bg);
-    border: 1px solid var(--bg-hl);
+    background: var(--chrome-bg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 0;
-    color: var(--txt-hl);
+    color: var(--chrome-txt-l);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -332,8 +332,8 @@
     }
 
     &:hover {
-      color: var(--txt);
-      border-color: var(--txt-l);
+      color: var(--chrome-txt);
+      border-color: rgba(255, 255, 255, 0.3);
     }
   }
 
