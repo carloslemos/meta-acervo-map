@@ -595,10 +595,11 @@
   })();
 
   let hoveredBubbleId = null;
-  // Quando locked + pinnedCreator, resolve o ID de uma bubble do criador para
-  // reutilizar a lógica de highlight existente. Caso contrário, usa o hover.
+  // Quando pinnedCreator (artista com card aberto), resolve o ID de uma bubble do criador
+  // para reutilizar a lógica de highlight. Caso contrário, usa o hover.
+  // Nota: não depende mais de `locked`, assim a trajetória destaca mesmo com mapa interativo.
   $: effectiveBubbleId = (() => {
-    if (locked && pinnedCreator) {
+    if (pinnedCreator) {
       const found = bubbles.find(b => b.creator === pinnedCreator && b.type !== 'acervo');
       return found?.id ?? null;
     }
