@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { TYPE_COLOR, TYPE_LABEL } from '../lib/constants.js';
+  import { TYPE_COLOR, TYPE_COLOR_HOVER, TYPE_LABEL } from '../lib/constants.js';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
 
   /** Conjunto de tipos de bubble visíveis. */
@@ -21,10 +21,10 @@
   const dispatch = createEventDispatcher();
 
   const FILTERS = [
-    { type: 'birth',     label: TYPE_LABEL.birth,     color: TYPE_COLOR.birth },
-    { type: 'education', label: TYPE_LABEL.education, color: TYPE_COLOR.education },
-    { type: 'death',     label: TYPE_LABEL.death,     color: TYPE_COLOR.death },
-    { type: 'acervo',    label: TYPE_LABEL.acervo,    color: TYPE_COLOR.acervo },
+    { type: 'birth',     label: TYPE_LABEL.birth,     color: TYPE_COLOR.birth,     colorHover: TYPE_COLOR_HOVER.birth },
+    { type: 'education', label: TYPE_LABEL.education, color: TYPE_COLOR.education, colorHover: TYPE_COLOR_HOVER.education },
+    { type: 'death',     label: TYPE_LABEL.death,     color: TYPE_COLOR.death,     colorHover: TYPE_COLOR_HOVER.death },
+    { type: 'acervo',    label: TYPE_LABEL.acervo,    color: TYPE_COLOR.acervo,    colorHover: TYPE_COLOR_HOVER.acervo },
   ];
 
   /** Alterna a presença de um tipo no conjunto e dispatcha `typeschange`. */
@@ -52,7 +52,7 @@
           type="button"
           class="pill"
           class:pill--active={activeTypes.has(filter.type)}
-          style="--accent: {filter.color}"
+          style="--accent: {filter.color}; --accent-hover: {filter.colorHover}"
           aria-pressed={activeTypes.has(filter.type)}
           on:click={() => toggleType(filter.type)}
         >
@@ -163,21 +163,25 @@
     gap: 6px;
     padding: 0.25rem 0.6rem;
     border-radius: 0.25rem;
-    border: 1px solid var(--bg-hl);
+    border: 1.5px solid var(--accent);
     font-family: var(--font-family-base);
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-md);
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-l);
+    color: var(--accent);
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.12s, color 0.12s, border-color 0.12s;
     box-sizing: border-box;
 
     &:not(.pill--active):hover {
-      border-color: var(--txt-l);
-      color: var(--txt);
+      border-color: var(--accent-hover);
+      color: var(--accent-hover);
+
+      .pill__dot {
+        background: var(--accent-hover);
+      }
     }
   }
 
@@ -185,6 +189,11 @@
     background-color: var(--accent);
     border-color: var(--accent);
     color: var(--bg);
+
+    &:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
 
     .pill__dot {
       background: var(--bg);
