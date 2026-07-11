@@ -11,6 +11,7 @@
   import ArtistCard from './components/ArtistCard.svelte';
   import ArtworkStrip from './components/ArtworkStrip.svelte';
   import MapStats from './components/MapStats.svelte';
+  import ProfilePanel from './components/ProfilePanel.svelte';
   import TutorialBox from './components/TutorialBox.svelte';
   import ThemeToggle from './components/ThemeToggle.svelte';
   import { loadData } from './lib/dataUtils.js';
@@ -468,6 +469,7 @@ import {
           <ThemeToggle {theme} on:themechange={handleThemeChange} />
         </div>
         <MapStats stats={statsBlock} />
+        <ProfilePanel bubbles={bubblesForMap} {breakpoint} />
         {#if isMobile}
           <button
             class="tutorial-reopen-mobile"

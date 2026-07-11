@@ -335,6 +335,9 @@ export const LS_TUTORIAL_KEY = 'meta-acervo:tutorial-dismissed';
 /** Chave localStorage para persistir a preferência de tema (light|dark). */
 export const LS_THEME_KEY = 'meta-acervo:theme';
 
+/** Chave localStorage para persistir o estado colapsado do painel de perfil (true|false). */
+export const LS_PROFILE_PANEL_KEY = 'meta-acervo:profile-panel-collapsed';
+
 /** Texto da caixa de tutorial da sidebar (Box 1). */
 export const TUTORIAL_SIDEBAR_TEXT = 'Explore os filtros e navegue pelas trajetórias dos artistas dos acervos';
 
