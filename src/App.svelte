@@ -21,6 +21,7 @@ import {
   ARTWORK_STRIP_HEIGHT_MOBILE_EXPANDED,
   ARTWORK_STRIP_HEIGHT_MOBILE_COLLAPSED,
   BREAKPOINT_TABLET,
+  ZOOM_STEP_FACTOR,
   getBreakpoint,
   LS_TUTORIAL_KEY,
   LS_THEME_KEY,
@@ -90,6 +91,7 @@ import {
   let acervoBubbles = [];
   let artworksByCreator = new Map();
   let selectedArtist = null;
+  let worldMapRef = null;  // Referência ao componente WorldMap para zoom programático
   let activeTypes = new Set(['birth', 'education']);
   let projectionType = '3d';
   let activeAcervos = new Set();
@@ -177,6 +179,20 @@ import {
   /** Alterna o tema claro/escuro. */
   function handleThemeChange(event) {
     theme = event.detail;
+  }
+
+  /** Aumenta o zoom do mapa (botão +). */
+  function handleZoomIn() {
+    if (worldMapRef?.zoomBy) {
+      worldMapRef.zoomBy(ZOOM_STEP_FACTOR);
+    }
+  }
+
+  /** Diminui o zoom do mapa (botão -). */
+  function handleZoomOut() {
+    if (worldMapRef?.zoomBy) {
+      worldMapRef.zoomBy(1 / ZOOM_STEP_FACTOR);
+    }
   }
 
   /** Atualiza o conjunto de acervos ativos. */
@@ -406,6 +422,7 @@ import {
         <div class="state-message state-message--error">Erro: {error}</div>
       {:else}
         <WorldMap
+          bind:this={worldMapRef}
           bubbles={bubblesWithAcervos}
           trajectories={trajectoriesForMap}
           {activeTypes}

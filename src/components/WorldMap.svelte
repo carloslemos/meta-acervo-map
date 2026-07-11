@@ -68,6 +68,11 @@
   const state2d = { k: 1, x: 0, y: 0 };
   const state3d = { rotate: [CENTRAL_ROTATION[0], -10, 0], k: 1 };
 
+  // ─── Referências para zoom programático (expostas para botões de zoom) ────
+  let zoomSelection = null;       // D3 selection do canvas
+  let zoomBehavior2d = null;      // objeto d3.zoom() para 2D
+  let zoomBehavior3d = null;      // objeto d3.zoom() para 3D
+
   // ─── Morph entre projeções (2D ↔ 3D) ─────────────────────────
   // Valores importados de constants.js: PROJECTION_MORPH_ENABLED, PROJECTION_MORPH_DURATION
   let morphing = false;
@@ -404,6 +409,7 @@
     if (attachedKey !== key) {
       attachedKey = key;
       const sel = d3.select(canvasEl);
+      zoomSelection = sel;  // Guardar referência para zoom programático
       sel.on('.drag', null);
       sel.on('.zoom', null);
 
@@ -427,6 +433,7 @@
             dragTick++;
           });
 
+        zoomBehavior3d = zoom;  // Guardar referência para zoom programático
         const drag = d3.drag()
           .filter(() => !locked)
           .on('start', () => sel.style('cursor', 'grabbing'))
@@ -456,6 +463,7 @@
             dragTick++;
           });
 
+        zoomBehavior2d = zoom;  // Guardar referência para zoom programático
         sel.call(zoom).style('cursor', 'grab');
         // Reaplica transform corrente (ou identity se vinha de outro modo / resize forçou clamp)
         const clampedK = Math.max(1, Math.min(8, state2d.k));
@@ -1169,6 +1177,20 @@
       }
     }
     return best;
+  }
+
+  /**
+   * Aplica zoom programático (botões +/-).
+   * Multiplicá a escala atual por `factor`, respeitando os limites da projeção.
+   *
+   * @param {number} factor - Fator multiplicativo (ex: 1.3 para aumentar, 1/1.3 para diminuir)
+   */
+  export function zoomBy(factor) {
+    if (!zoomSelection) return;
+    const behavior = projectionType === '2d' ? zoomBehavior2d : zoomBehavior3d;
+    if (behavior) {
+      zoomSelection.call(behavior.scaleBy, factor);
+    }
   }
 </script>
 
