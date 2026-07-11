@@ -13,6 +13,7 @@
   import MapStats from './components/MapStats.svelte';
   import ProfilePanel from './components/ProfilePanel.svelte';
   import TutorialBox from './components/TutorialBox.svelte';
+  import AboutModal from './components/AboutModal.svelte';
   import ThemeToggle from './components/ThemeToggle.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
@@ -233,6 +234,11 @@ import {
     sidebarOpen = false;
   }
 
+  /** Abre o modal "Sobre / O Atlas". */
+  let aboutOpen = false;
+  function handleAboutOpen() { aboutOpen = true; }
+  function handleAboutClose() { aboutOpen = false; }
+
   /** Click numa bubble do mapa: abre/atualiza o ArtistCard. */
   function handleArtistClick(event) {
     selectedArtist = event.detail;
@@ -356,12 +362,13 @@ import {
       on:nationalitieschange={handleNationalitiesChange}
       tutorialActive={!tutorialDismissed}
       on:tutorialreopen={handleTutorialReopen}
+      on:aboutopen={handleAboutOpen}
     />
   {/if}
 
   <div class="main-area">
   {#if isMobile}
-    <MobileHeader />
+    <MobileHeader on:aboutopen={handleAboutOpen} />
 
     <div class="mobile-filters" class:mobile-filters--open={accordionOpen}>
       <FilterAccordion items={ACCORDION_ITEMS} bind:expandedId={accordionExpandedId}>
@@ -495,6 +502,10 @@ import {
   </div>
   </div>
 </div>
+
+{#if aboutOpen}
+  <AboutModal on:close={handleAboutClose} />
+{/if}
 
 <style lang="scss">
   .layout {

@@ -4,6 +4,8 @@
    * Contém apenas: marca (logo), título, botão "Sobre" e seletor de idioma PT|EN.
    * Os controles de filtro NÃO ficam aqui no mobile; vão para o FilterAccordion.
    */
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
 </script>
 
 <header class="mobile-header">
@@ -17,7 +19,7 @@
     <span class="mobile-header__subtitle">dos Acervos Digitais</span>
   </div>
   <div class="mobile-header__actions">
-    <button class="mobile-header__action-btn">Sobre</button>
+    <button class="mobile-header__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
     <div class="mobile-header__lang">
       <button class="mobile-header__lang-btn mobile-header__lang-btn--active">PT</button>
       <button class="mobile-header__lang-btn">EN</button>

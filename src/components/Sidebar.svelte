@@ -41,7 +41,7 @@
       <span class="sidebar__brand-subtitle">dos Acervos Digitais</span>
     </div>
     <div class="sidebar__brand-actions">
-      <button class="sidebar__action-btn">Sobre</button>
+      <button class="sidebar__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
       <div class="sidebar__lang">
         <button class="sidebar__lang-btn sidebar__lang-btn--active">PT</button>
         <button class="sidebar__lang-btn">EN</button>
