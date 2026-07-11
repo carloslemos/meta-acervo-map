@@ -6,6 +6,7 @@
   import FilterAccordion from './components/FilterAccordion.svelte';
   import SidebarFilters from './components/SidebarFilters.svelte';
   import ProjectionToggle from './components/ProjectionToggle.svelte';
+  import ZoomButtons from './components/ZoomButtons.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import ArtistCard from './components/ArtistCard.svelte';
   import ArtworkStrip from './components/ArtworkStrip.svelte';
@@ -31,6 +32,7 @@ import {
   TUTORIAL_MAP_TEXT_MOBILE_SELECT,
   TUTORIAL_MAP_TEXT_MOBILE_NAV,
   TUTORIAL_MAP_TEXT_MOBILE_ZOOM,
+  TUTORIAL_MAP_TEXT_2D,
 } from './lib/constants.js';
 
   /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
@@ -447,6 +449,7 @@ import {
                 <p><strong>Navegação:</strong> {TUTORIAL_MAP_TEXT_NAV}</p>
                 <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-desktop.png" alt="" />
                 <p><strong>Zoom:</strong> {TUTORIAL_MAP_TEXT_ZOOM}</p>
+                <p><strong>Planisfério:</strong> {TUTORIAL_MAP_TEXT_2D}</p>
               {/if}
             </TutorialBox>
           </div>
@@ -458,6 +461,7 @@ import {
           on:close={handleArtistClose}
         />
         <div class="map-overlay-right">
+          <ZoomButtons on:zoomin={handleZoomIn} on:zoomout={handleZoomOut} />
           <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
         </div>
         <div class="map-overlay-theme">
@@ -593,6 +597,10 @@ import {
     right: 16px;
     z-index: 10; /* acima do canvas, abaixo do ArtistCard (z-index: 20) */
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
   }
 
   /* Toggle de tema (sol/lua) — centralizado verticalmente na área visível
