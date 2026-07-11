@@ -11,6 +11,7 @@
   import ArtworkStrip from './components/ArtworkStrip.svelte';
   import MapStats from './components/MapStats.svelte';
   import TutorialBox from './components/TutorialBox.svelte';
+  import ThemeToggle from './components/ThemeToggle.svelte';
   import { loadData } from './lib/dataUtils.js';
   import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
 import {
@@ -22,6 +23,7 @@ import {
   BREAKPOINT_TABLET,
   getBreakpoint,
   LS_TUTORIAL_KEY,
+  LS_THEME_KEY,
   TUTORIAL_MAP_TITLE,
   TUTORIAL_MAP_TEXT_NAV,
   TUTORIAL_MAP_TEXT_ZOOM,
@@ -37,6 +39,25 @@ import {
   ];
 
   const LS_STRIP_KEY = 'meta-acervo:artwork-strip-collapsed';
+
+  /** Lê preferência de tema do localStorage (fallback 'dark'). */
+  function readTheme() {
+    try {
+      const v = localStorage.getItem(LS_THEME_KEY);
+      return v === 'light' ? 'light' : 'dark';
+    } catch { return 'dark'; }
+  }
+
+  /** Persiste preferência de tema sem lançar exceção. */
+  function saveTheme(val) {
+    try { localStorage.setItem(LS_THEME_KEY, val); } catch { /* silencioso */ }
+  }
+
+  let theme = readTheme();
+  $: saveTheme(theme);
+  $: if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
 
   /** Lê estado collapsed do localStorage (fallback false). */
   function readCollapsed() {
@@ -151,6 +172,11 @@ import {
   /** Alterna a projeção entre 2D e 3D. */
   function handleProjectionChange(event) {
     projectionType = event.detail;
+  }
+
+  /** Alterna o tema claro/escuro. */
+  function handleThemeChange(event) {
+    theme = event.detail;
   }
 
   /** Atualiza o conjunto de acervos ativos. */
@@ -384,6 +410,7 @@ import {
           trajectories={trajectoriesForMap}
           {activeTypes}
           {projectionType}
+          {theme}
           locked={false}
           pinnedCreator={selectedArtist?.creator ?? null}
           bottomInset={artworkStripInset}
@@ -415,6 +442,7 @@ import {
         />
         <div class="map-overlay-right">
           <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
+          <ThemeToggle {theme} on:themechange={handleThemeChange} />
         </div>
         <MapStats stats={statsBlock} />
         {#if isMobile}

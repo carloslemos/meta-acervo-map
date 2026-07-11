@@ -22,6 +22,8 @@
   export let trajectories = [];
   export let activeTypes = new Set(['birth', 'education', 'death']);
   export let projectionType = '2d';
+  /** 'dark' | 'light' — controla paleta do canvas (sphere, países, trajetórias). */
+  export let theme = 'dark';
   /** Quando `true`, bloqueia totalmente interação (mouse, drag, zoom). */
   export let locked = false;
   /** Nome do criador a manter destacado enquanto o card estiver aberto (`locked=true`). */
@@ -640,63 +642,83 @@
     // Durante o morph: trata como globo (sphere fill consistente) e
     // pula o mesh de bordas para reduzir custo por frame.
     const isGlobe = morphing || projectionType === '3d';
+    const isLight = theme === 'light';
     const geoPath = d3.geoPath().projection(projection).context(bgCtx);
 
     bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     bgCtx.clearRect(0, 0, width, height);
 
     if (isGlobe) {
-      /* Gradiente vertical: topo escuro → base mais clara */
+      /* Gradiente vertical: tema escuro topo preto → cinza; claro neutro → branco */
       const vertGrad = bgCtx.createLinearGradient(0, 0, 0, height);
-      vertGrad.addColorStop(0,    'rgba(0, 0, 0, 1)');
-      vertGrad.addColorStop(1,    'rgba(94, 94, 94, 1)');
+      if (isLight) {
+        vertGrad.addColorStop(0, 'rgba(210, 210, 210, 1)');
+        vertGrad.addColorStop(1, 'rgba(245, 245, 245, 1)');
+      } else {
+        vertGrad.addColorStop(0,    'rgba(0, 0, 0, 1)');
+        vertGrad.addColorStop(1,    'rgba(94, 94, 94, 1)');
+      }
       bgCtx.fillStyle = vertGrad;
       bgCtx.fillRect(0, 0, width, height);
 
-      /* Glow luminoso por trás do globo — canvas preenchido com gradiente
-         radial antes da esfera, criando um halo mais claro ao redor dela. */
+      /* Glow por trás do globo */
       const [glowCx, glowCy] = projection.translate();
       const glowSc = projection.scale();
       const glow = bgCtx.createRadialGradient(
         glowCx, glowCy, glowSc * 0.8,
         glowCx, glowCy, glowSc * 2.4
       );
-      glow.addColorStop(0,   'rgba(94, 94, 94, 1)');
-      glow.addColorStop(0.3, 'rgba(94, 94, 94, 0.3)');
-      glow.addColorStop(1,   'rgba(94, 94, 94, 0)');
+      if (isLight) {
+        glow.addColorStop(0,   'rgba(200, 200, 200, 1)');
+        glow.addColorStop(0.3, 'rgba(200, 200, 200, 0.3)');
+        glow.addColorStop(1,   'rgba(200, 200, 200, 0)');
+      } else {
+        glow.addColorStop(0,   'rgba(94, 94, 94, 1)');
+        glow.addColorStop(0.3, 'rgba(94, 94, 94, 0.3)');
+        glow.addColorStop(1,   'rgba(94, 94, 94, 0)');
+      }
       bgCtx.fillStyle = glow;
       bgCtx.fillRect(0, 0, width, height);
 
       bgCtx.beginPath();
       geoPath(SPHERE);
-      bgCtx.fillStyle = '#141414';
+      bgCtx.fillStyle = isLight ? '#f0f0f0' : '#141414';
       bgCtx.fill();
-      bgCtx.strokeStyle = 'rgba(255,255,255,0.18)';
+      bgCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.18)';
       bgCtx.lineWidth = 0.6;
       bgCtx.stroke();
     } else {
-      /* Fundo do mapa 2D: gradiente vertical sólido — topo preto → base cinza */
+      /* Fundo do mapa 2D */
       const vertGrad2d = bgCtx.createLinearGradient(0, 0, 0, height);
-      vertGrad2d.addColorStop(0, 'rgba(0, 0, 0, 1)');
-      vertGrad2d.addColorStop(1, 'rgba(94, 94, 94, 1)');
+      if (isLight) {
+        vertGrad2d.addColorStop(0, 'rgba(220, 220, 220, 1)');
+        vertGrad2d.addColorStop(1, 'rgba(245, 245, 245, 1)');
+      } else {
+        vertGrad2d.addColorStop(0, 'rgba(0, 0, 0, 1)');
+        vertGrad2d.addColorStop(1, 'rgba(94, 94, 94, 1)');
+      }
       bgCtx.fillStyle = vertGrad2d;
       bgCtx.fillRect(0, 0, width, height);
     }
 
     if (countriesFeature) {
-      // Um único path agregando todos os países: 1 fill em vez de 177.
       bgCtx.beginPath();
       geoPath(countriesFeature);
-      bgCtx.fillStyle = isGlobe ? '#404040' : 'rgba(125, 125, 125, 1)';
+      if (isLight) {
+        bgCtx.fillStyle = isGlobe ? '#c8c8c8' : 'rgba(180, 180, 180, 1)';
+      } else {
+        bgCtx.fillStyle = isGlobe ? '#404040' : 'rgba(125, 125, 125, 1)';
+      }
       bgCtx.fill();
 
-      // Bordas via mesh interno (cada borda compartilhada desenhada uma vez).
-      // Durante o morph, o mesh também é desenhado: o clipping da projeção
-      // garante que apenas a face visível apareça.
       if (countriesMesh) {
         bgCtx.beginPath();
         geoPath(countriesMesh);
-        bgCtx.strokeStyle = isGlobe ? '#121212' : '#383838';
+        if (isLight) {
+          bgCtx.strokeStyle = isGlobe ? '#e0e0e0' : '#d0d0d0';
+        } else {
+          bgCtx.strokeStyle = isGlobe ? '#121212' : '#383838';
+        }
         bgCtx.lineWidth = 0.5;
         bgCtx.stroke();
       }
@@ -745,7 +767,7 @@
 
     // Trajetórias — agrupadas por estilo para reduzir trocas de strokeStyle.
     if (positionedTrajectories.length) {
-      const baseColor = '#ccc';
+      const baseColor = theme === 'light' ? '#888' : '#ccc';
 
       if (isGlobe) {
         // Em 3D, desenhamos cada trajetória como uma LineString geodésica.
@@ -965,6 +987,10 @@
        if (bgCtx) markStaticDirty();
        if (ctx) markDynamicDirty(); }
   $: { void positionedBubbles; void positionedTrajectories; void hoveredBubbleId; void effectiveBubbleId;
+       if (ctx) markDynamicDirty(); }
+  // Mudança de tema: repinta ambas as camadas (paleta do canvas muda).
+  $: { void theme;
+       if (bgCtx) markStaticDirty();
        if (ctx) markDynamicDirty(); }
 
   // Atualiza cursor quando entra/sai do hover de uma bubble
