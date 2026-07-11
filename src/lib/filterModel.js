@@ -36,8 +36,8 @@ export function applyFilters(bubbles, filters) {
     selectedLocalidade,
   } = filters;
   return bubbles.filter(b =>
-    (activeAcervos.size === 0 || b.acervos.length === 0 || b.acervos.some(a => activeAcervos.has(a))) &&
-    (activeGenders.size === 0 || activeGenders.has(b.gender)) &&
+    (activeAcervos.size > 0 && b.acervos.some(a => activeAcervos.has(a))) &&
+    (activeGenders.size > 0 && activeGenders.has(b.gender)) &&
     (selectedCreators.size === 0 || selectedCreators.has(b.creator)) &&
     (selectedSchools.size === 0 || b.educatedAt.some(s => selectedSchools.has(s))) &&
     (selectedNationalities.size === 0 || selectedNationalities.has(b.nationality)) &&

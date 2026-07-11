@@ -389,6 +389,19 @@ export async function loadData() {
   const countriesFeature = topojson.feature(topo, topo.objects.countries);
   annotateGeo([...bubbles, ...acervoBubbles], countriesFeature);
 
+  // Warning: reportar criadores sem dados de acervo
+  const creatorsWithoutAcervo = new Set();
+  for (const b of bubbles) {
+    if (b.acervos.length === 0) {
+      creatorsWithoutAcervo.add(b.creator);
+    }
+  }
+  if (creatorsWithoutAcervo.size > 0) {
+    console.warn(
+      `[Meta-Acervo] ${creatorsWithoutAcervo.size} criadores sem dados de acervo (sempre filtrados): ${Array.from(creatorsWithoutAcervo).slice(0, 5).join(', ')}${creatorsWithoutAcervo.size > 5 ? '...' : ''}`
+    );
+  }
+
   return { bubbles, trajectories, artworksByCreator, acervoBubbles };
 }
 
