@@ -184,6 +184,23 @@ export const PROJECTION_3D_SCALE_FACTOR = 0.44;
 /** Fator de escala base 2D para o mapa (pixels). */
 export const PROJECTION_2D_BASE_SCALE = 168;
 
+// ─── Zoom e Controles do Mapa ─────────────────────────────────────────────────
+
+/** Fator de incremento/decremento de zoom ao clicar botões +/− (multiplicativo). */
+export const ZOOM_STEP_FACTOR = 1.3;
+
+/** Escala mínima de zoom em projeção 2D (EqualEarth). */
+export const ZOOM_MIN_2D = 1;
+
+/** Escala máxima de zoom em projeção 2D (EqualEarth). */
+export const ZOOM_MAX_2D = 8;
+
+/** Escala mínima de zoom em projeção 3D (Ortográfica). */
+export const ZOOM_MIN_3D = 0.5;
+
+/** Escala máxima de zoom em projeção 3D (Ortográfica). */
+export const ZOOM_MAX_3D = 5;
+
 // ─── Artwork Strip: dimensões e timing ────────────────────────────────────────
 
 /** Altura da faixa de obras quando expandida em tablet/desktop (px). */
@@ -338,6 +355,9 @@ export const TUTORIAL_MAP_TEXT_MOBILE_NAV = 'Deslize um dedo pela tela para gira
 
 /** Instrução de zoom mobile — Box 2. */
 export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM = 'Toque nos botões + e − ou junte e afaste dois dedos para aproximar e afastar.';
+
+/** Instrução de modo planisfério/2D — Box 2 (tutorial sobre como alternar para 2D). */
+export const TUTORIAL_MAP_TEXT_2D = 'Para visualizar em modo planisfério (2D), clique no ícone do planisfério.';
 
 /** Texto da caixa de tutorial do artwork strip (Box 3). */
 export const TUTORIAL_STRIP_TEXT = 'Obras dos artistas nos acervos selecionados';
