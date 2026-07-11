@@ -244,3 +244,4 @@ Use as skills de engenharia nesta ordem:
 | `/melhorar-arquitetura` | Varredura de fricção arquitetural com relatório HTML |
 | `/para-spec` | Converte conversa em spec publicada no GitHub |
 | `/para-tickets` | Quebra spec/plano em tickets tracer-bullet no GitHub |
+| `/implementar` | Implementa um ticket ou spec do GitHub Issues, fatia a fatia, com testes e commit |

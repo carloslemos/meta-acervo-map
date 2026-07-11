@@ -5,6 +5,7 @@
   import {
   TYPE_COLOR,
   BUBBLE_RADIUS,
+  BUBBLE_HIGHLIGHT_RING_WIDTH,
   CENTRAL_ROTATION,
   TRAJECTORY_FLOW_ENABLED,
   TRAJECTORY_FLOW_SPEED_PX,
@@ -907,17 +908,21 @@
       ctx.stroke(path);
     }
 
-    // Bubbles destacadas — desenhadas individualmente (sempre poucas)
+    // Bubbles destacadas — desenhadas individualmente com halo branco externo
     if (highlightArcs.length) {
       ctx.globalAlpha = 1;
       for (const a of highlightArcs) {
+        // Anel branco externo (halo)
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, BUBBLE_RADIUS + BUBBLE_HIGHLIGHT_RING_WIDTH, 0, TAU);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        
+        // Fill colorido interno
         ctx.beginPath();
         ctx.arc(a.x, a.y, BUBBLE_RADIUS, 0, TAU);
         ctx.fillStyle = a.color;
         ctx.fill();
-        ctx.strokeStyle = TRAJECTORY_FLOW_COLOR_HIGHLIGHT;
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
       }
     }
 

@@ -119,6 +119,9 @@ export const ISO_CONTINENT = {
 /** Raio visual das bubbles (px). Usado em WorldMap e no cálculo de colisão em dataUtils. */
 export const BUBBLE_RADIUS = 2.5;
 
+/** Largura do anel de destaque (halo branco) ao redor de uma bubble selecionada (px). */
+export const BUBBLE_HIGHLIGHT_RING_WIDTH = 1.5;
+
 // ─── Projeção de referência (compartilhada entre WorldMap e dataUtils) ────────
 
 /**

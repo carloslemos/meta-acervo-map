@@ -120,7 +120,7 @@ import {
       acervoBubbles = data.acervoBubbles ?? [];
       artworksByCreator = data.artworksByCreator ?? new Map();
       allAcervos = [...new Set(bubbles.flatMap(b => b.acervos).filter(Boolean))].sort();
-      // activeAcervos permanece Set vazio → sem filtro ativo, mostra tudo
+      activeAcervos = new Set(allAcervos);
       allGenders = [...new Set(bubbles.map(b => b.gender).filter(Boolean))].sort();
       activeGenders = new Set(allGenders);
       allCreators = [...new Set(bubbles.map(b => b.creator).filter(Boolean))].sort();
@@ -204,8 +204,6 @@ import {
   function handleArtistClose() {
     selectedArtist = null;
   }
-
-  $: mapLocked = selectedArtist !== null;
 
   $: bubblesForMap = applyFilters(bubbles, {
     activeAcervos,
@@ -386,7 +384,7 @@ import {
           trajectories={trajectoriesForMap}
           {activeTypes}
           {projectionType}
-          locked={mapLocked}
+          locked={false}
           pinnedCreator={selectedArtist?.creator ?? null}
           bottomInset={artworkStripInset}
           on:artistclick={handleArtistClick}

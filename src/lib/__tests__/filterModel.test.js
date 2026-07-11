@@ -92,6 +92,13 @@ describe('applyFilters', () => {
     const out = applyFilters([semAcervo], emptyFilters({ activeAcervos: new Set(['X']) }));
     expect(out).toEqual([semAcervo]);
   });
+
+  test('activeAcervos cheio (todos) retorna o mesmo resultado que vazio (sem filtro)', () => {
+    const allAcervos = ['MAC', 'MASP', 'MAM'];
+    const resultWithAll = applyFilters(all, emptyFilters({ activeAcervos: new Set(allAcervos) }));
+    const resultWithEmpty = applyFilters(all, emptyFilters({ activeAcervos: new Set() }));
+    expect(resultWithAll).toEqual(resultWithEmpty);
+  });
 });
 
 describe('applyTrajectoryFilter', () => {
