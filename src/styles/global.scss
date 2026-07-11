@@ -51,8 +51,17 @@
   --pill-neutral:       var(--neutral-10);   /* #e8e8e8 */
   --pill-neutral-hover: var(--neutral-30);   /* #bbbbbb */
 
-  /* Gradiente de fundo da sidebar — adaptável ao tema (ver [data-theme=light]). */
-  --sidebar-bg: linear-gradient(180deg, var(--color-black) 13.94%, #686868 100%);
+  /* Gradiente de fundo do chrome da UI (sidebar + header) — escuro em ambos os temas.
+     O dark mode usa gradiente quente (preto → cinza-médio); o light mode usa
+     gradiente frio/neutro (cinza-escuro → cinza-médio) — distinto mas ainda escuro,
+     mantendo contraste com o mapa claro (ver [data-theme=light]). */
+  --chrome-bg: linear-gradient(180deg, var(--color-black) 13.94%, #686868 100%);
+  /* Mantido por compatibilidade; redireciona para --chrome-bg. */
+  --sidebar-bg: var(--chrome-bg);
+
+  /* Texto do chrome — claro sobre fundo escuro em ambos os temas. */
+  --chrome-txt:   var(--neutral-10);  /* #e8e8e8 */
+  --chrome-txt-l: var(--neutral-30);  /* #bbbbbb */
 
   /* ─── Tipografia — tokens (Figma specimen "Atlas", nó 1:6704) ─────────────────
      Todos os estilos do design usam JetBrains Mono, line-height 140%, caixa alta
@@ -113,8 +122,15 @@
   --pill-neutral:       var(--color-black);  /* #121212 */
   --pill-neutral-hover: var(--neutral-80);   /* #4b4b4b */
 
-  /* Sidebar clara: gradiente branco → cinza-claro. */
-  --sidebar-bg: linear-gradient(180deg, var(--color-white) 13.94%, var(--neutral-20) 100%);
+  /* Chrome (sidebar + header): fundo escuro-neutro, distinto do dark mode quente.
+     neutral-100 (#272727) → neutral-70 (#616161): mais frio/acinzentado que o
+     near-black quente do dark mode, mas ainda escuro para contrastar com o mapa claro. */
+  --chrome-bg: linear-gradient(180deg, var(--neutral-100) 13.94%, var(--neutral-70) 100%);
+  --sidebar-bg: var(--chrome-bg);
+
+  /* Texto do chrome claro sobre fundo escuro — mantém legibilidade em ambos os temas. */
+  --chrome-txt:   var(--neutral-10);  /* #e8e8e8 */
+  --chrome-txt-l: var(--neutral-30);  /* #bbbbbb */
 }
 
 /* Tablet: 760–1379px — sidebar mais estreita (302px), header completo */
