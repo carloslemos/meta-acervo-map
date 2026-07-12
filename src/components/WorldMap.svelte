@@ -1274,7 +1274,7 @@
     background: radial-gradient(
       ellipse 70% 60% at 60% 50%,
       transparent 30%,
-      var(--bg) 100%
+      var(--bg-vignette-left) 100%
     );
   }
 
@@ -1284,7 +1284,7 @@
     left: 0;
     right: 0;
     height: 80px;
-    background: linear-gradient(to bottom, var(--bg-l) 0%, transparent 100%);
+    background: linear-gradient(to bottom, var(--bg-vignette-top) 0%, transparent 100%);
     opacity: 0.5;
   }
 
@@ -1294,7 +1294,7 @@
     left: 0;
     bottom: 0;
     width: 200px;
-    background: linear-gradient(to right, var(--bg-c) 0%, transparent 100%);
+    background: linear-gradient(to right, var(--bg-vignette-left) 0%, transparent 100%);
     opacity: 0.5;
   }
 </style>
