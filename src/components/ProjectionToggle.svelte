@@ -62,29 +62,29 @@
     align-items: center;
     justify-content: center;
     background: transparent;
-    border: 2px solid var(--bg-hl);
-    border-radius: 4px;
-    color: var(--txt-hl);
+    border: 2px solid var(--neutral-10);
+    border-radius: 5.4px;
+    color: var(--neutral-10);
     cursor: pointer;
     pointer-events: auto;
-    transition: color 0.12s, border-color 0.12s;
+    transition: color 0.12s, border-color 0.12s, background-color 0.12s;
+    backdrop-filter: blur(3.6px);
 
     &:hover {
-      color: var(--txt);
-      border-color: var(--txt-l);
+      color: var(--neutral-30);
+      border-color: var(--neutral-30);
     }
   }
 
   .map-btn--active {
-    background: var(--neutral-40);
-    border-color: var(--neutral-40);
+    background: var(--neutral-10);
+    border-color: var(--neutral-10);
     color: var(--color-black);
 
     &:hover {
-      background: var(--neutral-40);
-      border-color: var(--neutral-40);
+      background: var(--neutral-30);
+      border-color: var(--neutral-30);
       color: var(--color-black);
-      cursor: default;
     }
   }
 </style>
