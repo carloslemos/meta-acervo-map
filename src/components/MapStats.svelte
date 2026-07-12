@@ -7,12 +7,13 @@
   export let stats = { acervos: 0, artistas: 0, escolas: 0, obras: 0 };
 </script>
 
-<div class="map-stats" aria-label="Estatísticas do mapa">
+<figure class="map-stats" aria-label="Resultados">
+  <figcaption class="map-stats__title">Resultados</figcaption>
   <p class="map-stats__line">{stats.acervos} {STATS_LABELS.acervosSelected}</p>
   <p class="map-stats__line">{stats.artistas} {STATS_LABELS.artistas}</p>
   <p class="map-stats__line">{stats.escolas} {STATS_LABELS.escolas}</p>
   <p class="map-stats__line">{stats.obras} {STATS_LABELS.obras}</p>
-</div>
+</figure>
 
 <style lang="scss">
   .map-stats {
@@ -24,13 +25,26 @@
     flex-direction: column;
     gap: 0;
     pointer-events: none;
+    padding: 14px;
+    background: var(--bg-c);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
     font-family: var(--font-family-base);
     font-style: normal;
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-sm);
     line-height: var(--line-height-relaxed);
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.64);
+    color: var(--txt-l);
+  }
+
+  .map-stats__title {
+    margin: 0 0 4px 0;
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-snug);
+    text-transform: uppercase;
   }
 
   /* Tema claro: inverte para texto escuro (contraste sobre fundo claro). */
@@ -40,5 +54,17 @@
 
   .map-stats__line {
     margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .map-stats {
+      top: 16px;
+      left: 16px;
+      font-size: var(--font-size-xs);
+    }
+
+    .map-stats__title {
+      font-size: var(--font-size-lg);
+    }
   }
 </style>
