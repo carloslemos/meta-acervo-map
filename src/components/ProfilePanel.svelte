@@ -85,8 +85,9 @@
                   fill="none"
                   stroke="var(--neutral-30)"
                   stroke-width={DONUT_SW}
+                  stroke-linecap="round"
                   stroke-dasharray={arcDash(stats.genderTop.pct)}
-                  stroke-dashoffset={CIRCUMFERENCE / 4}
+                  stroke-dashoffset={-CIRCUMFERENCE / 4}
                   transform="rotate(-90 {DONUT_SIZE / 2} {DONUT_SIZE / 2})"
                 />
               {/if}
@@ -128,8 +129,9 @@
                   fill="none"
                   stroke="var(--neutral-30)"
                   stroke-width={DONUT_SW}
+                  stroke-linecap="round"
                   stroke-dasharray={arcDash(stats.formationTop.pct)}
-                  stroke-dashoffset={CIRCUMFERENCE / 4}
+                  stroke-dashoffset={-CIRCUMFERENCE / 4}
                   transform="rotate(-90 {DONUT_SIZE / 2} {DONUT_SIZE / 2})"
                 />
               {/if}

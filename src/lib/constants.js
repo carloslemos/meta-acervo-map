@@ -32,6 +32,14 @@ export const TYPE_LABEL = {
   acervo:    'Acervo',
 };
 
+// ─── Rótulos de gênero em PT-BR ──────────────────────────────────────────────
+export const GENDER_LABEL = {
+  male:       'Masculino',
+  female:     'Feminino',
+  'non-binary': 'Não-binário',
+  unknown:    'Desconhecido',
+};
+
 // ─── Normalização de valores de confiança do CSV ──────────────────────────────
 
 /**

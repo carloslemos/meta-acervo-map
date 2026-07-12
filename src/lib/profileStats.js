@@ -6,6 +6,8 @@
  * um objeto com distribuição de gênero, local de formação e regiões.
  */
 
+import { GENDER_LABEL } from './constants.js';
+
 /**
  * Retorna as top N entradas de um Map<string, count> como array de
  * { label, pct }, ordenado decrescente por frequência.
@@ -13,15 +15,16 @@
  * @param {Map<string, number>} freq - mapa label → contagem
  * @param {number} topN - máximo de entradas
  * @param {number} total - denominador para o %
+ * @param {object} [labelMap] - mapa opcional para traduzir labels (ex: GENDER_LABEL)
  * @returns {{ label: string, pct: number }[]}
  */
-function topFromFreq(freq, topN, total) {
+function topFromFreq(freq, topN, total, labelMap = null) {
   if (!freq.size || total === 0) return [];
   return [...freq.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, topN)
-    .map(([label, count]) => ({
-      label,
+    .map(([key, count]) => ({
+      label: labelMap?.[key] ?? key,
       pct: Math.round((count / total) * 100),
     }));
 }
@@ -97,8 +100,8 @@ export function profileStats(bubbles) {
     if (formationContinent) formationContFreq.set(formationContinent, (formationContFreq.get(formationContinent) ?? 0) + 1);
   }
 
-  // ─── Top gênero ──────────────────────────────────────────────────────────
-  const genderTop = topFromFreq(genderFreq, 1, total)[0] ?? null;
+  // ─── Top gênero (traduzido para PT-BR) ────────────────────────────────────
+  const genderTop = topFromFreq(genderFreq, 1, total, GENDER_LABEL)[0] ?? null;
 
   // ─── Top local de formação (por nome da escola/cidade) ───────────────────
   const formationTop = topFromFreq(formationPlaceFreq, 1, formationPlaceFreq.size > 0 ? [...formationPlaceFreq.values()].reduce((a, b) => a + b, 0) : 0)[0] ?? null;

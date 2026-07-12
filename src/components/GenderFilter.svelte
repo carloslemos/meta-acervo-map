@@ -1,18 +1,12 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { GENDER_LABEL } from '../lib/constants.js';
   import ToggleGroup from './ToggleGroup.svelte';
 
   export let genders = [];
   export let activeGenders = new Set();
 
   const dispatch = createEventDispatcher();
-
-  const GENDER_LABEL = {
-    male:        'Masculino',
-    female:      'Feminino',
-    'non-binary': 'Não-binário',
-    unknown:     'Desconhecido',
-  };
 
   function labelFor(g) {
     return GENDER_LABEL[g] ?? (g.charAt(0).toUpperCase() + g.slice(1));

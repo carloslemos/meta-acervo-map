@@ -38,7 +38,7 @@ describe('profileStats', () => {
       mkBirth('Anita', { gender: 'female' }),
     ];
     const result = profileStats(bubbles);
-    expect(result.genderTop).toEqual({ label: 'female', pct: 100 });
+    expect(result.genderTop).toEqual({ label: 'Feminino', pct: 100 });
   });
 
   test('dois gêneros → retorna o mais frequente', () => {
@@ -48,7 +48,7 @@ describe('profileStats', () => {
       mkBirth('Picasso', { gender: 'male' }),
     ];
     const result = profileStats(bubbles);
-    expect(result.genderTop?.label).toBe('female');
+    expect(result.genderTop?.label).toBe('Feminino');
     expect(result.genderTop?.pct).toBeGreaterThan(50);
   });
 
@@ -63,7 +63,7 @@ describe('profileStats', () => {
     const result = profileStats(bubbles);
     // 2 criadores únicos (Tarsila, Frida), ambas female → 100%
     expect(result.genderTop?.pct).toBe(100);
-    expect(result.genderTop?.label).toBe('female');
+    expect(result.genderTop?.label).toBe('Feminino');
   });
 
   test('birthByRegion: mais de 4 regiões → retorna apenas top 4, ordem decrescente', () => {
