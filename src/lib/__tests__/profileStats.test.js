@@ -66,7 +66,7 @@ describe('profileStats', () => {
     expect(result.genderTop?.label).toBe('Feminino');
   });
 
-  test('birthByRegion: mais de 4 regiões → retorna apenas top 4, ordem decrescente', () => {
+  test('birthByRegion: inclui todas as regiões presentes no conjunto filtrado, ordenadas por frequência', () => {
     const bubbles = [
       mkBirth('c1', { continent: 'Europa' }),
       mkBirth('c2', { continent: 'Europa' }),
@@ -79,18 +79,15 @@ describe('profileStats', () => {
       mkBirth('c9', { continent: 'Oceania' }),
     ];
     const result = profileStats(bubbles);
-    expect(result.birthByRegion).toHaveLength(4);
-    // Primeiro deve ser Europa (3/9)
+    expect(result.birthByRegion).toHaveLength(6);
     expect(result.birthByRegion[0].label).toBe('Europa');
-    // Segundo deve ser América do Sul (2/9)
     expect(result.birthByRegion[1].label).toBe('América do Sul');
-    // Ordem decrescente
     for (let i = 0; i < result.birthByRegion.length - 1; i++) {
       expect(result.birthByRegion[i].pct).toBeGreaterThanOrEqual(result.birthByRegion[i + 1].pct);
     }
   });
 
-  test('formationByRegion: top 4 em ordem decrescente', () => {
+  test('formationByRegion: inclui todas as regiões presentes no conjunto filtrado', () => {
     const bubbles = [
       mkEdu('c1', { continent: 'Europa' }),
       mkEdu('c2', { continent: 'Europa' }),
@@ -100,8 +97,28 @@ describe('profileStats', () => {
       mkEdu('c6', { continent: 'Oceania' }),
     ];
     const result = profileStats(bubbles);
-    expect(result.formationByRegion).toHaveLength(4);
+    expect(result.formationByRegion).toHaveLength(5);
     expect(result.formationByRegion[0].label).toBe('Europa');
+  });
+
+  test('inclui regiões adicionais quando elas existem no conjunto filtrado', () => {
+    const bubbles = [
+      mkBirth('c1', { continent: 'Europa' }),
+      mkBirth('c2', { continent: 'América do Norte' }),
+      mkBirth('c3', { continent: 'América Central' }),
+      mkBirth('c4', { continent: 'Caribe' }),
+      mkBirth('c5', { continent: 'África' }),
+      mkBirth('c6', { continent: 'Oceania' }),
+      mkEdu('d1', { continent: 'Europa' }),
+      mkEdu('d2', { continent: 'América do Norte' }),
+      mkEdu('d3', { continent: 'América Central' }),
+      mkEdu('d4', { continent: 'Caribe' }),
+      mkEdu('d5', { continent: 'África' }),
+      mkEdu('d6', { continent: 'Oceania' }),
+    ];
+    const result = profileStats(bubbles);
+    expect(result.birthByRegion.map(r => r.label)).toEqual(expect.arrayContaining(['África', 'Oceania', 'América Central', 'Caribe']));
+    expect(result.formationByRegion.map(r => r.label)).toEqual(expect.arrayContaining(['África', 'Oceania', 'América Central', 'Caribe']));
   });
 
   test('empate entre regiões → ordem estável e determinística (localeCompare)', () => {

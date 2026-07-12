@@ -8,6 +8,10 @@
 
 import { GENDER_LABEL } from './constants.js';
 
+const REGION_LABEL_OVERRIDES = {
+  'América Central e Caribe': 'América Central e Caribe',
+};
+
 /**
  * Retorna as top N entradas de um Map<string, count> como array de
  * { label, pct }, ordenado decrescente por frequência.
@@ -24,7 +28,7 @@ function topFromFreq(freq, topN, total, labelMap = null) {
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, topN)
     .map(([key, count]) => ({
-      label: labelMap?.[key] ?? key,
+      label: labelMap?.[key] ?? REGION_LABEL_OVERRIDES[key] ?? key,
       pct: Math.round((count / total) * 100),
     }));
 }
@@ -106,11 +110,11 @@ export function profileStats(bubbles) {
   // ─── Top local de formação (por nome da escola/cidade) ───────────────────
   const formationTop = topFromFreq(formationPlaceFreq, 1, formationPlaceFreq.size > 0 ? [...formationPlaceFreq.values()].reduce((a, b) => a + b, 0) : 0)[0] ?? null;
 
-  // ─── Regiões de nascimento — top 4 ───────────────────────────────────────
-  const birthByRegion = topFromFreq(birthContFreq, 4, [...birthContFreq.values()].reduce((a, b) => a + b, 0) || 1);
+  // ─── Regiões de nascimento — todas as regiões presentes no conjunto filtrado ─
+  const birthByRegion = topFromFreq(birthContFreq, birthContFreq.size, [...birthContFreq.values()].reduce((a, b) => a + b, 0) || 1);
 
-  // ─── Regiões de formação — top 4 ─────────────────────────────────────────
-  const formationByRegion = topFromFreq(formationContFreq, 4, [...formationContFreq.values()].reduce((a, b) => a + b, 0) || 1);
+  // ─── Regiões de formação — todas as regiões presentes no conjunto filtrado ─
+  const formationByRegion = topFromFreq(formationContFreq, formationContFreq.size, [...formationContFreq.values()].reduce((a, b) => a + b, 0) || 1);
 
   return { genderTop, formationTop, birthByRegion, formationByRegion };
 }

@@ -82,14 +82,19 @@ export const ISO_CONTINENT = {
   '788': 'África', '800': 'África', '894': 'África', '716': 'África',
 
   // América do Norte
-  '28': 'América do Norte', '44': 'América do Norte', '52': 'América do Norte',
-  '84': 'América do Norte', '124': 'América do Norte', '188': 'América do Norte',
-  '192': 'América do Norte', '212': 'América do Norte', '214': 'América do Norte',
-  '222': 'América do Norte', '308': 'América do Norte', '320': 'América do Norte',
-  '332': 'América do Norte', '340': 'América do Norte', '388': 'América do Norte',
-  '484': 'América do Norte', '558': 'América do Norte', '591': 'América do Norte',
-  '659': 'América do Norte', '662': 'América do Norte', '670': 'América do Norte',
-  '780': 'América do Norte', '840': 'América do Norte',
+  '124': 'América do Norte', '484': 'América do Norte', '840': 'América do Norte',
+
+  // América Central e Caribe
+  '28': 'América Central e Caribe', '44': 'América Central e Caribe',
+  '52': 'América Central e Caribe', '84': 'América Central e Caribe',
+  '188': 'América Central e Caribe', '192': 'América Central e Caribe',
+  '212': 'América Central e Caribe', '214': 'América Central e Caribe',
+  '222': 'América Central e Caribe', '308': 'América Central e Caribe',
+  '320': 'América Central e Caribe', '332': 'América Central e Caribe',
+  '340': 'América Central e Caribe', '388': 'América Central e Caribe',
+  '558': 'América Central e Caribe', '591': 'América Central e Caribe',
+  '659': 'América Central e Caribe', '662': 'América Central e Caribe',
+  '670': 'América Central e Caribe', '780': 'América Central e Caribe',
 
   // América do Sul
   '32': 'América do Sul', '68': 'América do Sul', '76': 'América do Sul',
