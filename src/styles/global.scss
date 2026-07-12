@@ -34,6 +34,7 @@
 
   /* ─── Aliases semânticos (referenciados nos componentes) ─── */
   --bg:    var(--color-black);      /* fundo principal da página / header / sphere overlay */
+  --bg-side:    var(--color-black); 
   --bg-l:  var(--neutral-100);      /* superfície elevada (header de cards, hover de itens) */
   --bg-c:  rgba(18, 18, 18, 0.8);   /* Background-Card #121212 @ 0.8 — cards em overlay ao mapa */
   --bg-m:  var(--neutral-100);      /* fundo de inputs */
@@ -108,6 +109,7 @@
    os aliases são remapeados. */
 [data-theme="light"] {
   --bg:    var(--color-white);      /* fundo principal (#ffffff) */
+  --bg-side:    var(--neutral-10);      /* fundo principal (#ffffff) */
   --bg-l:  var(--neutral-10);       /* superfície elevada (#e8e8e8) */
   --bg-c:  rgba(255, 255, 255, 0.85); /* cards em overlay ao mapa */
   --bg-m:  var(--neutral-10);       /* fundo de inputs */
