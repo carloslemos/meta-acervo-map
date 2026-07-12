@@ -78,18 +78,31 @@
               />
               <!-- Arco preenchido -->
               {#if stats.genderTop}
-                <circle
-                  cx={DONUT_SIZE / 2}
-                  cy={DONUT_SIZE / 2}
-                  r={DONUT_R}
-                  fill="none"
-                  stroke="var(--neutral-30)"
-                  stroke-width={DONUT_SW}
-                  stroke-linecap="round"
-                  stroke-dasharray={arcDash(stats.genderTop.pct)}
-                  stroke-dashoffset={-CIRCUMFERENCE / 4}
-                  transform="rotate(-90 {DONUT_SIZE / 2} {DONUT_SIZE / 2})"
-                />
+                {#if stats.genderTop.pct === 100}
+                  <!-- A 100%, desenha círculo sólido completo -->
+                  <circle
+                    cx={DONUT_SIZE / 2}
+                    cy={DONUT_SIZE / 2}
+                    r={DONUT_R}
+                    fill="none"
+                    stroke="var(--neutral-30)"
+                    stroke-width={DONUT_SW}
+                    stroke-linecap="round"
+                  />
+                {:else}
+                  <!-- Parcial: arco proporcional -->
+                  <circle
+                    cx={DONUT_SIZE / 2}
+                    cy={DONUT_SIZE / 2}
+                    r={DONUT_R}
+                    fill="none"
+                    stroke="var(--neutral-30)"
+                    stroke-width={DONUT_SW}
+                    stroke-linecap="round"
+                    stroke-dasharray={arcDash(stats.genderTop.pct)}
+                    transform="rotate(-90 {DONUT_SIZE / 2} {DONUT_SIZE / 2})"
+                  />
+                {/if}
               {/if}
               <!-- % centralizado -->
               <text
@@ -122,18 +135,31 @@
                 stroke-width={DONUT_SW}
               />
               {#if stats.formationTop}
-                <circle
-                  cx={DONUT_SIZE / 2}
-                  cy={DONUT_SIZE / 2}
-                  r={DONUT_R}
-                  fill="none"
-                  stroke="var(--neutral-30)"
-                  stroke-width={DONUT_SW}
-                  stroke-linecap="round"
-                  stroke-dasharray={arcDash(stats.formationTop.pct)}
-                  stroke-dashoffset={-CIRCUMFERENCE / 4}
-                  transform="rotate(-90 {DONUT_SIZE / 2} {DONUT_SIZE / 2})"
-                />
+                {#if stats.formationTop.pct === 100}
+                  <!-- A 100%, desenha círculo sólido completo -->
+                  <circle
+                    cx={DONUT_SIZE / 2}
+                    cy={DONUT_SIZE / 2}
+                    r={DONUT_R}
+                    fill="none"
+                    stroke="var(--neutral-30)"
+                    stroke-width={DONUT_SW}
+                    stroke-linecap="round"
+                  />
+                {:else}
+                  <!-- Parcial: arco proporcional -->
+                  <circle
+                    cx={DONUT_SIZE / 2}
+                    cy={DONUT_SIZE / 2}
+                    r={DONUT_R}
+                    fill="none"
+                    stroke="var(--neutral-30)"
+                    stroke-width={DONUT_SW}
+                    stroke-linecap="round"
+                    stroke-dasharray={arcDash(stats.formationTop.pct)}
+                    transform="rotate(-90 {DONUT_SIZE / 2} {DONUT_SIZE / 2})"
+                  />
+                {/if}
               {/if}
               <text
                 x={DONUT_SIZE / 2}
