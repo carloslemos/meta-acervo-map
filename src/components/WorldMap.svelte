@@ -4,6 +4,7 @@
   import * as topojson from 'topojson-client';
   import {
   TYPE_COLOR,
+  TYPE_COLOR_ACERVO_LIGHT,
   BUBBLE_RADIUS,
   BUBBLE_HIGHLIGHT_RING_WIDTH,
   CENTRAL_ROTATION,
@@ -942,7 +943,10 @@
     const bubbleStrokeColor = theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
 
     for (const { bubble, x, y } of positionedBubbles) {
-      const color = TYPE_COLOR[bubble.type];
+      let color = TYPE_COLOR[bubble.type];
+      if (bubble.type === 'acervo' && theme === 'light') {
+        color = TYPE_COLOR_ACERVO_LIGHT;
+      }
       if (!color) continue;
       const isHighlightBubble = highlightedBubbleIds && highlightedBubbleIds.has(bubble.id);
       if (isHovering && isHighlightBubble) {

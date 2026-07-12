@@ -25,6 +25,9 @@ export const TYPE_COLOR_HOVER = {
   acervo:    '#bbbbbb',  // neutro-30 — Acervo hover
 };
 
+/** Cor da bubble de acervo no tema claro — carvão escuro para contraste sobre oceano claro. */
+export const TYPE_COLOR_ACERVO_LIGHT = '#1a1a1a';
+
 export const TYPE_LABEL = {
   birth:     'Nascimento',
   death:     'Morte',
