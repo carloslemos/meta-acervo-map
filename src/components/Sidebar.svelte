@@ -106,7 +106,7 @@
     width: var(--sidebar-width, 365px);
     flex-shrink: 0;
     border-right: 1px solid var(--bg-hl);
-    background: var(--bg);
+    background: var(--bg-l);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -137,6 +137,10 @@
         transform: translateX(0);
       }
     }
+  }
+
+  [data-theme="light"] .sidebar {
+    background: var(--bg-l);
   }
 
   /* Inner: clipa o conteúdo durante o colapso */

@@ -1274,7 +1274,7 @@
     background: radial-gradient(
       ellipse 70% 60% at 60% 50%,
       transparent 30%,
-      rgba(0, 0, 0, 0.70) 100%
+      var(--bg) 100%
     );
   }
 
@@ -1284,7 +1284,8 @@
     left: 0;
     right: 0;
     height: 80px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.60) 0%, transparent 100%);
+    background: linear-gradient(to bottom, var(--bg-l) 0%, transparent 100%);
+    opacity: 0.5;
   }
 
   /* Gradiente lateral esquerdo — suaviza transição com a sidebar */
@@ -1293,6 +1294,7 @@
     left: 0;
     bottom: 0;
     width: 200px;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.50) 0%, transparent 100%);
+    background: linear-gradient(to right, var(--bg-c) 0%, transparent 100%);
+    opacity: 0.5;
   }
 </style>

@@ -49,7 +49,7 @@
           type="button"
           class="pill"
           class:pill--active={activeTypes.has(filter.type)}
-          style="--accent: {filter.type === 'acervo' ? 'var(--pill-neutral)' : filter.color}; --accent-hover: {filter.type === 'acervo' ? 'var(--pill-neutral-hover)' : filter.colorHover}"
+          style="--accent: {filter.color}; --accent-hover: {filter.colorHover}"
           aria-pressed={activeTypes.has(filter.type)}
           on:click={() => toggleType(filter.type)}
         >
@@ -133,7 +133,7 @@
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-l);
+    color: var(--chrome-txt);
     white-space: nowrap;
   }
 
@@ -176,15 +176,16 @@
   .pill--active {
     background-color: var(--accent);
     border-color: var(--accent);
-    color: var(--bg);
+    color: var(--color-black);
 
     &:hover {
       background-color: var(--accent-hover);
       border-color: var(--accent-hover);
+      color: var(--color-black);
     }
 
     .pill__dot {
-      background: var(--bg);
+      background: var(--color-black);
     }
   }
 
@@ -233,17 +234,17 @@
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
-    color: var(--txt-l);
+    color: var(--chrome-txt-l);
     cursor: pointer;
     white-space: nowrap;
 
     &:hover {
-      color: var(--txt);
+      color: var(--chrome-txt);
     }
   }
 
   .trajectory-option--active {
-    color: var(--txt);
+    color: var(--chrome-txt);
   }
 
   .trajectory-dot {
