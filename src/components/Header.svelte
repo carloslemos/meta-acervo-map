@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { TYPE_COLOR, TYPE_COLOR_HOVER, TYPE_LABEL } from '../lib/constants.js';
+  import { TYPE_COLOR, TYPE_COLOR_HOVER, TYPE_LABEL, SECTION_LABELS, AUTOCOMPLETE_PLACEHOLDERS } from '../lib/constants.js';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
 
   /** Conjunto de tipos de bubble visíveis. */
@@ -45,7 +45,7 @@
 
   <!-- Seção 1: Tipos de bubble -->
   <div class="header-section">
-    <span class="header-section__label">Visualização por trajetórias dos artistas</span>
+    <span class="header-section__label">{SECTION_LABELS.trajectoryVisualization}</span>
     <div class="header-bar__pills">
       {#each FILTERS as filter}
         <button
@@ -65,11 +65,11 @@
 
   <!-- Seção 2: Filtro de localidade -->
   <div class="header-section header-section--locality">
-    <span class="header-section__label">Filtrar por localidade</span>
+    <span class="header-section__label">{SECTION_LABELS.filterLocality}</span>
     <div class="header-bar__locality">
       <AutocompleteSelect
         label=""
-        placeholder="Selecionar país ou continente"
+        placeholder={AUTOCOMPLETE_PLACEHOLDERS.nacionalidade}
         options={localidades}
         value={selectedLocalidade || null}
         multiple={false}
@@ -80,7 +80,7 @@
 
   <!-- Seção 3: Toggle de trajetórias (radio style) -->
   <div class="header-section">
-    <span class="header-section__label">Linhas do percurso</span>
+    <span class="header-section__label">{SECTION_LABELS.trajectories}</span>
     <div class="trajectory-group" role="group" aria-label="Visibilidade das trajetórias">
       <button
         type="button"
@@ -90,7 +90,7 @@
         on:click={() => !showTrajectories && dispatch('trajectorieschange', true)}
       >
         <span class="trajectory-dot"></span>
-        Visíveis
+        {SECTION_LABELS.trajectoryToggle.split(' / ')[0]}
       </button>
       <button
         type="button"
@@ -100,7 +100,7 @@
         on:click={() => showTrajectories && dispatch('trajectorieschange', false)}
       >
         <span class="trajectory-dot"></span>
-        Ocultas
+        {SECTION_LABELS.trajectoryToggle.split(' / ')[1]}
       </button>
     </div>
   </div>

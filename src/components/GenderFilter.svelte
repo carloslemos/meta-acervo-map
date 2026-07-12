@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { GENDER_LABEL } from '../lib/constants.js';
+  import { GENDER_LABEL, FILTER_LABELS } from '../lib/constants.js';
   import ToggleGroup from './ToggleGroup.svelte';
 
   export let genders = [];
@@ -17,7 +17,7 @@
 
 <div class="gender-filter">
   <div class="section-header">
-    <span class="section-title">Gênero</span>
+    <span class="section-title">{FILTER_LABELS.gender}</span>
   </div>
   <ToggleGroup
     {items}

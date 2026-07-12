@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { FILTER_LABELS, AUTOCOMPLETE_PLACEHOLDERS } from '../lib/constants.js';
   import AcervoFilter from './AcervoFilter.svelte';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
   import GenderFilter from './GenderFilter.svelte';
@@ -30,8 +31,8 @@
   />
 
   <AutocompleteSelect
-    label="Artistas"
-    placeholder="Selecionar artistas"
+    label={FILTER_LABELS.artista}
+    placeholder={AUTOCOMPLETE_PLACEHOLDERS.artista}
     options={allCreators}
     value={selectedCreators}
     multiple={true}
@@ -39,8 +40,8 @@
   />
 
   <AutocompleteSelect
-    label="Escola"
-    placeholder="Selecionar escolas"
+    label={FILTER_LABELS.education}
+    placeholder={AUTOCOMPLETE_PLACEHOLDERS.education}
     options={allSchools}
     value={selectedSchools}
     multiple={true}
@@ -48,8 +49,8 @@
   />
 
   <AutocompleteSelect
-    label="Nacionalidade"
-    placeholder="Selecionar nacionalidade"
+    label={FILTER_LABELS.nacionalidade}
+    placeholder={AUTOCOMPLETE_PLACEHOLDERS.nacionalidade}
     options={allNationalities}
     value={selectedNationalities}
     multiple={true}

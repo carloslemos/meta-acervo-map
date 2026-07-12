@@ -4,6 +4,7 @@ import {
   UNDATED_YEAR,
   ARTWORK_STRIP_HOVER_DELAY,
   ARTWORK_STRIP_TRANSITION_DURATION,
+  ARTWORK_STRIP_DEFAULT_MESSAGE,
 } from '../lib/constants.js';
 
   /**
@@ -160,7 +161,7 @@ import {
         aria-hidden="true"
       >▾</span>
       <span class="artwork-strip__label">
-        {selectedCreator ? `Obras de ${selectedCreator}` : 'Obras dos artistas nos acervos selecionados'}
+        {selectedCreator ? `Obras de ${selectedCreator}` : ARTWORK_STRIP_DEFAULT_MESSAGE}
       </span>
     </button>
 

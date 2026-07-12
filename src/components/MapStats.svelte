@@ -1,4 +1,6 @@
 <script>
+  import { STATS_LABELS } from '../lib/constants.js';
+
   /**
    * Overlay de contagens no mapa. Recebe quatro valores agregados; não calcula nada.
    */
@@ -6,10 +8,10 @@
 </script>
 
 <div class="map-stats" aria-label="Estatísticas do mapa">
-  <p class="map-stats__line">{stats.acervos} Acervos selecionados</p>
-  <p class="map-stats__line">{stats.artistas} Artistas</p>
-  <p class="map-stats__line">{stats.escolas} Escolas</p>
-  <p class="map-stats__line">{stats.obras} Obras</p>
+  <p class="map-stats__line">{stats.acervos} {STATS_LABELS.acervosSelected}</p>
+  <p class="map-stats__line">{stats.artistas} {STATS_LABELS.artistas}</p>
+  <p class="map-stats__line">{stats.escolas} {STATS_LABELS.escolas}</p>
+  <p class="map-stats__line">{stats.obras} {STATS_LABELS.obras}</p>
 </div>
 
 <style lang="scss">

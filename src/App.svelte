@@ -35,11 +35,12 @@ import {
   TUTORIAL_MAP_TEXT_MOBILE_NAV,
   TUTORIAL_MAP_TEXT_MOBILE_ZOOM,
   TUTORIAL_MAP_TEXT_2D,
+  SECTION_LABELS,
 } from './lib/constants.js';
 
   /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
   const ACCORDION_ITEMS = [
-    { id: 'level1', label: 'Acervos e Artistas' },
+    { id: 'level1', label: SECTION_LABELS.accordion },
     { id: 'level2', label: 'Visualizações e Filtros' },
   ];
 

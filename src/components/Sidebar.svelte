@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { APP_TITLE, SECTION_LABELS } from '../lib/constants.js';
   import SidebarFilters from './SidebarFilters.svelte';
 
   export let acervos = [];
@@ -34,11 +35,10 @@
     <img
       class="sidebar__logo"
       src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
-      alt="Atlas dos Acervos Digitais"
+      alt={APP_TITLE}
     />
     <div class="sidebar__brand-text">
-      <span class="sidebar__brand-title">Atlas Geopolítico</span>
-      <span class="sidebar__brand-subtitle">dos Acervos Digitais</span>
+      <span class="sidebar__brand-title">{APP_TITLE}</span>
     </div>
     <div class="sidebar__brand-actions">
       <button class="sidebar__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
@@ -59,7 +59,7 @@
   <!-- Intro desktop: descrição + ⓘ -->
   <div class="sidebar__intro">
     <p class="sidebar__description">
-      Explore os filtros e navegue pelas trajetórias de artistas dos acervos
+      {SECTION_LABELS.sidebarDescription}
     </p>
     <button class="sidebar__info-btn" class:sidebar__info-btn--active={tutorialActive} aria-label="Reabrir tutorial" on:click={() => dispatch('tutorialreopen')}>
       <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,8 +176,7 @@
     min-width: 0;
   }
 
-  .sidebar__brand-title,
-  .sidebar__brand-subtitle {
+  .sidebar__brand-title {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-snug);

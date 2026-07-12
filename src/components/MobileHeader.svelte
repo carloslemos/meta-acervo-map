@@ -5,6 +5,7 @@
    * Os controles de filtro NÃO ficam aqui no mobile; vão para o FilterAccordion.
    */
   import { createEventDispatcher } from 'svelte';
+  import { APP_TITLE } from '../lib/constants.js';
   const dispatch = createEventDispatcher();
 </script>
 
@@ -12,11 +13,10 @@
   <img
     class="mobile-header__logo"
     src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
-    alt="Atlas dos Acervos Digitais"
+    alt={APP_TITLE}
   />
   <div class="mobile-header__brand-text">
-    <span class="mobile-header__title">Atlas Geopolítico</span>
-    <span class="mobile-header__subtitle">dos Acervos Digitais</span>
+    <span class="mobile-header__title">{APP_TITLE}</span>
   </div>
   <div class="mobile-header__actions">
     <button class="mobile-header__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
@@ -54,8 +54,7 @@
     min-width: 0;
   }
 
-  .mobile-header__title,
-  .mobile-header__subtitle {
+  .mobile-header__title {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-snug);

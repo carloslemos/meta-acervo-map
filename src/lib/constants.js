@@ -29,10 +29,10 @@ export const TYPE_COLOR_HOVER = {
 export const TYPE_COLOR_ACERVO_LIGHT = '#1a1a1a';
 
 export const TYPE_LABEL = {
-  birth:     'Nascimento',
-  death:     'Morte',
-  education: 'Estudos',
-  acervo:    'Acervo',
+  birth:     'Local de nascimento',
+  death:     'Local de morte',
+  education: 'Local de formação',
+  acervo:    'Museus',
 };
 
 // ─── Rótulos de gênero em PT-BR ──────────────────────────────────────────────
@@ -373,5 +373,66 @@ export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM = 'Toque nos botões + e − ou junte
 /** Instrução de modo planisfério/2D — Box 2 (tutorial sobre como alternar para 2D). */
 export const TUTORIAL_MAP_TEXT_2D = 'Para visualizar em modo planisfério (2D), clique no ícone do planisfério.';
 
+/** Instruções de filtros — Box 1 no tutorial. */
+export const TUTORIAL_FILTER_TEXT = 'Selecione um ou mais filtros na coluna à esquerda para localizar museus, artistas, locais de formação, nacionalidade e gênero.';
+
+/** Instruções de combinação de filtros — Box 1 no tutorial. */
+export const TUTORIAL_COMBINATION_TEXT = 'Combine os filtros com informações sobre um/uma artista (local de nascimento, morte, instituição de ensino e museus que possuem suas obras).';
+
 /** Texto da caixa de tutorial do artwork strip (Box 3). */
 export const TUTORIAL_STRIP_TEXT = 'Obras dos artistas nos acervos selecionados';
+
+// ─── Textos de filtros, labels, buttons e seções (UI) ──────────────────────
+
+/** Título da aplicação. */
+export const APP_TITLE = 'Atlas dos Percursos Artísticos';
+
+/** URL do site do projeto (para o link do logo). */
+export const APP_WEBSITE_URL = 'https://www.acervosdigitais.fau.usp.br/meta-acervos-navegador-para-museus-em-rede/';
+
+/** Rótulos de filtros na sidebar. */
+export const FILTER_LABELS = {
+  acervo: 'Museus',
+  artista: 'Artistas',
+  education: 'Formação',
+  nacionalidade: 'Nacionalidade',
+  gender: 'Gênero',
+};
+
+/** Placeholders para campos de autocomplete. */
+export const AUTOCOMPLETE_PLACEHOLDERS = {
+  artista: 'Selecionar artistas',
+  education: 'Locais de estudo',
+  nacionalidade: 'Selecionar',
+  acervo: 'Selecionar museus',
+};
+
+/** Rótulos de botões em filtros. */
+export const BUTTON_LABELS = {
+  selectAll: 'Selecionar todos',
+  clearSelection: 'Limpar seleção',
+};
+
+/** Títulos de seções na UI. */
+export const SECTION_LABELS = {
+  accordion: 'Museus e artistas',
+  filterLocality: 'Filtrar por país ou região',
+  trajectoryVisualization: 'Visualizar percursos',
+  trajectories: 'Trajetos',
+  trajectoryToggle: 'Exibir / Ocultar',
+  sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos dos museus',
+};
+
+/** Rótulos de estatísticas no mapa. */
+export const STATS_LABELS = {
+  acervosSelected: 'Museus Selecionados',
+  artistas: 'Artistas',
+  escolas: 'Instituições educacionais',
+  obras: 'Obras em museus',
+};
+
+/** Mensagem padrão da faixa de obras (quando nenhuma obra está selecionada). */
+export const ARTWORK_STRIP_DEFAULT_MESSAGE = 'Conheça as obras dos artistas nos museus selecionados';
+
+/** Texto de instrução do filtro de localidade/país na sidebar. */
+export const LOCALITY_FILTER_INSTRUCTION = 'Filtrar por país ou região';

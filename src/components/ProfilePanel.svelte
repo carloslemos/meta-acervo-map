@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { profileStats } from '../lib/profileStats.js';
-  import { LS_PROFILE_PANEL_KEY } from '../lib/constants.js';
+  import { LS_PROFILE_PANEL_KEY, FILTER_LABELS } from '../lib/constants.js';
 
   /** Bubbles filtradas passadas pelo App.svelte (excluir acervos internamente). */
   export let bubbles = [];
@@ -114,7 +114,7 @@
                 fill="var(--txt)"
               >{stats.genderTop?.pct ?? 0}%</text>
             </svg>
-            <p class="profile-panel__donut-label">Gênero</p>
+            <p class="profile-panel__donut-label">{FILTER_LABELS.gender}</p>
             <p class="profile-panel__donut-value">{stats.genderTop?.label ?? '—'}</p>
           </div>
 
