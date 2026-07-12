@@ -469,8 +469,10 @@ import {
           {artworksByCreator}
           on:close={handleArtistClose}
         />
-        <div class="map-overlay-right">
+        <div class="map-overlay-zoom">
           <ZoomButtons on:zoomin={handleZoomIn} on:zoomout={handleZoomOut} />
+        </div>
+        <div class="map-overlay-right">
           <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
         </div>
         <div class="map-overlay-theme">
@@ -605,6 +607,17 @@ import {
     background: var(--bg);
   }
 
+  .map-overlay-zoom {
+    position: absolute;
+    bottom: calc(var(--artwork-strip-inset, 0px) + 16px);
+    right: 16px;
+    z-index: 10; /* acima do canvas, abaixo do ArtistCard (z-index: 20) */
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .map-overlay-right {
     position: absolute;
     top: 16px;
@@ -615,6 +628,7 @@ import {
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
+    transform: translateY(32px); /* empurra pra baixo para não colidir com botão de perfil dos resultados */
   }
 
   /* Toggle de tema (sol/lua) — centralizado verticalmente na área visível
