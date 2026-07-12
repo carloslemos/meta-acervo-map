@@ -52,10 +52,8 @@
   --pill-neutral-hover: var(--neutral-30);   /* #bbbbbb */
 
   /* Gradiente de fundo do chrome da UI (sidebar + header) — escuro em ambos os temas.
-     O dark mode usa gradiente quente (preto → cinza-médio); o light mode usa
-     gradiente frio/neutro (cinza-escuro → cinza-médio) — distinto mas ainda escuro,
-     mantendo contraste com o mapa claro (ver [data-theme=light]). */
-  --chrome-bg: linear-gradient(180deg, var(--color-black) 13.94%, #686868 100%);
+     Mantido por compatibilidade; redireciona para --chrome-bg. */
+  --chrome-bg: var(--color-black);  /* #272727 */
   /* Mantido por compatibilidade; redireciona para --chrome-bg. */
   --sidebar-bg: var(--chrome-bg);
 
@@ -125,7 +123,7 @@
   /* Chrome (sidebar + header): fundo escuro-neutro, distinto do dark mode quente.
      neutral-100 (#272727) → neutral-70 (#616161): mais frio/acinzentado que o
      near-black quente do dark mode, mas ainda escuro para contrastar com o mapa claro. */
-  --chrome-bg: linear-gradient(180deg, var(--neutral-100) 13.94%, var(--neutral-70) 100%);
+  --chrome-bg: var(--color-black);
   --sidebar-bg: var(--chrome-bg);
 
   /* Texto do chrome claro sobre fundo escuro — mantém legibilidade em ambos os temas. */

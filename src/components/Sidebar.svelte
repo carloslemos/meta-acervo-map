@@ -32,14 +32,16 @@
 
   <!-- Marca: logo + título + SOBRE + PT|EN (desktop) -->
   <div class="sidebar__brand">
-    <img
-      class="sidebar__logo"
-      src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
-      alt={APP_TITLE}
-    />
-    <div class="sidebar__brand-text">
+    <a href="https://www.acervosdigitais.fau.usp.br/" class="sidebar__logo-link">
+      <img
+        class="sidebar__logo"
+        src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
+        alt={APP_TITLE}
+      />
+    </a>
+    <a href="https://www.acervosdigitais.fau.usp.br/" class="sidebar__brand-text">
       <span class="sidebar__brand-title">{APP_TITLE}</span>
-    </div>
+    </a>
     <div class="sidebar__brand-actions">
       <button class="sidebar__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
       <div class="sidebar__lang">
@@ -174,6 +176,7 @@
     gap: 2px;
     flex: 1;
     min-width: 0;
+    text-decoration: none; /* remove underline do <a> */
   }
 
   .sidebar__brand-title {
@@ -182,7 +185,6 @@
     line-height: var(--line-height-snug);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--chrome-txt);
-    white-space: nowrap;
   }
 
   .sidebar__brand-actions {
