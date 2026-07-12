@@ -15,9 +15,6 @@
   /** Trajetórias visíveis ou ocultas. */
   export let showTrajectories = true;
 
-  /** Quando true, o tutorial está ativo — o botão “?” recebe glow. */
-  export let tutorialActive = false;
-
   const dispatch = createEventDispatcher();
 
   const FILTERS = [
@@ -104,15 +101,6 @@
       </button>
     </div>
   </div>
-
-  <!-- Botão de reabertura do tutorial -->
-  <button
-    type="button"
-    class="tutorial-btn"
-    class:tutorial-btn--active={tutorialActive}
-    on:click={() => dispatch('tutorialreopen')}
-    aria-label="Reabrir tutorial"
-  >?</button>
 
 </div>
 
@@ -258,48 +246,32 @@
   }
 
   .trajectory-dot {
-    width: 8px;
-    height: 8px;
+    position: relative;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    border: 1px solid currentColor;
+    border: 1.5px solid var(--txt-l);
+    box-sizing: border-box;
+    background: transparent;
     flex-shrink: 0;
+    transition: border-color 0.12s, background 0.12s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.12s;
+    }
 
     .trajectory-option--active & {
-      background: currentColor;
+      border-color: currentColor;
+
+      &::after {
+        background: currentColor;
+      }
     }
   }
 
-  .tutorial-btn {
-    all: unset;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1px solid var(--bg-hl);
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-bold);
-    color: var(--txt-l);
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: auto;
-    transition: color 0.12s, border-color 0.12s;
-
-    /* No mobile o ⓘ flutuante no mapa assume este papel */
-    @media (max-width: 759px) {
-      display: none;
-    }
-
-    &:hover {
-      color: var(--txt);
-      border-color: var(--txt-l);
-    }
-  }
-
-  .tutorial-btn--active {
-    color: var(--txt);
-    border-color: var(--txt);
-    box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.55);
-  }
 </style>
