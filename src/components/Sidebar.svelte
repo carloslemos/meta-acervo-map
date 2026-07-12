@@ -181,7 +181,7 @@
 
   .sidebar__brand-title {
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-medium);
     line-height: var(--line-height-snug);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--chrome-txt);
@@ -278,8 +278,8 @@
 
   .sidebar__description {
     font-family: var(--font-family-base);
-    font-size: var(--font-size-2xs);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
     line-height: var(--line-height-relaxed);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);

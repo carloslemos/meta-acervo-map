@@ -29,9 +29,9 @@ export const TYPE_COLOR_HOVER = {
 export const TYPE_COLOR_ACERVO_LIGHT = '#1a1a1a';
 
 export const TYPE_LABEL = {
-  birth:     'Local de nascimento',
-  death:     'Local de morte',
-  education: 'Local de formação',
+  birth:     'Nascimento',
+  death:     'Morte',
+  education: 'Formação',
   acervo:    'Museus',
 };
 

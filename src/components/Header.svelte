@@ -219,6 +219,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-top: 8px;
   }
 
   .trajectory-option {
