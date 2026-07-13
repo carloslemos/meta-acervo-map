@@ -1,4 +1,4 @@
-import { continentForIsoId, sortArtworks } from '../dataUtils.js';
+import { continentForIsoId, sortArtworks, normalizeConfidence } from '../dataUtils.js';
 
 describe('continentForIsoId', () => {
   test('mapeia código ISO existente para o continente correto (Brasil → América do Sul)', () => {
@@ -89,5 +89,56 @@ describe('sortArtworks', () => {
 
   test('retorna array vazio para entrada vazia', () => {
     expect(sortArtworks([])).toEqual([]);
+  });
+});
+
+describe('normalizeConfidence', () => {
+  test('normaliza valor PT-BR "alta" para "alta"', () => {
+    expect(normalizeConfidence('alta')).toBe('alta');
+  });
+
+  test('normaliza valor PT-BR "alto" para "alta"', () => {
+    expect(normalizeConfidence('alto')).toBe('alta');
+  });
+
+  test('normaliza valor PT-BR "médio" e "medio" para "médio"', () => {
+    expect(normalizeConfidence('médio')).toBe('médio');
+    expect(normalizeConfidence('medio')).toBe('médio');
+  });
+
+  test('normaliza valor PT-BR "baixa" e "baixo" para "baixo"', () => {
+    expect(normalizeConfidence('baixa')).toBe('baixo');
+    expect(normalizeConfidence('baixo')).toBe('baixo');
+  });
+
+  test('normaliza valor EN "high" para "alta"', () => {
+    expect(normalizeConfidence('high')).toBe('alta');
+  });
+
+  test('normaliza valor EN "medium" para "médio"', () => {
+    expect(normalizeConfidence('medium')).toBe('médio');
+  });
+
+  test('normaliza valor EN "low" para "baixo"', () => {
+    expect(normalizeConfidence('low')).toBe('baixo');
+  });
+
+  test('retorna null para null ou undefined', () => {
+    expect(normalizeConfidence(null)).toBeNull();
+    expect(normalizeConfidence(undefined)).toBeNull();
+  });
+
+  test('retorna null para string vazia', () => {
+    expect(normalizeConfidence('')).toBeNull();
+  });
+
+  test('retorna null para valor desconhecido', () => {
+    expect(normalizeConfidence('desconhecido')).toBeNull();
+  });
+
+  test('é case-insensitive', () => {
+    expect(normalizeConfidence('ALTA')).toBe('alta');
+    expect(normalizeConfidence('HIGH')).toBe('alta');
+    expect(normalizeConfidence('Medium')).toBe('médio');
   });
 });

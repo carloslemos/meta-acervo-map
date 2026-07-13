@@ -6,7 +6,7 @@
  * um objeto com distribuição de gênero, local de formação e regiões.
  */
 
-import { GENDER_LABEL } from './constants.js';
+import { GENDER_LABEL_PT_COMPAT as GENDER_LABEL } from './constants.js';
 
 const REGION_LABEL_OVERRIDES = {
   'América Central e Caribe': 'América Central e Caribe',

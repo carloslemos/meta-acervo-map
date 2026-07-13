@@ -20,16 +20,23 @@ const ACERVO_ALIASES = { 'MAC USP': 'MAC' };
 
 /**
  * Normaliza valores de confiança do CSV para um formato canônico.
+ * Aceita valores PT-BR (alta/médio/baixo) e EN (high/medium/low).
  *
  * @param {string|null|undefined} value — valor bruto da coluna de confiança
  * @returns {('alta'|'médio'|'baixo'|null)} valor normalizado, ou `null` se vazio/desconhecido
  */
-function normalizeConfidence(value) {
+export function normalizeConfidence(value) {
   if (!value) return null;
   const val = value.toLowerCase().trim();
+  // PT-BR
   if (val === 'alta') return 'alta';
-  if (val === 'médio' || val === 'media') return 'médio';
-  if (val === 'baixo') return 'baixo';
+  if (val === 'alto') return 'alta';
+  if (val === 'médio' || val === 'medio') return 'médio';
+  if (val === 'baixa' || val === 'baixo') return 'baixo';
+  // EN
+  if (val === 'high') return 'alta';
+  if (val === 'medium') return 'médio';
+  if (val === 'low') return 'baixo';
   return null;
 }
 
@@ -217,11 +224,13 @@ async function loadArtworksByCreator() {
  * usando uma projeção de referência fixa, para que `forceCollide` não rode a
  * cada pan/zoom em runtime.
  *
- * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object> }>}
+ * @param {string} [csvPath] — Caminho do CSV de criadores (opcional). Se omitido, usa CSV_CREATORS_PATH.
+ * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object>, artworksByCreator: Map, acervoBubbles: Array<object> }>}
  */
-export async function loadData() {
+export async function loadData(csvPath) {
+  const actualCsvPath = csvPath ?? CSV_CREATORS_PATH;
   const [rows, artworksByCreator, acervoBubbles, topo] = await Promise.all([
-    d3.dsv(CSV_CREATORS_DELIMITER, CSV_CREATORS_PATH),
+    d3.dsv(CSV_CREATORS_DELIMITER, actualCsvPath),
     loadArtworksByCreator(),
     loadAcervoBubbles(),
     d3.json(GEOJSON_COUNTRIES_PATH),

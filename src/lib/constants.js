@@ -29,33 +29,56 @@ export const TYPE_COLOR_HOVER = {
 export const TYPE_COLOR_ACERVO_LIGHT = '#bbbbbb';
 
 export const TYPE_LABEL = {
-  birth:     'Nascimento',
-  death:     'Morte',
-  education: 'Formação',
-  acervo:    'Museus',
+  pt: {
+    birth:     'Nascimento',
+    death:     'Morte',
+    education: 'Formação',
+    acervo:    'Museus',
+  },
+  en: {
+    birth:     'Birth',
+    death:     'Death',
+    education: 'Education',
+    acervo:    'Museums',
+  },
 };
 
-// ─── Rótulos de gênero em PT-BR ──────────────────────────────────────────────
+// ─── Rótulos de gênero (PT-BR ↔ EN) ──────────────────────────────────────────────
 export const GENDER_LABEL = {
-  male:       'Masculino',
-  female:     'Feminino',
-  'non-binary': 'Não-binário',
-  unknown:    'Desconhecido',
+  pt: {
+    male:       'Masculino',
+    female:     'Feminino',
+    'non-binary': 'Não-binário',
+    unknown:    'Desconhecido',
+  },
+  en: {
+    male:       'Male',
+    female:     'Female',
+    'non-binary': 'Non-binary',
+    unknown:    'Unknown',
+  },
 };
 
 // ─── Normalização de valores de confiança do CSV ──────────────────────────────
 
 /**
  * Normaliza os valores inconsistentes do campo de confiança no CSV
- * (alto/alta/médio/baixa/baixo) para labels canônicos exibidos no ArtistCard.
+ * (alto/alta/médio/baixa/baixo em PT e high/medium/low em EN) para labels canônicos.
  */
 export const CONFIDENCE_LABEL = {
-  alto:  'Alta',
-  alta:  'Alta',
-  médio: 'Médio',
-  medio: 'Médio',
-  baixa: 'Baixa',
-  baixo: 'Baixa',
+  pt: {
+    alto:  'Alta',
+    alta:  'Alta',
+    médio: 'Médio',
+    medio: 'Médio',
+    baixa: 'Baixa',
+    baixo: 'Baixa',
+  },
+  en: {
+    high:   'High',
+    medium: 'Medium',
+    low:    'Low',
+  },
 };
 
 // ─── Mapeamento ISO 3166-1 numérico → continente (PT-BR) ─────────────────────
@@ -137,6 +160,276 @@ export const ISO_CONTINENT = {
 
   // Antártica
   '10': 'Antártica',
+};
+
+// ─── Mapeamento de nomes de países (EN → PT-BR) ──────────────────────────────
+
+/**
+ * Traduz nomes de países do TopoJSON (Natural Earth 110m, em inglês)
+ * para seus nomes em português brasileiro.
+ * Chave: nome em inglês (conforme consta em countries-110m.json).
+ * Valor: nome em PT-BR.
+ * Usado para exibição de tooltips e filtros geográficos.
+ */
+export const COUNTRY_NAME_PTBR = {
+  "Afghanistan": "Afeganistão",
+  "Albania": "Albânia",
+  "Algeria": "Argélia",
+  "Angola": "Angola",
+  "Antarctica": "Antártica",
+  "Argentina": "Argentina",
+  "Armenia": "Armênia",
+  "Australia": "Austrália",
+  "Austria": "Áustria",
+  "Azerbaijan": "Azerbaijão",
+  "Bahamas": "Bahamas",
+  "Bangladesh": "Bangladesh",
+  "Belarus": "Bielorrússia",
+  "Belgium": "Bélgica",
+  "Belize": "Belize",
+  "Benin": "Benin",
+  "Bhutan": "Butão",
+  "Bolivia": "Bolívia",
+  "Bosnia and Herz.": "Bósnia e Herzegovina",
+  "Botswana": "Botsuana",
+  "Brazil": "Brasil",
+  "Brunei": "Brunei",
+  "Bulgaria": "Bulgária",
+  "Burkina Faso": "Burquina Faso",
+  "Burundi": "Burundi",
+  "Cambodia": "Camboja",
+  "Cameroon": "Camarões",
+  "Canada": "Canadá",
+  "Central African Rep.": "República Centro-Africana",
+  "Chad": "Chade",
+  "Chile": "Chile",
+  "China": "China",
+  "Colombia": "Colômbia",
+  "Congo": "Congo",
+  "Costa Rica": "Costa Rica",
+  "Croatia": "Croácia",
+  "Cuba": "Cuba",
+  "Cyprus": "Chipre",
+  "Czechia": "República Tcheca",
+  "Côte d'Ivoire": "Costa do Marfim",
+  "Dem. Rep. Congo": "República Democrática do Congo",
+  "Denmark": "Dinamarca",
+  "Djibouti": "Djibuti",
+  "Dominican Rep.": "República Dominicana",
+  "Ecuador": "Equador",
+  "Egypt": "Egito",
+  "El Salvador": "El Salvador",
+  "Eq. Guinea": "Guiné Equatorial",
+  "Eritrea": "Eritreia",
+  "Estonia": "Estônia",
+  "Ethiopia": "Etiópia",
+  "Falkland Is.": "Ilhas Malvinas",
+  "Fiji": "Fiji",
+  "Finland": "Finlândia",
+  "Fr. S. Antarctic Lands": "Terras Austrais Francesas",
+  "France": "França",
+  "Gabon": "Gabão",
+  "Gambia": "Gâmbia",
+  "Georgia": "Geórgia",
+  "Germany": "Alemanha",
+  "Ghana": "Gana",
+  "Greece": "Grécia",
+  "Greenland": "Groenlândia",
+  "Guatemala": "Guatemala",
+  "Guinea": "Guiné",
+  "Guinea-Bissau": "Guiné-Bissau",
+  "Guyana": "Guiana",
+  "Haiti": "Haiti",
+  "Honduras": "Honduras",
+  "Hungary": "Hungria",
+  "Iceland": "Islândia",
+  "India": "Índia",
+  "Indonesia": "Indonésia",
+  "Iran": "Irã",
+  "Iraq": "Iraque",
+  "Ireland": "Irlanda",
+  "Israel": "Israel",
+  "Italy": "Itália",
+  "Jamaica": "Jamaica",
+  "Japan": "Japão",
+  "Jordan": "Jordânia",
+  "Kazakhstan": "Cazaquistão",
+  "Kenya": "Quênia",
+  "Kosovo": "Kosovo",
+  "Kuwait": "Kuwait",
+  "Kyrgyzstan": "Quirguistão",
+  "Laos": "Laos",
+  "Latvia": "Letônia",
+  "Lebanon": "Líbano",
+  "Lesotho": "Lesoto",
+  "Liberia": "Libéria",
+  "Libya": "Líbia",
+  "Lithuania": "Lituânia",
+  "Luxembourg": "Luxemburgo",
+  "Macedonia": "Macedônia",
+  "Madagascar": "Madagascar",
+  "Malawi": "Malaui",
+  "Malaysia": "Malásia",
+  "Mali": "Mali",
+  "Mauritania": "Mauritânia",
+  "Mexico": "México",
+  "Moldova": "Moldávia",
+  "Mongolia": "Mongólia",
+  "Montenegro": "Montenegro",
+  "Morocco": "Marrocos",
+  "Mozambique": "Moçambique",
+  "Myanmar": "Mianmar",
+  "N. Cyprus": "Chipre do Norte",
+  "Namibia": "Namíbia",
+  "Nepal": "Nepal",
+  "Netherlands": "Países Baixos",
+  "New Caledonia": "Nova Caledônia",
+  "New Zealand": "Nova Zelândia",
+  "Nicaragua": "Nicarágua",
+  "Niger": "Níger",
+  "Nigeria": "Nigéria",
+  "North Korea": "Coreia do Norte",
+  "Norway": "Noruega",
+  "Oman": "Omã",
+  "Pakistan": "Paquistão",
+  "Palestine": "Palestina",
+  "Panama": "Panamá",
+  "Papua New Guinea": "Papua Nova Guiné",
+  "Paraguay": "Paraguai",
+  "Peru": "Peru",
+  "Philippines": "Filipinas",
+  "Poland": "Polônia",
+  "Portugal": "Portugal",
+  "Puerto Rico": "Porto Rico",
+  "Qatar": "Catar",
+  "Romania": "Romênia",
+  "Russia": "Rússia",
+  "Rwanda": "Ruanda",
+  "S. Sudan": "Sudão do Sul",
+  "Saudi Arabia": "Arábia Saudita",
+  "Senegal": "Senegal",
+  "Serbia": "Sérvia",
+  "Sierra Leone": "Serra Leoa",
+  "Slovakia": "Eslováquia",
+  "Slovenia": "Eslovênia",
+  "Solomon Is.": "Ilhas Salomão",
+  "Somalia": "Somália",
+  "Somaliland": "Somalilândia",
+  "South Africa": "África do Sul",
+  "South Korea": "Coreia do Sul",
+  "Spain": "Espanha",
+  "Sri Lanka": "Sri Lanka",
+  "Sudan": "Sudão",
+  "Suriname": "Suriname",
+  "Sweden": "Suécia",
+  "Switzerland": "Suíça",
+  "Syria": "Síria",
+  "Taiwan": "Taiwan",
+  "Tajikistan": "Tajiquistão",
+  "Tanzania": "Tanzânia",
+  "Thailand": "Tailândia",
+  "Timor-Leste": "Timor-Leste",
+  "Togo": "Togo",
+  "Trinidad and Tobago": "Trinidad e Tobago",
+  "Tunisia": "Tunísia",
+  "Turkey": "Turquia",
+  "Turkmenistan": "Turcomenistão",
+  "Uganda": "Uganda",
+  "Ukraine": "Ucrânia",
+  "United Arab Emirates": "Emirados Árabes Unidos",
+  "United Kingdom": "Reino Unido",
+  "United States of America": "Estados Unidos da América",
+  "Uruguay": "Uruguai",
+  "Uzbekistan": "Uzbequistão",
+  "Vanuatu": "Vanuatu",
+  "Venezuela": "Venezuela",
+  "Vietnam": "Vietnã",
+  "W. Sahara": "Saara Ocidental",
+  "Yemen": "Iêmen",
+  "Zambia": "Zâmbia",
+  "Zimbabwe": "Zimbábue",
+  "eSwatini": "Eswatini",
+};
+
+// ─── Mapeamento ISO 3166-1 numérico → continente (EN) ──────────────────────────
+
+/**
+ * Versão em inglês de ISO_CONTINENT. Mesmo shape de chaves (códigos ISO numéricos),
+ * mas com nomes de continentes em inglês.
+ * Usado para compatibilidade com dataset bilíngue EN.
+ */
+export const ISO_CONTINENT_EN = {
+  // Africa
+  '12': 'Africa', '24': 'Africa', '204': 'Africa', '72': 'Africa',
+  '854': 'Africa', '108': 'Africa', '120': 'Africa', '140': 'Africa',
+  '148': 'Africa', '174': 'Africa', '178': 'Africa', '180': 'Africa',
+  '384': 'Africa', '262': 'Africa', '818': 'Africa', '226': 'Africa',
+  '232': 'Africa', '231': 'Africa', '266': 'Africa', '270': 'Africa',
+  '288': 'Africa', '324': 'Africa', '404': 'Africa', '426': 'Africa',
+  '430': 'Africa', '434': 'Africa', '450': 'Africa', '454': 'Africa',
+  '466': 'Africa', '478': 'Africa', '480': 'Africa', '504': 'Africa',
+  '508': 'Africa', '516': 'Africa', '562': 'Africa', '566': 'Africa',
+  '646': 'Africa', '678': 'Africa', '686': 'Africa', '694': 'Africa',
+  '706': 'Africa', '710': 'Africa', '728': 'Africa', '729': 'Africa',
+  '748': 'Africa', '834': 'Africa', '768': 'Africa', '788': 'Africa',
+  '800': 'Africa', '894': 'Africa', '716': 'Africa',
+
+  // North America
+  '124': 'North America', '484': 'North America', '840': 'North America',
+
+  // Central America and Caribbean
+  '28': 'Central America and Caribbean', '44': 'Central America and Caribbean',
+  '52': 'Central America and Caribbean', '84': 'Central America and Caribbean',
+  '188': 'Central America and Caribbean', '192': 'Central America and Caribbean',
+  '212': 'Central America and Caribbean', '214': 'Central America and Caribbean',
+  '222': 'Central America and Caribbean', '308': 'Central America and Caribbean',
+  '320': 'Central America and Caribbean', '332': 'Central America and Caribbean',
+  '340': 'Central America and Caribbean', '388': 'Central America and Caribbean',
+  '558': 'Central America and Caribbean', '591': 'Central America and Caribbean',
+  '659': 'Central America and Caribbean', '662': 'Central America and Caribbean',
+  '670': 'Central America and Caribbean', '780': 'Central America and Caribbean',
+
+  // South America
+  '32': 'South America', '68': 'South America', '76': 'South America',
+  '152': 'South America', '170': 'South America', '218': 'South America',
+  '328': 'South America', '600': 'South America', '604': 'South America',
+  '740': 'South America', '858': 'South America', '862': 'South America',
+  '254': 'South America',
+
+  // Asia
+  '4': 'Asia', '51': 'Asia', '31': 'Asia', '50': 'Asia', '64': 'Asia',
+  '96': 'Asia', '116': 'Asia', '156': 'Asia', '626': 'Asia', '268': 'Asia',
+  '356': 'Asia', '360': 'Asia', '364': 'Asia', '368': 'Asia', '376': 'Asia',
+  '392': 'Asia', '400': 'Asia', '398': 'Asia', '408': 'Asia', '410': 'Asia',
+  '414': 'Asia', '417': 'Asia', '418': 'Asia', '422': 'Asia', '458': 'Asia',
+  '462': 'Asia', '496': 'Asia', '104': 'Asia', '524': 'Asia', '512': 'Asia',
+  '586': 'Asia', '275': 'Asia', '608': 'Asia', '634': 'Asia', '682': 'Asia',
+  '702': 'Asia', '144': 'Asia', '760': 'Asia', '158': 'Asia', '762': 'Asia',
+  '764': 'Asia', '795': 'Asia', '784': 'Asia', '860': 'Asia', '704': 'Asia',
+  '887': 'Asia', '792': 'Asia',
+
+  // Europe
+  '8': 'Europe', '20': 'Europe', '40': 'Europe', '112': 'Europe',
+  '56': 'Europe', '70': 'Europe', '100': 'Europe', '191': 'Europe',
+  '196': 'Europe', '203': 'Europe', '208': 'Europe', '233': 'Europe',
+  '246': 'Europe', '250': 'Europe', '276': 'Europe', '300': 'Europe',
+  '348': 'Europe', '352': 'Europe', '372': 'Europe', '380': 'Europe',
+  '428': 'Europe', '438': 'Europe', '440': 'Europe', '442': 'Europe',
+  '470': 'Europe', '498': 'Europe', '492': 'Europe', '499': 'Europe',
+  '528': 'Europe', '807': 'Europe', '578': 'Europe', '616': 'Europe',
+  '620': 'Europe', '642': 'Europe', '643': 'Europe', '674': 'Europe',
+  '688': 'Europe', '703': 'Europe', '705': 'Europe', '724': 'Europe',
+  '752': 'Europe', '756': 'Europe', '804': 'Europe', '826': 'Europe',
+  '336': 'Europe',
+
+  // Oceania
+  '36': 'Oceania', '242': 'Oceania', '296': 'Oceania', '584': 'Oceania',
+  '583': 'Oceania', '520': 'Oceania', '554': 'Oceania', '585': 'Oceania',
+  '598': 'Oceania', '882': 'Oceania', '90': 'Oceania', '776': 'Oceania',
+  '798': 'Oceania', '548': 'Oceania',
+
+  // Antarctica
+  '10': 'Antarctica',
 };
 
 // ─── Parâmetros visuais do mapa ───────────────────────────────────────────────
@@ -319,8 +612,15 @@ export const TRANSITION_SLOW = '300ms';
 /**
  * CSV principal com criadores: lat/lon de nascimento, morte, estudo.
  * Versão fixa (v4). Se mudar, atualizar apenas aqui.
+ * Padrão: CSV em PT-BR (comportamento atual preservado).
  */
 export const CSV_CREATORS_PATH = 'atlas_ma_0610_v2.csv';
+
+/** Caminho do CSV de criadores em português brasileiro (mesmo que CSV_CREATORS_PATH). */
+export const CSV_CREATORS_PATH_PT = 'atlas_ma_0610_v2.csv';
+
+/** Caminho do CSV de criadores em inglês (futuro: atlas_ma_0610_v2_en.csv). */
+export const CSV_CREATORS_PATH_EN = 'atlas_ma_0610_v2_en.csv';
 
 /**
  * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.
@@ -355,89 +655,202 @@ export const LS_THEME_KEY = 'meta-acervo:theme';
 export const LS_PROFILE_PANEL_KEY = 'meta-acervo:profile-panel-collapsed';
 
 /** Texto da caixa de tutorial da sidebar (Box 1). */
-export const TUTORIAL_SIDEBAR_TEXT = 'Explore os filtros e navegue pelas trajetórias dos artistas dos acervos';
+export const TUTORIAL_SIDEBAR_TEXT = {
+  pt: 'Explore os filtros e navegue pelas trajetórias dos artistas dos acervos',
+  en: 'Explore filters and navigate through the artists\' trajectories in the collections',
+};
 
 /** Título da caixa de tutorial do centro do mapa (Box 2). */
-export const TUTORIAL_MAP_TITLE = 'Como navegar';
+export const TUTORIAL_MAP_TITLE = {
+  pt: 'Como navegar',
+  en: 'How to navigate',
+};
 
 /** Instrução de navegação desktop — Box 2 (texto após o label bold). */
-export const TUTORIAL_MAP_TEXT_NAV = 'Para girar o globo, clique e segure o botão esquerdo do mouse e arraste.';
+export const TUTORIAL_MAP_TEXT_NAV = {
+  pt: 'Para girar o globo, clique e segure o botão esquerdo do mouse e arraste.',
+  en: 'To rotate the globe, click and hold the left mouse button and drag.',
+};
 
 /** Instrução de zoom desktop — Box 2 (texto após o label bold). */
-export const TUTORIAL_MAP_TEXT_ZOOM = 'Use o scroll do mouse ou clique nos botões + e − para aproximar ou afastar.';
+export const TUTORIAL_MAP_TEXT_ZOOM = {
+  pt: 'Use o scroll do mouse ou clique nos botões + e − para aproximar ou afastar.',
+  en: 'Use the mouse scroll or click the + and − buttons to zoom in or out.',
+};
 
 /** Instrução de seleção mobile — Box 2. */
-export const TUTORIAL_MAP_TEXT_MOBILE_SELECT = 'Escolha categorias e visualizações para ver as trajetórias dos artistas.';
+export const TUTORIAL_MAP_TEXT_MOBILE_SELECT = {
+  pt: 'Escolha categorias e visualizações para ver as trajetórias dos artistas.',
+  en: 'Choose categories and views to see the artists\' trajectories.',
+};
 
 /** Instrução de navegação mobile — Box 2. */
-export const TUTORIAL_MAP_TEXT_MOBILE_NAV = 'Deslize um dedo pela tela para girar o globo.';
+export const TUTORIAL_MAP_TEXT_MOBILE_NAV = {
+  pt: 'Deslize um dedo pela tela para girar o globo.',
+  en: 'Slide one finger across the screen to rotate the globe.',
+};
 
 /** Instrução de zoom mobile — Box 2. */
-export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM = 'Toque nos botões + e − ou junte e afaste dois dedos para aproximar e afastar.';
+export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM = {
+  pt: 'Toque nos botões + e − ou junte e afaste dois dedos para aproximar e afastar.',
+  en: 'Tap the + and − buttons or pinch two fingers to zoom in and out.',
+};
 
 /** Instrução de modo planisfério/2D — Box 2 (tutorial sobre como alternar para 2D). */
-export const TUTORIAL_MAP_TEXT_2D = 'Para visualizar em modo planisfério (2D), clique no ícone do planisfério.';
+export const TUTORIAL_MAP_TEXT_2D = {
+  pt: 'Para visualizar em modo planisfério (2D), clique no ícone do planisfério.',
+  en: 'To view in map mode (2D), click the map icon.',
+};
 
 /** Instruções de filtros — Box 1 no tutorial. */
-export const TUTORIAL_FILTER_TEXT = 'Selecione um ou mais filtros na coluna à esquerda para localizar museus, artistas, locais de formação, nacionalidade e gênero.';
+export const TUTORIAL_FILTER_TEXT = {
+  pt: 'Selecione um ou mais filtros na coluna à esquerda para localizar museus, artistas, locais de formação, nacionalidade e gênero.',
+  en: 'Select one or more filters on the left column to find museums, artists, educational locations, nationality and gender.',
+};
 
 /** Instruções de combinação de filtros — Box 1 no tutorial. */
-export const TUTORIAL_COMBINATION_TEXT = 'Combine os filtros com informações sobre um/uma artista (local de nascimento, morte, instituição de ensino e museus que possuem suas obras).';
+export const TUTORIAL_COMBINATION_TEXT = {
+  pt: 'Combine os filtros com informações sobre um/uma artista (local de nascimento, morte, instituição de ensino e museus que possuem suas obras).',
+  en: 'Combine filters with information about an artist (place of birth, death, educational institution and museums that hold their works).',
+};
 
 /** Texto da caixa de tutorial do artwork strip (Box 3). */
-export const TUTORIAL_STRIP_TEXT = 'Obras dos artistas nos acervos selecionados';
+export const TUTORIAL_STRIP_TEXT = {
+  pt: 'Obras dos artistas nos acervos selecionados',
+  en: 'Works by artists in the selected collections',
+};
 
 // ─── Textos de filtros, labels, buttons e seções (UI) ──────────────────────
 
-/** Título da aplicação. */
-export const APP_TITLE = 'Atlas dos Percursos Artísticos';
+/** Título da aplicação (PT-BR ↔ EN). */
+export const APP_TITLE = {
+  pt: 'Átlas dos Percursos Artísticos',
+  en: 'Atlas of Artistic Trajectories',
+};
 
 /** URL do site do projeto (para o link do logo). */
 export const APP_WEBSITE_URL = 'https://www.acervosdigitais.fau.usp.br/meta-acervos-navegador-para-museus-em-rede/';
 
 /** Rótulos de filtros na sidebar. */
 export const FILTER_LABELS = {
-  acervo: 'Museus',
-  artista: 'Artistas',
-  education: 'Formação',
-  nacionalidade: 'Nacionalidade',
-  gender: 'Gênero',
+  pt: {
+    acervo: 'Museus',
+    artista: 'Artistas',
+    education: 'Formação',
+    nacionalidade: 'Nacionalidade',
+    gender: 'Gênero',
+  },
+  en: {
+    acervo: 'Museums',
+    artista: 'Artists',
+    education: 'Education',
+    nacionalidade: 'Nationality',
+    gender: 'Gender',
+  },
 };
 
 /** Placeholders para campos de autocomplete. */
 export const AUTOCOMPLETE_PLACEHOLDERS = {
-  artista: 'Selecionar artistas',
-  education: 'Locais de estudo',
-  nacionalidade: 'Selecionar',
-  acervo: 'Selecionar museus',
+  pt: {
+    artista: 'Selecionar artistas',
+    education: 'Locais de estudo',
+    nacionalidade: 'Selecionar',
+    acervo: 'Selecionar museus',
+  },
+  en: {
+    artista: 'Select artists',
+    education: 'Study locations',
+    nacionalidade: 'Select',
+    acervo: 'Select museums',
+  },
 };
 
 /** Rótulos de botões em filtros. */
 export const BUTTON_LABELS = {
-  selectAll: 'Selecionar todos',
-  clearSelection: 'Limpar seleção',
+  pt: {
+    selectAll: 'Selecionar todos',
+    clearSelection: 'Limpar seleção',
+  },
+  en: {
+    selectAll: 'Select all',
+    clearSelection: 'Clear selection',
+  },
 };
 
 /** Títulos de seções na UI. */
 export const SECTION_LABELS = {
-  accordion: 'Museus e artistas',
-  filterLocality: 'Filtrar por país ou região',
-  trajectoryVisualization: 'Visualizar percursos',
-  trajectories: 'Trajetos',
-  trajectoryToggle: 'Exibir / Ocultar',
-  sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos dos museus',
+  pt: {
+    accordion: 'Museus e artistas',
+    filterLocality: 'Filtrar por país ou região',
+    trajectoryVisualization: 'Visualizar percursos',
+    trajectories: 'Trajetos',
+    trajectoryToggle: 'Exibir / Ocultar',
+    sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos dos museus',
+  },
+  en: {
+    accordion: 'Museums and artists',
+    filterLocality: 'Filter by country or region',
+    trajectoryVisualization: 'View trajectories',
+    trajectories: 'Trajectories',
+    trajectoryToggle: 'Show / Hide',
+    sidebarDescription: 'Select filters and navigate through the artists\' journeys in the museum collections',
+  },
 };
 
 /** Rótulos de estatísticas no mapa. */
 export const STATS_LABELS = {
-  acervosSelected: 'Museus Selecionados',
-  artistas: 'Artistas',
-  escolas: 'Instituições educacionais',
-  obras: 'Obras em museus',
+  pt: {
+    acervosSelected: 'Museus Selecionados',
+    artistas: 'Artistas',
+    escolas: 'Instituições educacionais',
+    obras: 'Obras em museus',
+  },
+  en: {
+    acervosSelected: 'Selected Museums',
+    artistas: 'Artists',
+    escolas: 'Educational institutions',
+    obras: 'Works in museums',
+  },
 };
 
 /** Mensagem padrão da faixa de obras (quando nenhuma obra está selecionada). */
-export const ARTWORK_STRIP_DEFAULT_MESSAGE = 'Conheça as obras dos artistas nos museus selecionados';
+export const ARTWORK_STRIP_DEFAULT_MESSAGE = {
+  pt: 'Conheça as obras dos artistas nos museus selecionados',
+  en: 'Learn about the works of artists in the selected museums',
+};
 
 /** Texto de instrução do filtro de localidade/país na sidebar. */
-export const LOCALITY_FILTER_INSTRUCTION = 'Filtrar por país ou região';
+export const LOCALITY_FILTER_INSTRUCTION = {
+  pt: 'Filtrar por país ou região',
+  en: 'Filter by country or region',
+};
+
+// ─── Compatibilidade: aliases PT-BR das constantes bilíngues (para componentes legados) ──────────────
+
+/**
+ * Enquanto o app é puramente PT-BR, mantenha aliases PT das constantes bilíngues.
+ * Componentes que usam `TYPE_LABEL.birth` continuarão funcionando via `TYPE_LABEL_PT_COMPAT.birth`,
+ * ou transitoriamente via `TYPE_LABEL.pt.birth` após migração.
+ */
+export const TYPE_LABEL_PT_COMPAT = TYPE_LABEL.pt;
+export const GENDER_LABEL_PT_COMPAT = GENDER_LABEL.pt;
+export const CONFIDENCE_LABEL_PT_COMPAT = CONFIDENCE_LABEL.pt;
+export const FILTER_LABELS_PT_COMPAT = FILTER_LABELS.pt;
+export const AUTOCOMPLETE_PLACEHOLDERS_PT_COMPAT = AUTOCOMPLETE_PLACEHOLDERS.pt;
+export const BUTTON_LABELS_PT_COMPAT = BUTTON_LABELS.pt;
+export const SECTION_LABELS_PT_COMPAT = SECTION_LABELS.pt;
+export const STATS_LABELS_PT_COMPAT = STATS_LABELS.pt;
+export const APP_TITLE_PT_COMPAT = APP_TITLE.pt;
+export const TUTORIAL_SIDEBAR_TEXT_PT_COMPAT = TUTORIAL_SIDEBAR_TEXT.pt;
+export const TUTORIAL_MAP_TITLE_PT_COMPAT = TUTORIAL_MAP_TITLE.pt;
+export const TUTORIAL_MAP_TEXT_NAV_PT_COMPAT = TUTORIAL_MAP_TEXT_NAV.pt;
+export const TUTORIAL_MAP_TEXT_ZOOM_PT_COMPAT = TUTORIAL_MAP_TEXT_ZOOM.pt;
+export const TUTORIAL_MAP_TEXT_MOBILE_SELECT_PT_COMPAT = TUTORIAL_MAP_TEXT_MOBILE_SELECT.pt;
+export const TUTORIAL_MAP_TEXT_MOBILE_NAV_PT_COMPAT = TUTORIAL_MAP_TEXT_MOBILE_NAV.pt;
+export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM_PT_COMPAT = TUTORIAL_MAP_TEXT_MOBILE_ZOOM.pt;
+export const TUTORIAL_MAP_TEXT_2D_PT_COMPAT = TUTORIAL_MAP_TEXT_2D.pt;
+export const TUTORIAL_FILTER_TEXT_PT_COMPAT = TUTORIAL_FILTER_TEXT.pt;
+export const TUTORIAL_COMBINATION_TEXT_PT_COMPAT = TUTORIAL_COMBINATION_TEXT.pt;
+export const TUTORIAL_STRIP_TEXT_PT_COMPAT = TUTORIAL_STRIP_TEXT.pt;
+export const ARTWORK_STRIP_DEFAULT_MESSAGE_PT_COMPAT = ARTWORK_STRIP_DEFAULT_MESSAGE.pt;
+export const LOCALITY_FILTER_INSTRUCTION_PT_COMPAT = LOCALITY_FILTER_INSTRUCTION.pt;
