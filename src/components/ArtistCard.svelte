@@ -6,7 +6,6 @@
    * controlado por `App.svelte` via evento `close`. Enquanto aberto, o mapa
    * é bloqueado (responsabilidade de `App.svelte`).
    */
-  import { createEventDispatcher } from 'svelte';
   import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH, ARTIST_CARD_LABELS } from '../lib/constants.js';
   import { formatAcervoLabel } from '../lib/dataUtils.js';
 
@@ -18,11 +17,10 @@
   export let allBubbles = [];
   /** Map<creator, obras[]> de `loadData()`. */
   export let artworksByCreator = new Map();
-
-  const dispatch = createEventDispatcher();
+  export let onClose = null;
 
   function close() {
-    dispatch('close');
+    onClose?.();
   }
 
   // Bubbles do mesmo criador.

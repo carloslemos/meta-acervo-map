@@ -4,11 +4,10 @@
    * Contém apenas: marca (logo), título, botão "Sobre" e seletor de idioma PT|EN.
    * Os controles de filtro NÃO ficam aqui no mobile; vão para o FilterAccordion.
    */
-  import { createEventDispatcher } from 'svelte';
   import { APP_TITLE, BUTTON_LABELS } from '../lib/constants.js';
-  const dispatch = createEventDispatcher();
 
   export let locale = 'pt';
+  export let onAboutOpen = null;
 
   /** Navega para URL com ou sem ?lang=en */
   function handleLanguageChange(targetLocale) {
@@ -32,7 +31,7 @@
     <span class="mobile-header__title">{APP_TITLE[locale]}</span>
   </div>
   <div class="mobile-header__actions">
-    <button class="mobile-header__action-btn" on:click={() => dispatch('aboutopen')}>{BUTTON_LABELS[locale].about}</button>
+    <button class="mobile-header__action-btn" on:click={() => onAboutOpen?.()}>{BUTTON_LABELS[locale].about}</button>
     <div class="mobile-header__lang">
       <button 
         class="mobile-header__lang-btn"

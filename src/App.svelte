@@ -183,28 +183,28 @@ import {
   });
 
   /** Atualiza o conjunto de tipos ativos (nascimento/estudo/morte/acervo). */
-  function handleFilterChange(event) {
-    activeTypes = event.detail;
+  function handleFilterChange(nextTypes) {
+    activeTypes = nextTypes;
   }
 
   /** Atualiza a localidade ativa (string vazia limpa o filtro). */
-  function handleLocalidadeChange(event) {
-    selectedLocalidade = event.detail ?? '';
+  function handleLocalidadeChange(nextLocalidade) {
+    selectedLocalidade = nextLocalidade ?? '';
   }
 
   /** Alterna visibilidade das trajetórias. */
-  function handleTrajectoriesChange(event) {
-    showTrajectories = event.detail;
+  function handleTrajectoriesChange(nextValue) {
+    showTrajectories = nextValue;
   }
 
   /** Alterna a projeção entre 2D e 3D. */
-  function handleProjectionChange(event) {
-    projectionType = event.detail;
+  function handleProjectionChange(nextProjection) {
+    projectionType = nextProjection;
   }
 
   /** Alterna o tema claro/escuro. */
-  function handleThemeChange(event) {
-    theme = event.detail;
+  function handleThemeChange(nextTheme) {
+    theme = nextTheme;
   }
 
   /** Aumenta o zoom do mapa (botão +). */
@@ -222,28 +222,28 @@ import {
   }
 
   /** Atualiza o conjunto de acervos ativos. */
-  function handleAcervoChange(event) {
-    activeAcervos = event.detail;
+  function handleAcervoChange(nextSet) {
+    activeAcervos = nextSet;
   }
 
   /** Atualiza o conjunto de gêneros ativos. */
-  function handleGenderChange(event) {
-    activeGenders = event.detail;
+  function handleGenderChange(nextSet) {
+    activeGenders = nextSet;
   }
 
   /** Atualiza o conjunto de criadores selecionados. */
-  function handleCreatorsChange(event) {
-    selectedCreators = event.detail;
+  function handleCreatorsChange(nextSet) {
+    selectedCreators = nextSet;
   }
 
   /** Atualiza o conjunto de escolas selecionadas. */
-  function handleSchoolsChange(event) {
-    selectedSchools = event.detail;
+  function handleSchoolsChange(nextSet) {
+    selectedSchools = nextSet;
   }
 
   /** Atualiza o conjunto de nacionalidades selecionadas. */
-  function handleNationalitiesChange(event) {
-    selectedNationalities = event.detail;
+  function handleNationalitiesChange(nextSet) {
+    selectedNationalities = nextSet;
   }
 
   /** Alterna a sidebar (mobile). */
@@ -262,13 +262,12 @@ import {
   function handleAboutClose() { aboutOpen = false; }
 
   /** Click numa bubble do mapa: abre/atualiza o ArtistCard. */
-  function handleArtistClick(event) {
-    selectedArtist = event.detail;
+  function handleArtistClick(nextArtist) {
+    selectedArtist = nextArtist;
   }
 
   /** Click numa obra do ArtworkStrip: trata como artistclick a partir do nome. */
-  function handleArtistSelect(event) {
-    const creator = event.detail;
+  function handleArtistSelect(creator) {
     if (!creator) return;
     selectedArtist = { creator };
   }
@@ -375,20 +374,20 @@ import {
       {allNationalities}
       {selectedNationalities}
       {locale}
-      on:acervochange={handleAcervoChange}
-      on:genderchange={handleGenderChange}
-      on:creatorschange={handleCreatorsChange}
-      on:schoolschange={handleSchoolsChange}
-      on:nationalitieschange={handleNationalitiesChange}
+      onAcervoChange={handleAcervoChange}
+      onGenderChange={handleGenderChange}
+      onCreatorsChange={handleCreatorsChange}
+      onSchoolsChange={handleSchoolsChange}
+      onNationalitiesChange={handleNationalitiesChange}
       tutorialActive={!tutorialDismissed}
-      on:tutorialreopen={handleTutorialReopen}
-      on:aboutopen={handleAboutOpen}
+      onTutorialReopen={handleTutorialReopen}
+      onAboutOpen={handleAboutOpen}
     />
   {/if}
 
   <div class="main-area">
   {#if isMobile}
-    <MobileHeader {locale} on:aboutopen={handleAboutOpen} />
+    <MobileHeader {locale} onAboutOpen={handleAboutOpen} />
 
     <div class="mobile-filters" class:mobile-filters--open={accordionOpen}>
       <FilterAccordion items={ACCORDION_ITEMS} bind:expandedId={accordionExpandedId}>
@@ -405,11 +404,11 @@ import {
             {allNationalities}
             {selectedNationalities}
             {locale}
-            on:acervochange={handleAcervoChange}
-            on:genderchange={handleGenderChange}
-            on:creatorschange={handleCreatorsChange}
-            on:schoolschange={handleSchoolsChange}
-            on:nationalitieschange={handleNationalitiesChange}
+            onAcervoChange={handleAcervoChange}
+            onGenderChange={handleGenderChange}
+            onCreatorsChange={handleCreatorsChange}
+            onSchoolsChange={handleSchoolsChange}
+            onNationalitiesChange={handleNationalitiesChange}
           />
         </div>
         <div slot="level2" class="mobile-filters__panel mobile-filters__panel--header">
@@ -419,11 +418,11 @@ import {
             localidades={allLocalidades}
             {showTrajectories}
             {locale}
-            on:typeschange={handleFilterChange}
-            on:localidadechange={handleLocalidadeChange}
-            on:trajectorieschange={handleTrajectoriesChange}
+            onTypesChange={handleFilterChange}
+            onLocalityChange={handleLocalidadeChange}
+            onTrajectoriesChange={handleTrajectoriesChange}
             tutorialActive={!tutorialDismissed}
-            on:tutorialreopen={handleTutorialReopen}
+            onTutorialReopen={handleTutorialReopen}
           />
         </div>
       </FilterAccordion>
@@ -437,11 +436,11 @@ import {
           localidades={allLocalidades}
           {showTrajectories}
           {locale}
-          on:typeschange={handleFilterChange}
-          on:localidadechange={handleLocalidadeChange}
-          on:trajectorieschange={handleTrajectoriesChange}
+          onTypesChange={handleFilterChange}
+          onLocalityChange={handleLocalidadeChange}
+          onTrajectoriesChange={handleTrajectoriesChange}
           tutorialActive={!tutorialDismissed}
-          on:tutorialreopen={handleTutorialReopen}
+          onTutorialReopen={handleTutorialReopen}
         />
       </div>
     </header>
@@ -465,11 +464,11 @@ import {
           locked={false}
           pinnedCreator={selectedArtist?.creator ?? null}
           bottomInset={artworkStripInset}
-          on:artistclick={handleArtistClick}
+          onArtistClick={handleArtistClick}
         />
         {#if !tutorialDismissed}
           <div class="tutorial-overlay tutorial-overlay--center">
-            <TutorialBox title={TUTORIAL_MAP_TITLE[locale]} on:dismiss={handleTutorialDismiss}>
+            <TutorialBox title={TUTORIAL_MAP_TITLE[locale]} onDismiss={handleTutorialDismiss}>
               {#if isMobile}
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].selection}</strong> {TUTORIAL_MAP_TEXT_MOBILE_SELECT[locale]}</p>
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].navigation}</strong> {TUTORIAL_MAP_TEXT_MOBILE_NAV[locale]}</p>
@@ -491,16 +490,16 @@ import {
           allBubbles={bubbles}
           {artworksByCreator}
           {locale}
-          on:close={handleArtistClose}
+          onClose={handleArtistClose}
         />
         <div class="map-overlay-zoom">
-          <ZoomButtons on:zoomin={handleZoomIn} on:zoomout={handleZoomOut} />
+          <ZoomButtons onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
         </div>
         <div class="map-overlay-right">
-          <ProjectionToggle {projectionType} {locale} on:change={handleProjectionChange} />
+          <ProjectionToggle {projectionType} {locale} onChange={handleProjectionChange} />
         </div>
         <div class="map-overlay-theme">
-          <ThemeToggle {theme} {locale} on:themechange={handleThemeChange} />
+          <ThemeToggle {theme} {locale} onThemeChange={handleThemeChange} />
         </div>
         <MapStats stats={statsBlock} {locale} />
         <ProfilePanel bubbles={bubblesForMap} {breakpoint} {locale} />
@@ -523,7 +522,7 @@ import {
           mobile={isMobile}
           {locale}
           bind:collapsed={artworkStripCollapsed}
-          on:artistselect={handleArtistSelect}
+          onArtistSelect={handleArtistSelect}
         />
       {/if}
     </main>
@@ -532,7 +531,7 @@ import {
 </div>
 
 {#if aboutOpen}
-  <AboutModal {locale} on:close={handleAboutClose} />
+  <AboutModal {locale} onClose={handleAboutClose} />
 {/if}
 
 <style lang="scss">

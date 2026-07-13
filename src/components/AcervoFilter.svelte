@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { FILTER_LABELS, BUTTON_LABELS } from '../lib/constants.js';
   import { formatAcervoLabel } from '../lib/dataUtils.js';
   import ToggleGroup from './ToggleGroup.svelte';
@@ -7,19 +6,18 @@
   export let locale = 'pt';
   export let acervos = [];
   export let activeAcervos = new Set();
-
-  const dispatch = createEventDispatcher();
+  export let onChange = null;
 
   $: items = acervos.map(a => ({ value: a, label: formatAcervoLabel(a) }));
 
   /** Seleciona todos os acervos. */
   function selectAll() {
-    dispatch('change', new Set(acervos));
+    onChange?.(new Set(acervos));
   }
 
   /** Limpa a seleção de acervos. */
   function selectNone() {
-    dispatch('change', new Set());
+    onChange?.(new Set());
   }
 </script>
 
@@ -32,7 +30,7 @@
     {items}
     active={activeAcervos}
     layout="wrap"
-    on:change={e => dispatch('change', e.detail)}
+    onChange={onChange}
   />
 
   <div class="acervo-filter__shortcuts">

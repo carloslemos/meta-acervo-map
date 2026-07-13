@@ -1,17 +1,15 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { PROJECTION_LABELS } from '../lib/constants.js';
 
   /** Locale ativo: 'pt' | 'en'. */
   export let locale = 'pt';
 
   export let projectionType = '2d';
-
-  const dispatch = createEventDispatcher();
+  export let onChange = null;
 
   function select(value) {
-    if (value !== projectionType) {
-      dispatch('change', value);
+    if (value !== projectionType && typeof onChange === 'function') {
+      onChange(value);
     }
   }
 </script>

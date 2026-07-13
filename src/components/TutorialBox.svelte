@@ -1,13 +1,10 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-
   /** Título opcional exibido na linha de cabeçalho (em maiúsculas). */
   export let title = '';
-
-  const dispatch = createEventDispatcher();
+  export let onDismiss = null;
 
   function dismiss() {
-    dispatch('dismiss');
+    onDismiss?.();
   }
 </script>
 

@@ -1,13 +1,11 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { GENDER_LABEL, FILTER_LABELS } from '../lib/constants.js';
   import ToggleGroup from './ToggleGroup.svelte';
 
   export let locale = 'pt';
   export let genders = [];
   export let activeGenders = new Set();
-
-  const dispatch = createEventDispatcher();
+  export let onChange = null;
 
   function labelFor(g) {
     return GENDER_LABEL[locale]?.[g] ?? (g.charAt(0).toUpperCase() + g.slice(1));
@@ -23,7 +21,7 @@
   <ToggleGroup
     {items}
     active={activeGenders}
-    on:change={e => dispatch('change', e.detail)}
+    onChange={onChange}
   />
 </div>
 

@@ -1,5 +1,5 @@
 ﻿<script>
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import * as d3 from 'd3';
   import * as topojson from 'topojson-client';
   import {
@@ -38,8 +38,7 @@
    * que o globo não fique escondido sob o overlay.
    */
   export let bottomInset = 0;
-
-  const dispatch = createEventDispatcher();
+  export let onArtistClick = null;
 
 
 
@@ -1105,14 +1104,14 @@
     const found = bubbleQuadtree.find(mx, my, BUBBLE_RADIUS + 4);
     // Bubbles de acervo não disparam interação de artista.
     if (found && found.bubble.type !== 'acervo') {
-      dispatch('artistclick', found.bubble);
+      onArtistClick?.(found.bubble);
       return;
     }
     if (found) return; // acervo: ignora
     // Sem bubble — tenta acertar trajetória.
     const seg = hitTrajectory(mx, my, 4);
     if (seg?.fromBubble) {
-      dispatch('artistclick', seg.fromBubble);
+      onArtistClick?.(seg.fromBubble);
     }
   }
 

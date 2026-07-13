@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { THEME_LABELS } from '../lib/constants.js';
 
   /** Locale ativo: 'pt' | 'en'. */
@@ -8,11 +7,11 @@
   /** Tema ativo: 'dark' | 'light' */
   export let theme = 'dark';
 
-  const dispatch = createEventDispatcher();
+  export let onThemeChange = null;
 
   function select(value) {
-    if (value !== theme) {
-      dispatch('themechange', value);
+    if (value !== theme && typeof onThemeChange === 'function') {
+      onThemeChange(value);
     }
   }
 </script>
@@ -60,21 +59,36 @@
   .map-btn {
     width: 44px;
     height: 44px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
     background: transparent;
-    border: 1.65px solid var(--neutral-10);
+    border: 2px solid var(--neutral-10);
     border-radius: 5.28px;
     color: var(--neutral-10);
     cursor: pointer;
     pointer-events: auto;
-    transition: color 0.12s, border-color 0.12s, background 0.12s;
+    transition: color 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, transform 0.16s ease;
     backdrop-filter: blur(3.52px);
+    box-shadow: none;
+
+    svg {
+      width: 44px;
+      height: 44px;
+      display: block;
+      flex-shrink: 0;
+    }
 
     &:hover {
       border-color: var(--neutral-30);
       color: var(--neutral-30);
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--neutral-30);
+      outline-offset: 2px;
     }
   }
 
@@ -88,6 +102,7 @@
       background: var(--neutral-30);
       border-color: var(--neutral-30);
       color: var(--color-black);
+      transform: none;
     }
   }
 </style>

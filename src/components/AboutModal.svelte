@@ -1,17 +1,16 @@
 <script>
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { ABOUT_MODAL_LABELS } from '../lib/constants.js';
 
   /** Locale ativo: 'pt' | 'en'. */
   export let locale = 'pt';
-
-  const dispatch = createEventDispatcher();
+  export let onClose = null;
 
   let modalEl;
   let triggerEl;  // guardado para devolver foco ao fechar
 
   function close() {
-    dispatch('close');
+    onClose?.();
   }
 
   function handleKeydown(e) {

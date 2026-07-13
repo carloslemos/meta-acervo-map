@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onDestroy } from 'svelte';
+  import { onDestroy } from 'svelte';
 import {
   UNDATED_YEAR,
   ARTWORK_STRIP_HOVER_DELAY,
@@ -28,8 +28,7 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
 
   /** Quando true, renderiza como overlay flutuante de largura variável (mobile). */
   export let mobile = false;
-
-  const dispatch = createEventDispatcher();
+  export let onArtistSelect = null;
 
   /** Distância (em px) até o fim do scroll vertical — controla o fade. */
   let scrollEl;
@@ -50,7 +49,9 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
 
   /** Click numa obra → emite o nome do criador para abrir o ArtistCard. */
   function selectArtwork(artwork) {
-    if (artwork?.creator) dispatch('artistselect', artwork.creator);
+    if (artwork?.creator && typeof onArtistSelect === 'function') {
+      onArtistSelect(artwork.creator);
+    }
   }
 
   /** Decide se o ano deve ser exibido (oculta UNDATED_YEAR/null). */

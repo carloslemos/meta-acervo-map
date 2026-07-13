@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { APP_TITLE, BUTTON_LABELS, SECTION_LABELS } from '../lib/constants.js';
   import SidebarFilters from './SidebarFilters.svelte';
 
@@ -18,8 +17,13 @@
   export let onToggle = null;
   export let tutorialActive = false;
   export let locale = 'pt';
-
-  const dispatch = createEventDispatcher();
+  export let onAboutOpen = null;
+  export let onTutorialReopen = null;
+  export let onAcervoChange = null;
+  export let onGenderChange = null;
+  export let onCreatorsChange = null;
+  export let onSchoolsChange = null;
+  export let onNationalitiesChange = null;
 
   /** Aciona o callback de fechamento da sidebar (mobile). */
   function handleClose() {
@@ -55,7 +59,7 @@
       <span class="sidebar__brand-title">{APP_TITLE[locale]}</span>
     </a>
     <div class="sidebar__brand-actions">
-      <button class="sidebar__action-btn" on:click={() => dispatch('aboutopen')}>{BUTTON_LABELS[locale].about}</button>
+      <button class="sidebar__action-btn" on:click={() => onAboutOpen?.()}>{BUTTON_LABELS[locale].about}</button>
       <div class="sidebar__lang">
         <button 
           class="sidebar__lang-btn"
@@ -87,7 +91,7 @@
     <p class="sidebar__description">
       {SECTION_LABELS[locale].sidebarDescription}
     </p>
-    <button class="sidebar__info-btn" class:sidebar__info-btn--active={tutorialActive} aria-label="Reabrir tutorial" on:click={() => dispatch('tutorialreopen')}>
+    <button class="sidebar__info-btn" class:sidebar__info-btn--active={tutorialActive} aria-label="Reabrir tutorial" on:click={() => onTutorialReopen?.()}>
       <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="currentColor"/>
       </svg>
@@ -107,11 +111,11 @@
       {allNationalities}
       {selectedNationalities}
       {locale}
-      on:acervochange={e => dispatch('acervochange', e.detail)}
-      on:genderchange={e => dispatch('genderchange', e.detail)}
-      on:creatorschange={e => dispatch('creatorschange', e.detail)}
-      on:schoolschange={e => dispatch('schoolschange', e.detail)}
-      on:nationalitieschange={e => dispatch('nationalitieschange', e.detail)}
+      onAcervoChange={onAcervoChange}
+      onGenderChange={onGenderChange}
+      onCreatorsChange={onCreatorsChange}
+      onSchoolsChange={onSchoolsChange}
+      onNationalitiesChange={onNationalitiesChange}
     />
   </div>
 

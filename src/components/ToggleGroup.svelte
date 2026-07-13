@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
 
   /**
    * Lista de itens a exibir como pills alternáveis.
@@ -16,15 +15,14 @@
    * - 'list'  → coluna vertical com overflow-y e pills de largura total
    */
   export let layout = 'wrap';
-
-  const dispatch = createEventDispatcher();
+  export let onChange = null;
 
   /** Alterna a presença de um valor no conjunto ativo e emite o novo Set. */
   function toggle(value) {
     const next = new Set(active);
     if (next.has(value)) next.delete(value);
     else next.add(value);
-    dispatch('change', next);
+    onChange?.(next);
   }
 </script>
 

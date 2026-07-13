@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { FILTER_LABELS, AUTOCOMPLETE_PLACEHOLDERS } from '../lib/constants.js';
   import AcervoFilter from './AcervoFilter.svelte';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
@@ -18,8 +17,11 @@
   export let selectedSchools = new Set();
   export let allNationalities = [];
   export let selectedNationalities = new Set();
-
-  const dispatch = createEventDispatcher();
+  export let onAcervoChange = null;
+  export let onCreatorsChange = null;
+  export let onSchoolsChange = null;
+  export let onNationalitiesChange = null;
+  export let onGenderChange = null;
 </script>
 
 <!--
@@ -31,7 +33,7 @@
     {acervos}
     {activeAcervos}
     {locale}
-    on:change={e => dispatch('acervochange', e.detail)}
+    onChange={onAcervoChange}
   />
 
   <AutocompleteSelect
@@ -40,7 +42,7 @@
     options={allCreators}
     value={selectedCreators}
     multiple={true}
-    on:change={e => dispatch('creatorschange', e.detail)}
+    onChange={onCreatorsChange}
   />
 
   <AutocompleteSelect
@@ -49,7 +51,7 @@
     options={allSchools}
     value={selectedSchools}
     multiple={true}
-    on:change={e => dispatch('schoolschange', e.detail)}
+    onChange={onSchoolsChange}
   />
 
   <AutocompleteSelect
@@ -58,14 +60,14 @@
     options={allNationalities}
     value={selectedNationalities}
     multiple={true}
-    on:change={e => dispatch('nationalitieschange', e.detail)}
+    onChange={onNationalitiesChange}
   />
 
   <GenderFilter
     genders={allGenders}
     {activeGenders}
     {locale}
-    on:change={e => dispatch('genderchange', e.detail)}
+    onChange={onGenderChange}
   />
 </div>
 

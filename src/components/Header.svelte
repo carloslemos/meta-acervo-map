@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { TYPE_COLOR, TYPE_COLOR_HOVER, TYPE_LABEL, SECTION_LABELS, AUTOCOMPLETE_PLACEHOLDERS } from '../lib/constants.js';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
 
@@ -17,8 +16,9 @@
 
   /** Trajetórias visíveis ou ocultas. */
   export let showTrajectories = true;
-
-  const dispatch = createEventDispatcher();
+  export let onTypesChange = null;
+  export let onLocalityChange = null;
+  export let onTrajectoriesChange = null;
 
   $: FILTERS = [
     { type: 'birth',     label: TYPE_LABEL[locale].birth,     color: TYPE_COLOR.birth,     colorHover: TYPE_COLOR_HOVER.birth },
@@ -32,12 +32,12 @@
     const next = new Set(activeTypes);
     if (next.has(type)) next.delete(type);
     else next.add(type);
-    dispatch('typeschange', next);
+    onTypesChange?.(next);
   }
 
   /** Repassa seleção de localidade do AutocompleteSelect como string ou ''. */
-  function handleLocalidadeSelect(event) {
-    dispatch('localidadechange', event.detail ?? '');
+  function handleLocalidadeSelect(value) {
+    onLocalityChange?.(value ?? '');
   }
 </script>
 
@@ -73,7 +73,7 @@
         options={localidades}
         value={selectedLocalidade || null}
         multiple={false}
-        on:select={handleLocalidadeSelect}
+        onSelect={handleLocalidadeSelect}
       />
     </div>
   </div>
@@ -87,7 +87,7 @@
         class="trajectory-option"
         class:trajectory-option--active={showTrajectories}
         aria-pressed={showTrajectories}
-        on:click={() => !showTrajectories && dispatch('trajectorieschange', true)}
+        on:click={() => !showTrajectories && onTrajectoriesChange?.(true)}
       >
         <span class="trajectory-dot"></span>
         {SECTION_LABELS[locale].trajectoryToggle.split(' / ')[0]}
@@ -97,7 +97,7 @@
         class="trajectory-option"
         class:trajectory-option--active={!showTrajectories}
         aria-pressed={!showTrajectories}
-        on:click={() => showTrajectories && dispatch('trajectorieschange', false)}
+        on:click={() => showTrajectories && onTrajectoriesChange?.(false)}
       >
         <span class="trajectory-dot"></span>
         {SECTION_LABELS[locale].trajectoryToggle.split(' / ')[1]}

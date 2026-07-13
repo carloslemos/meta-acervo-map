@@ -1,14 +1,12 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-
   export let label = '';
   export let options = [];
   export let value = null;
   export let placeholder = 'Buscar…';
   /** Quando true, acumula seleções como Set e exibe chips removíveis. */
   export let multiple = false;
-
-  const dispatch = createEventDispatcher();
+  export let onChange = null;
+  export let onSelect = null;
 
   let query = '';
   let open = false;
@@ -33,14 +31,14 @@
     selectedSet.add(option);
     selectedSet = new Set(selectedSet);
     query = '';
-    dispatch('change', selectedSet);
+    onChange?.(selectedSet);
   }
 
   /** Remove um chip do Set. */
   function removeChip(option) {
     selectedSet.delete(option);
     selectedSet = new Set(selectedSet);
-    dispatch('change', selectedSet);
+    onChange?.(selectedSet);
   }
 
   /** Limpa todo o Set. */
@@ -48,7 +46,7 @@
     selectedSet = new Set();
     query = '';
     open = false;
-    dispatch('change', selectedSet);
+    onChange?.(selectedSet);
   }
 
   // ─── Modo simples (comportamento original inalterado) ─────────────────────
@@ -65,7 +63,7 @@
     value = option;
     query = '';
     open = false;
-    dispatch('select', option);
+    onSelect?.(option);
   }
 
   /** Limpa o valor selecionado e despacha `select` com `null`. */
@@ -73,7 +71,7 @@
     value = null;
     query = '';
     open = false;
-    dispatch('select', null);
+    onSelect?.(null);
   }
 
   /** Abre a lista ao focar no input. */

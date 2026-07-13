@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { slide } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
   import {
@@ -24,13 +23,12 @@
    * Bindable: o pai (App.svelte) persiste em localStorage durante a sessão.
    */
   export let expandedId = null;
-
-  const dispatch = createEventDispatcher();
+  export let onToggle = null;
 
   /** Alterna o nível: abre se fechado, fecha se já aberto. Só um aberto por vez. */
   function toggle(id) {
     expandedId = expandedId === id ? null : id;
-    dispatch('toggle', expandedId);
+    onToggle?.(expandedId);
   }
 </script>
 

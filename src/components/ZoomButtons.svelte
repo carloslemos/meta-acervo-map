@@ -1,33 +1,32 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-
-  const dispatch = createEventDispatcher();
+  export let onZoomIn = null;
+  export let onZoomOut = null;
 </script>
 
 <div class="zoom-buttons" role="group" aria-label="Controles de zoom">
   <button
     type="button"
     class="zoom-btn"
-    on:click={() => dispatch('zoomin')}
+    on:click={() => onZoomIn?.()}
     title="Aproximar"
     aria-label="Aproximar"
   >
     <!-- Ícone + (cruz) -->
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M11 5v6H5v2h6v6h2v-6h6v-2h-6V5h-2z" fill="currentColor"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+      <path d="M10.7958 14.1203H0.816406V10.7939H10.7958V0.814453H14.1223V10.7939H24.1017V14.1203H14.1223V24.0998H10.7958V14.1203Z" fill="currentColor" stroke="currentColor" stroke-width="1.62914"/>
     </svg>
   </button>
 
   <button
     type="button"
     class="zoom-btn"
-    on:click={() => dispatch('zoomout')}
+    on:click={() => onZoomOut?.()}
     title="Afastar"
     aria-label="Afastar"
   >
     <!-- Ícone − (traço horizontal) -->
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M5 11h14v2H5z" fill="currentColor"/>
+    <svg width="19" height="5" viewBox="0 0 19 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="19" height="4.555665" fill="currentColor"/>
     </svg>
   </button>
 </div>
