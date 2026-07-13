@@ -823,8 +823,14 @@ export const STATS_LABELS = {
 
 /** Mensagem padrão da faixa de obras (quando nenhuma obra está selecionada). */
 export const ARTWORK_STRIP_DEFAULT_MESSAGE = {
-  pt: 'Conheça as obras dos artistas nos museus selecionados',
-  en: 'Learn about the works of artists in the selected museums',
+  pt: {
+    empty: 'Conheça as obras dos artistas nos museus selecionados',
+    worksBy: 'Obras de',
+  },
+  en: {
+    empty: 'Learn about the works of artists in the selected museums',
+    worksBy: 'Works by',
+  },
 };
 
 /** Texto de instrução do filtro de localidade/país na sidebar. */
@@ -868,6 +874,80 @@ export function getLocalidadesList(bubbles, locale = 'pt') {
   }
   return [...localidades].sort();
 }
+
+/** Rótulos e textos do modal "Sobre". */
+export const ABOUT_MODAL_LABELS = {
+  pt: {
+    title: 'Sobre',
+    closeButton: 'Fechar',
+    description: 'O <strong>Atlas dos Percursos de Artistas em Museus</strong> é uma ferramenta de visualização cartográfica que permite acompanhar os deslocamentos de artistas presentes em acervos museais. A partir de dados sobre local de nascimento, formação, morte e museus onde suas obras estão preservadas, o mapa revela percursos, redes de circulação e vínculos entre artistas, instituições e territórios.',
+    learnMore: 'Conheça os detalhes do projeto em nosso',
+    siteLabel: 'site',
+    andAccessCode: 'e acesse o código da plataforma no nosso',
+    githubLabel: 'GitHub',
+    creditsRealization: 'Realização',
+    creditsCoordination: 'Coordenação geral',
+    creditsExecutiveCoordination: 'Coordenação executiva',
+    creditsCreativeCode: 'Programação criativa',
+    creditsDesign: 'Design de interface e interação',
+    creditsData: 'Dados',
+  },
+  en: {
+    title: 'About',
+    closeButton: 'Close',
+    description: 'The <strong>Atlas of Artists\' Trajectories in Museums</strong> is a cartographic visualization tool that tracks the movements of artists in museum collections. Based on data about birthplace, education, death, and museums where their works are preserved, the map reveals trajectories, circulation networks, and connections between artists, institutions, and territories.',
+    learnMore: 'Learn more about the project on our',
+    siteLabel: 'website',
+    andAccessCode: 'and access the platform code on our',
+    githubLabel: 'GitHub',
+    creditsRealization: 'Organization',
+    creditsCoordination: 'General coordination',
+    creditsExecutiveCoordination: 'Executive coordination',
+    creditsCreativeCode: 'Creative development',
+    creditsDesign: 'Interface and interaction design',
+    creditsData: 'Data',
+  },
+};
+
+/** Rótulos de projeção do mapa. */
+export const PROJECTION_LABELS = {
+  pt: {
+    globe3d: 'Globo 3D',
+    map2d: 'Mapa 2D',
+  },
+  en: {
+    globe3d: '3D Globe',
+    map2d: '2D Map',
+  },
+};
+
+/** Rótulos de tema. */
+export const THEME_LABELS = {
+  pt: {
+    darkTheme: 'Tema escuro',
+    lightTheme: 'Tema claro',
+  },
+  en: {
+    darkTheme: 'Dark theme',
+    lightTheme: 'Light theme',
+  },
+};
+
+/** Rótulos do painel de perfil de resultados. */
+export const PROFILE_PANEL_LABELS = {
+  pt: {
+    title: 'Perfil dos Resultados',
+    emptyMessage: 'Nenhum criador no conjunto filtrado.',
+    formationLabel: 'Formação',
+    birthLabel: 'Nascimento',
+  },
+  en: {
+    title: 'Results Profile',
+    emptyMessage: 'No creators in the filtered set.',
+    formationLabel: 'Education',
+    birthLabel: 'Birth',
+  },
+};
 
 // ─── Compatibilidade: aliases PT-BR das constantes bilíngues (para componentes legados) ──────────────
 

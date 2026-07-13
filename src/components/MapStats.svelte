@@ -1,6 +1,9 @@
 <script>
   import { STATS_LABELS } from '../lib/constants.js';
 
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
+
   /**
    * Overlay de contagens no mapa. Recebe quatro valores agregados; não calcula nada.
    */
@@ -9,10 +12,10 @@
 
 <figure class="map-stats" aria-label="Resultados">
   <figcaption class="map-stats__title">Resultados</figcaption>
-  <p class="map-stats__line">{stats.acervos} {STATS_LABELS.acervosSelected}</p>
-  <p class="map-stats__line">{stats.artistas} {STATS_LABELS.artistas}</p>
-  <p class="map-stats__line">{stats.escolas} {STATS_LABELS.escolas}</p>
-  <p class="map-stats__line">{stats.obras} {STATS_LABELS.obras}</p>
+  <p class="map-stats__line">{stats.acervos} {STATS_LABELS[locale].acervosSelected}</p>
+  <p class="map-stats__line">{stats.artistas} {STATS_LABELS[locale].artistas}</p>
+  <p class="map-stats__line">{stats.escolas} {STATS_LABELS[locale].escolas}</p>
+  <p class="map-stats__line">{stats.obras} {STATS_LABELS[locale].obras}</p>
 </figure>
 
 <style lang="scss">

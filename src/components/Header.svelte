@@ -3,6 +3,9 @@
   import { TYPE_COLOR, TYPE_COLOR_HOVER, TYPE_LABEL, SECTION_LABELS, AUTOCOMPLETE_PLACEHOLDERS } from '../lib/constants.js';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
 
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
+
   /** Conjunto de tipos de bubble visíveis. */
   export let activeTypes = new Set(['birth', 'education']);
 
@@ -17,11 +20,11 @@
 
   const dispatch = createEventDispatcher();
 
-  const FILTERS = [
-    { type: 'birth',     label: TYPE_LABEL.birth,     color: TYPE_COLOR.birth,     colorHover: TYPE_COLOR_HOVER.birth },
-    { type: 'education', label: TYPE_LABEL.education, color: TYPE_COLOR.education, colorHover: TYPE_COLOR_HOVER.education },
-    { type: 'death',     label: TYPE_LABEL.death,     color: TYPE_COLOR.death,     colorHover: TYPE_COLOR_HOVER.death },
-    { type: 'acervo',    label: TYPE_LABEL.acervo,    color: TYPE_COLOR.acervo,    colorHover: TYPE_COLOR_HOVER.acervo },
+  $: FILTERS = [
+    { type: 'birth',     label: TYPE_LABEL[locale].birth,     color: TYPE_COLOR.birth,     colorHover: TYPE_COLOR_HOVER.birth },
+    { type: 'education', label: TYPE_LABEL[locale].education, color: TYPE_COLOR.education, colorHover: TYPE_COLOR_HOVER.education },
+    { type: 'death',     label: TYPE_LABEL[locale].death,     color: TYPE_COLOR.death,     colorHover: TYPE_COLOR_HOVER.death },
+    { type: 'acervo',    label: TYPE_LABEL[locale].acervo,    color: TYPE_COLOR.acervo,    colorHover: TYPE_COLOR_HOVER.acervo },
   ];
 
   /** Alterna a presença de um tipo no conjunto e dispatcha `typeschange`. */
@@ -42,7 +45,7 @@
 
   <!-- Seção 1: Tipos de bubble -->
   <div class="header-section">
-    <span class="header-section__label">{SECTION_LABELS.trajectoryVisualization}</span>
+    <span class="header-section__label">{SECTION_LABELS[locale].trajectoryVisualization}</span>
     <div class="header-bar__pills">
       {#each FILTERS as filter}
         <button
@@ -62,11 +65,11 @@
 
   <!-- Seção 2: Filtro de localidade -->
   <div class="header-section header-section--locality">
-    <span class="header-section__label">{SECTION_LABELS.filterLocality}</span>
+    <span class="header-section__label">{SECTION_LABELS[locale].filterLocality}</span>
     <div class="header-bar__locality">
       <AutocompleteSelect
         label=""
-        placeholder={AUTOCOMPLETE_PLACEHOLDERS.nacionalidade}
+        placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].nacionalidade}
         options={localidades}
         value={selectedLocalidade || null}
         multiple={false}
@@ -77,7 +80,7 @@
 
   <!-- Seção 3: Toggle de trajetórias (radio style) -->
   <div class="header-section">
-    <span class="header-section__label">{SECTION_LABELS.trajectories}</span>
+    <span class="header-section__label">{SECTION_LABELS[locale].trajectories}</span>
     <div class="trajectory-group" role="group" aria-label="Visibilidade das trajetórias">
       <button
         type="button"
@@ -87,7 +90,7 @@
         on:click={() => !showTrajectories && dispatch('trajectorieschange', true)}
       >
         <span class="trajectory-dot"></span>
-        {SECTION_LABELS.trajectoryToggle.split(' / ')[0]}
+        {SECTION_LABELS[locale].trajectoryToggle.split(' / ')[0]}
       </button>
       <button
         type="button"
@@ -97,7 +100,7 @@
         on:click={() => showTrajectories && dispatch('trajectorieschange', false)}
       >
         <span class="trajectory-dot"></span>
-        {SECTION_LABELS.trajectoryToggle.split(' / ')[1]}
+        {SECTION_LABELS[locale].trajectoryToggle.split(' / ')[1]}
       </button>
     </div>
   </div>

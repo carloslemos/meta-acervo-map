@@ -1,5 +1,9 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { THEME_LABELS } from '../lib/constants.js';
+
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
 
   /** Tema ativo: 'dark' | 'light' */
   export let theme = 'dark';
@@ -20,8 +24,8 @@
     class="map-btn"
     class:map-btn--active={theme === 'dark'}
     on:click={() => select('dark')}
-    title="Tema escuro"
-    aria-label="Tema escuro"
+    title={THEME_LABELS[locale].darkTheme}
+    aria-label={THEME_LABELS[locale].darkTheme}
     aria-pressed={theme === 'dark'}
   >
     <svg width="24" height="24" viewBox="12 12 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,8 +39,8 @@
     class="map-btn"
     class:map-btn--active={theme === 'light'}
     on:click={() => select('light')}
-    title="Tema claro"
-    aria-label="Tema claro"
+    title={THEME_LABELS[locale].lightTheme}
+    aria-label={THEME_LABELS[locale].lightTheme}
     aria-pressed={theme === 'light'}
   >
     <svg width="24" height="24" viewBox="10 10 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">

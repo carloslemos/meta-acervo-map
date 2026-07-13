@@ -1,7 +1,10 @@
 <script>
   import { onMount } from 'svelte';
   import { profileStats } from '../lib/profileStats.js';
-  import { LS_PROFILE_PANEL_KEY, FILTER_LABELS } from '../lib/constants.js';
+  import { LS_PROFILE_PANEL_KEY, FILTER_LABELS, PROFILE_PANEL_LABELS } from '../lib/constants.js';
+
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
 
   /** Bubbles filtradas passadas pelo App.svelte (excluir acervos internamente). */
   export let bubbles = [];
@@ -48,14 +51,14 @@
     aria-expanded={!collapsed}
     aria-controls="profile-panel-content"
   >
-    <span class="profile-panel__title">Perfil dos Resultados</span>
+    <span class="profile-panel__title">{PROFILE_PANEL_LABELS[locale].title}</span>
     <span class="profile-panel__chevron" aria-hidden="true">{collapsed ? '«' : '»'}</span>
   </button>
 
   {#if !collapsed}
     <div class="profile-panel__content" id="profile-panel-content">
       {#if empty}
-        <p class="profile-panel__empty">Nenhum criador no conjunto filtrado.</p>
+        <p class="profile-panel__empty">{PROFILE_PANEL_LABELS[locale].emptyMessage}</p>
       {:else}
         <!-- Donuts: gênero + local de formação predominante -->
         <div class="profile-panel__donuts">
@@ -170,7 +173,7 @@
                 fill="var(--txt)"
               >{stats.formationTop?.pct ?? 0}%</text>
             </svg>
-            <p class="profile-panel__donut-label">Formação</p>
+            <p class="profile-panel__donut-label">{PROFILE_PANEL_LABELS[locale].formationLabel}</p>
             <p class="profile-panel__donut-value">{stats.formationTop?.label ?? '—'}</p>
           </div>
         </div>
@@ -178,7 +181,7 @@
         <!-- Barras: nascimento por região -->
         {#if stats.birthByRegion.length > 0}
           <section class="profile-panel__bars-section">
-            <h3 class="profile-panel__bars-title">Nascimento</h3>
+            <h3 class="profile-panel__bars-title">{PROFILE_PANEL_LABELS[locale].birthLabel}</h3>
             {#each stats.birthByRegion as row}
               <div class="profile-panel__bar-row">
                 <span class="profile-panel__bar-label">{row.label}</span>
@@ -194,7 +197,7 @@
         <!-- Barras: formação por região -->
         {#if stats.formationByRegion.length > 0}
           <section class="profile-panel__bars-section">
-            <h3 class="profile-panel__bars-title">Formação</h3>
+            <h3 class="profile-panel__bars-title">{PROFILE_PANEL_LABELS[locale].formationLabel}</h3>
             {#each stats.formationByRegion as row}
               <div class="profile-panel__bar-row">
                 <span class="profile-panel__bar-label">{row.label}</span>

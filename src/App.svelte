@@ -496,10 +496,10 @@ import {
           <ZoomButtons on:zoomin={handleZoomIn} on:zoomout={handleZoomOut} />
         </div>
         <div class="map-overlay-right">
-          <ProjectionToggle {projectionType} on:change={handleProjectionChange} />
+          <ProjectionToggle {projectionType} {locale} on:change={handleProjectionChange} />
         </div>
         <div class="map-overlay-theme">
-          <ThemeToggle {theme} on:themechange={handleThemeChange} />
+          <ThemeToggle {theme} {locale} on:themechange={handleThemeChange} />
         </div>
         <MapStats stats={statsBlock} {locale} />
         <ProfilePanel bubbles={bubblesForMap} {breakpoint} {locale} />
@@ -531,7 +531,7 @@ import {
 </div>
 
 {#if aboutOpen}
-  <AboutModal on:close={handleAboutClose} />
+  <AboutModal {locale} on:close={handleAboutClose} />
 {/if}
 
 <style lang="scss">

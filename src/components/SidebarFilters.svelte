@@ -5,6 +5,9 @@
   import AutocompleteSelect from './AutocompleteSelect.svelte';
   import GenderFilter from './GenderFilter.svelte';
 
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
+
   export let acervos = [];
   export let activeAcervos = new Set();
   export let allGenders = [];
@@ -31,8 +34,8 @@
   />
 
   <AutocompleteSelect
-    label={FILTER_LABELS.artista}
-    placeholder={AUTOCOMPLETE_PLACEHOLDERS.artista}
+    label={FILTER_LABELS[locale].artista}
+    placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].artista}
     options={allCreators}
     value={selectedCreators}
     multiple={true}
@@ -40,8 +43,8 @@
   />
 
   <AutocompleteSelect
-    label={FILTER_LABELS.education}
-    placeholder={AUTOCOMPLETE_PLACEHOLDERS.education}
+    label={FILTER_LABELS[locale].education}
+    placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].education}
     options={allSchools}
     value={selectedSchools}
     multiple={true}
@@ -49,8 +52,8 @@
   />
 
   <AutocompleteSelect
-    label={FILTER_LABELS.nacionalidade}
-    placeholder={AUTOCOMPLETE_PLACEHOLDERS.nacionalidade}
+    label={FILTER_LABELS[locale].nacionalidade}
+    placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].nacionalidade}
     options={allNationalities}
     value={selectedNationalities}
     multiple={true}

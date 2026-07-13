@@ -1,5 +1,9 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { ABOUT_MODAL_LABELS } from '../lib/constants.js';
+
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
 
   const dispatch = createEventDispatcher();
 
@@ -80,44 +84,39 @@
     type="button"
     class="about-modal__close"
     on:click={close}
-    aria-label="Fechar"
+    aria-label={ABOUT_MODAL_LABELS[locale].closeButton}
   >×</button>
 
   <!-- Título -->
-  <h2 class="about-modal__title" id="about-modal-title">Sobre</h2>
+  <h2 class="about-modal__title" id="about-modal-title">{ABOUT_MODAL_LABELS[locale].title}</h2>
 
   <!-- Descrição -->
   <p class="about-modal__body">
-    O <strong>Atlas dos Percursos de Artistas em Museus</strong> é uma ferramenta de
-    visualização cartográfica que permite acompanhar os deslocamentos de
-    artistas presentes em acervos museais. A partir de dados sobre local de
-    nascimento, formação, morte e museus onde suas obras estão preservadas,
-    o mapa revela percursos, redes de circulação e vínculos entre artistas,
-    instituições e territórios.
+    {@html ABOUT_MODAL_LABELS[locale].description}
   </p>
 
   <!-- Links -->
   <p class="about-modal__body">
-    Conheça os detalhes do projeto em nosso{' '}
+    {ABOUT_MODAL_LABELS[locale].learnMore}{' '}
     <a
       class="about-modal__link"
       href="https://www.acervosdigitais.fau.usp.br/meta-acervos-navegador-para-museus-em-rede/"
       target="_blank"
       rel="noopener noreferrer"
-    >site</a>
-    {' '}e acesse o código da plataforma no nosso{' '}
+    >{ABOUT_MODAL_LABELS[locale].siteLabel}</a>
+    {' '}{ABOUT_MODAL_LABELS[locale].andAccessCode}{' '}
     <a
       class="about-modal__link"
       href="https://github.com/acervos-digitais/"
       target="_blank"
       rel="noopener noreferrer"
-    >GitHub</a>.
+    >{ABOUT_MODAL_LABELS[locale].githubLabel}</a>.
   </p>
 
   <!-- Créditos -->
   <dl class="about-modal__credits">
     <div class="about-modal__credits-row">
-      <dt>Realização</dt>
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsRealization}</dt>
       <dd>
         <a
           class="about-modal__link"
@@ -128,23 +127,23 @@
       </dd>
     </div>
     <div class="about-modal__credits-row">
-      <dt>Coordenação geral</dt>
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsCoordination}</dt>
       <dd>Giselle Beiguelman</dd>
     </div>
     <div class="about-modal__credits-row">
-      <dt>Coordenação executiva</dt>
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsExecutiveCoordination}</dt>
       <dd>Gilberto Paschoal</dd>
     </div>
     <div class="about-modal__credits-row">
-      <dt>Programação criativa</dt>
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsCreativeCode}</dt>
       <dd>Carlos Tremonte de Lemos</dd>
     </div>
     <div class="about-modal__credits-row">
-      <dt>Design de interface e interação</dt>
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsDesign}</dt>
       <dd>Luisa Rodrigues e Bruna Keese</dd>
     </div>
     <div class="about-modal__credits-row">
-      <dt>Dados</dt>
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsData}</dt>
       <dd>Gilberto Paschoal e Giselle Beiguelman</dd>
     </div>
   </dl>

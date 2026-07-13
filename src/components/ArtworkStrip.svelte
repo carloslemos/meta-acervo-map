@@ -7,6 +7,9 @@ import {
   ARTWORK_STRIP_DEFAULT_MESSAGE,
 } from '../lib/constants.js';
 
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
+
   /**
    * Lista de obras já filtrada e ordenada por `App.svelte`.
    * Cada obra: { id, creator, museum, title, year, image, url }.
@@ -161,7 +164,7 @@ import {
         aria-hidden="true"
       >▾</span>
       <span class="artwork-strip__label">
-        {selectedCreator ? `Obras de ${selectedCreator}` : ARTWORK_STRIP_DEFAULT_MESSAGE}
+        {selectedCreator ? `${ARTWORK_STRIP_DEFAULT_MESSAGE[locale].worksBy} ${selectedCreator}` : ARTWORK_STRIP_DEFAULT_MESSAGE[locale].empty}
       </span>
     </button>
 
