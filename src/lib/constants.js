@@ -800,6 +800,7 @@ export const SECTION_LABELS = {
     trajectories: 'Trajetos',
     trajectoryToggle: 'Exibir / Ocultar',
     sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos dos museus',
+    visualizationsAndFilters: 'Visualizações e Filtros',
   },
   en: {
     accordion: 'Museums and artists',
@@ -808,18 +809,21 @@ export const SECTION_LABELS = {
     trajectories: 'Trajectories',
     trajectoryToggle: 'Show / Hide',
     sidebarDescription: 'Select filters and navigate through the artists\' journeys in the museum collections',
+    visualizationsAndFilters: 'Visualizations and Filters',
   },
 };
 
 /** Rótulos de estatísticas no mapa. */
 export const STATS_LABELS = {
   pt: {
+    title: 'Resultados',
     acervosSelected: 'Museus Selecionados',
     artistas: 'Artistas',
     escolas: 'Instituições educacionais',
     obras: 'Obras em museus',
   },
   en: {
+    title: 'Results',
     acervosSelected: 'Selected Museums',
     artistas: 'Artists',
     escolas: 'Educational institutions',
@@ -836,6 +840,28 @@ export const ARTWORK_STRIP_DEFAULT_MESSAGE = {
   en: {
     empty: 'Learn about the works of artists in the selected museums',
     worksBy: 'Works by',
+  },
+};
+
+/** Rótulos do ArtistCard — seções e ações. */
+export const ARTIST_CARD_LABELS = {
+  pt: {
+    worksAndCollections: 'Obras e Acervos',
+    birth: 'Nascimento',
+    studyLocation: 'Local de Estudo',
+    death: 'Morte',
+    untitled: '(sem título)',
+    close: 'Fechar',
+    confidenceInfo: 'Informações sobre confiança',
+  },
+  en: {
+    worksAndCollections: 'Works and Collections',
+    birth: 'Birth',
+    studyLocation: 'Study Location',
+    death: 'Death',
+    untitled: '(untitled)',
+    close: 'Close',
+    confidenceInfo: 'Confidence information',
   },
 };
 

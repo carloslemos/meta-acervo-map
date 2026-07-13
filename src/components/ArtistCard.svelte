@@ -7,7 +7,7 @@
    * é bloqueado (responsabilidade de `App.svelte`).
    */
   import { createEventDispatcher } from 'svelte';
-  import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH } from '../lib/constants.js';
+  import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH, ARTIST_CARD_LABELS } from '../lib/constants.js';
 
   /** Locale ativo: 'pt' | 'en'. */
   export let locale = 'pt';
@@ -52,7 +52,7 @@
   <div class="artist-card" role="dialog" aria-label="Detalhes do artista">
     <header class="artist-card__header">
       <h2 class="artist-card__name">{creatorName}</h2>
-      <button class="artist-card__close" on:click={close} aria-label="Fechar">×</button>
+      <button class="artist-card__close" on:click={close} aria-label={ARTIST_CARD_LABELS[locale].close}>×</button>
     </header>
 
     <div class="artist-card__body">
@@ -60,12 +60,12 @@
       <!-- Obras e Acervos (primeiro) -->
       {#if artworks.length > 0}
         <section class="section">
-          <h3 class="section__label">Obras e Acervos</h3>
+          <h3 class="section__label">{ARTIST_CARD_LABELS[locale].worksAndCollections}</h3>
           <ul class="artwork-list">
             {#each [...artworksByMuseum.entries()] as [museum, works]}
               <li class="artwork">
                 {#each works as a, i}
-                  {#if a.url}<a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</a>{:else}<span class="artwork__title">{a.title || '(sem título)'}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</span>{/if}{#if i < works.length - 1}{', '}{/if}
+                  {#if a.url}<a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || ARTIST_CARD_LABELS[locale].untitled}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</a>{:else}<span class="artwork__title">{a.title || ARTIST_CARD_LABELS[locale].untitled}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</span>{/if}{#if i < works.length - 1}{', '}{/if}
                 {/each}
                 {#if museum}<span class="artwork__museum"> — {museum}</span>{/if}
               </li>
@@ -81,14 +81,14 @@
             <div class="section__left">
               <span class="section__dot" style="color: var(--birth-color)">●</span>
               <div>
-                <h3 class="section__label">Nascimento</h3>
+                <h3 class="section__label">{ARTIST_CARD_LABELS[locale].birth}</h3>
                 <p class="section__text">{birth.place || '—'}</p>
               </div>
             </div>
             {#if birth.confidence}
               <div class="section__right">
                 <span class="badge">{confidenceLabel(birth.confidence)}</span>
-                <button class="info-btn" aria-label="Informações sobre confiança">
+                <button class="info-btn" aria-label={ARTIST_CARD_LABELS[locale].confidenceInfo}>
                   <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
                   </svg>
@@ -107,14 +107,14 @@
               <div class="section__left">
                 <span class="section__dot" style="color: var(--edu-color)">●</span>
                 <div>
-                  <h3 class="section__label">Local de Estudo</h3>
+                  <h3 class="section__label">{ARTIST_CARD_LABELS[locale].studyLocation}</h3>
                   <p class="section__text">{e.schoolName || e.place || '—'}</p>
                 </div>
               </div>
               {#if e.confidence}
                 <div class="section__right">
                   <span class="badge">{confidenceLabel(e.confidence)}</span>
-                  <button class="info-btn" aria-label="Informações sobre confiança">
+                  <button class="info-btn" aria-label={ARTIST_CARD_LABELS[locale].confidenceInfo}>
                     <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
                     </svg>
@@ -133,14 +133,14 @@
             <div class="section__left">
               <span class="section__dot" style="color: var(--death-color)">●</span>
               <div>
-                <h3 class="section__label">Morte</h3>
+                <h3 class="section__label">{ARTIST_CARD_LABELS[locale].death}</h3>
                 <p class="section__text">{death.place || '—'}</p>
               </div>
             </div>
             {#if death.confidence}
               <div class="section__right">
                 <span class="badge">{confidenceLabel(death.confidence)}</span>
-                <button class="info-btn" aria-label="Informações sobre confiança">
+                <button class="info-btn" aria-label={ARTIST_CARD_LABELS[locale].confidenceInfo}>
                   <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
                   </svg>

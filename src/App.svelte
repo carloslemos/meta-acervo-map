@@ -43,9 +43,9 @@ import {
 } from './lib/constants.js';
 
   /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
-  const ACCORDION_ITEMS = [
-    { id: 'level1', label: SECTION_LABELS.accordion },
-    { id: 'level2', label: 'Visualizações e Filtros' },
+  $: ACCORDION_ITEMS = [
+    { id: 'level1', label: SECTION_LABELS[locale].accordion },
+    { id: 'level2', label: SECTION_LABELS[locale].visualizationsAndFilters },
   ];
 
   const LS_STRIP_KEY = 'meta-acervo:artwork-strip-collapsed';

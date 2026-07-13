@@ -106,6 +106,7 @@
       {selectedSchools}
       {allNationalities}
       {selectedNationalities}
+      {locale}
       on:acervochange={e => dispatch('acervochange', e.detail)}
       on:genderchange={e => dispatch('genderchange', e.detail)}
       on:creatorschange={e => dispatch('creatorschange', e.detail)}

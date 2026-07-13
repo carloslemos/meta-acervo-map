@@ -6,7 +6,7 @@
  * um objeto com distribuição de gênero, local de formação e regiões.
  */
 
-import { GENDER_LABEL_PT_COMPAT as GENDER_LABEL } from './constants.js';
+import { GENDER_LABEL } from './constants.js';
 
 const REGION_LABEL_OVERRIDES = {
   'América Central e Caribe': 'América Central e Caribe',
@@ -46,7 +46,7 @@ function topFromFreq(freq, topN, total, labelMap = null) {
  *   formationByRegion: { label: string, pct: number }[]
  * }}
  */
-export function profileStats(bubbles) {
+export function profileStats(bubbles, locale = 'pt') {
   // ─── Deduplicação por criador único ───────────────────────────────────────
   /** Map<creator, { gender, birthContinent, formationPlace, formationContinent }> */
   const creators = new Map();
@@ -104,8 +104,9 @@ export function profileStats(bubbles) {
     if (formationContinent) formationContFreq.set(formationContinent, (formationContFreq.get(formationContinent) ?? 0) + 1);
   }
 
-  // ─── Top gênero (traduzido para PT-BR) ────────────────────────────────────
-  const genderTop = topFromFreq(genderFreq, 1, total, GENDER_LABEL)[0] ?? null;
+  // ─── Top gênero (traduzido para o locale ativo) ───────────────────────────
+  const genderLabelMap = GENDER_LABEL[locale] ?? GENDER_LABEL.pt;
+  const genderTop = topFromFreq(genderFreq, 1, total, genderLabelMap)[0] ?? null;
 
   // ─── Top local de formação (por nome da escola/cidade) ───────────────────
   const formationTop = topFromFreq(formationPlaceFreq, 1, formationPlaceFreq.size > 0 ? [...formationPlaceFreq.values()].reduce((a, b) => a + b, 0) : 0)[0] ?? null;

@@ -27,7 +27,7 @@
   }
 
   // ─── Métricas derivadas reativamente ──────────────────────────────────────
-  $: stats = profileStats(bubbles.filter(b => b.type !== 'acervo'));
+  $: stats = profileStats(bubbles.filter(b => b.type !== 'acervo'), locale);
   $: empty = !stats.genderTop && !stats.formationTop && stats.birthByRegion.length === 0;
 
   // ─── Geometria do donut SVG ────────────────────────────────────────────────

@@ -11,7 +11,7 @@
 </script>
 
 <figure class="map-stats" aria-label="Resultados">
-  <figcaption class="map-stats__title">Resultados</figcaption>
+  <figcaption class="map-stats__title">{STATS_LABELS[locale].title}</figcaption>
   <p class="map-stats__line">{stats.acervos} {STATS_LABELS[locale].acervosSelected}</p>
   <p class="map-stats__line">{stats.artistas} {STATS_LABELS[locale].artistas}</p>
   <p class="map-stats__line">{stats.escolas} {STATS_LABELS[locale].escolas}</p>
