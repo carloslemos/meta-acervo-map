@@ -1,4 +1,4 @@
-import { continentForIsoId, sortArtworks, normalizeConfidence } from '../dataUtils.js';
+import { continentForIsoId, sortArtworks, normalizeConfidence, formatAcervoLabel } from '../dataUtils.js';
 
 describe('continentForIsoId', () => {
   test('mapeia código ISO existente para o continente correto (Brasil → América do Sul)', () => {
@@ -89,6 +89,17 @@ describe('sortArtworks', () => {
 
   test('retorna array vazio para entrada vazia', () => {
     expect(sortArtworks([])).toEqual([]);
+  });
+});
+
+describe('formatAcervoLabel', () => {
+  test('substitui MAC por MAC-USP no rótulo de exibição', () => {
+    expect(formatAcervoLabel('MAC')).toBe('MAC-USP');
+  });
+
+  test('preserva outros valores de acervo', () => {
+    expect(formatAcervoLabel('MASP')).toBe('MASP');
+    expect(formatAcervoLabel('')).toBe('');
   });
 });
 

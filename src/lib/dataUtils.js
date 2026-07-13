@@ -19,6 +19,11 @@ import {
 // Exemplo: "MAC USP" e "MAC" referem-se à mesma coleção.
 const ACERVO_ALIASES = { 'MAC USP': 'MAC' };
 
+export function formatAcervoLabel(value) {
+  if (!value) return value ?? '';
+  return value === 'MAC' ? 'MAC-USP' : value;
+}
+
 /**
  * Normaliza valores de confiança do CSV para um formato canônico.
  * Aceita valores PT-BR (alta/médio/baixo) e EN (high/medium/low).

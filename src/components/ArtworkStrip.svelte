@@ -6,6 +6,7 @@ import {
   ARTWORK_STRIP_TRANSITION_DURATION,
   ARTWORK_STRIP_DEFAULT_MESSAGE,
 } from '../lib/constants.js';
+import { formatAcervoLabel } from '../lib/dataUtils.js';
 
   /** Locale ativo: 'pt' | 'en'. */
   export let locale = 'pt';
@@ -230,7 +231,7 @@ import {
     {/if}
     <p class="artwork-tip__creator">{hoveredArt.creator}</p>
     {#if hoveredArt.museum}
-      <p class="artwork-tip__museum">{hoveredArt.museum}</p>
+      <p class="artwork-tip__museum">{formatAcervoLabel(hoveredArt.museum)}</p>
     {/if}
   </div>
 {/if}

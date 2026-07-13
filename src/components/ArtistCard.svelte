@@ -8,6 +8,7 @@
    */
   import { createEventDispatcher } from 'svelte';
   import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH, ARTIST_CARD_LABELS } from '../lib/constants.js';
+  import { formatAcervoLabel } from '../lib/dataUtils.js';
 
   /** Locale ativo: 'pt' | 'en'. */
   export let locale = 'pt';
@@ -67,7 +68,7 @@
                 {#each works as a, i}
                   {#if a.url}<a href={a.url} target="_blank" rel="noopener noreferrer">{a.title || ARTIST_CARD_LABELS[locale].untitled}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</a>{:else}<span class="artwork__title">{a.title || ARTIST_CARD_LABELS[locale].untitled}{#if a.year && a.year !== UNDATED_YEAR} ({a.year}){/if}</span>{/if}{#if i < works.length - 1}{', '}{/if}
                 {/each}
-                {#if museum}<span class="artwork__museum"> — {museum}</span>{/if}
+                {#if museum}<span class="artwork__museum"> — {formatAcervoLabel(museum)}</span>{/if}
               </li>
             {/each}
           </ul>

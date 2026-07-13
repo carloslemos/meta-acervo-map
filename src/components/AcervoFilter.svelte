@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { FILTER_LABELS, BUTTON_LABELS } from '../lib/constants.js';
+  import { formatAcervoLabel } from '../lib/dataUtils.js';
   import ToggleGroup from './ToggleGroup.svelte';
 
   export let locale = 'pt';
@@ -9,7 +10,7 @@
 
   const dispatch = createEventDispatcher();
 
-  $: items = acervos.map(a => ({ value: a, label: a }));
+  $: items = acervos.map(a => ({ value: a, label: formatAcervoLabel(a) }));
 
   /** Seleciona todos os acervos. */
   function selectAll() {
