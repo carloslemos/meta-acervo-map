@@ -730,7 +730,7 @@ export const TUTORIAL_STRIP_TEXT = {
 
 /** Título da aplicação (PT-BR ↔ EN). */
 export const APP_TITLE = {
-  pt: 'Átlas dos Percursos Artísticos',
+  pt: 'Atlas dos Percursos Artísticos',
   en: 'Atlas of Artistic Trajectories',
 };
 
