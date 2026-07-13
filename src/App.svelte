@@ -505,7 +505,7 @@ import {
           <ThemeToggle {theme} {locale} onThemeChange={handleThemeChange} />
         </div>
         <MapStats stats={statsBlock} {locale} />
-        <ProfilePanel bubbles={bubblesForMap} {breakpoint} {locale} />
+        <ProfilePanel bubbles={bubblesForMap} {breakpoint} {locale} artworkStripInset={artworkStripInset} />
         {#if isMobile}
           <button
             class="tutorial-reopen-mobile"

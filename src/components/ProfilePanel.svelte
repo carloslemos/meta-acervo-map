@@ -11,6 +11,9 @@
   /** Faixa de layout: 'mobile' | 'tablet' | 'desktop'. */
   export let breakpoint = 'desktop';
 
+  /** Espaçamento do topo da faixa de obras (em px), para ajustar a posição do painel. */
+  export let artworkStripInset = 0;
+
   // ─── Estado colapsado — persiste em localStorage ───────────────────────────
   let collapsed = (() => {
     try {
@@ -45,7 +48,7 @@
 </script>
 
 <!-- Botão de colapso / cabeçalho do painel -->
-<div class="profile-panel" class:profile-panel--collapsed={collapsed}>
+<div class="profile-panel" class:profile-panel--collapsed={collapsed} style="--artwork-strip-inset: {artworkStripInset}px">
   <button
     type="button"
     class="profile-panel__header"
@@ -247,6 +250,7 @@
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-tight);
     pointer-events: auto;
+    max-height: calc(100% - var(--artwork-strip-inset, 0px));
   }
 
   .profile-panel--collapsed {
@@ -305,7 +309,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: calc(100vh - 140px);
+    max-height: calc(100vh - 148px - var(--artwork-strip-inset, 0px));
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--bg-hl) transparent;
