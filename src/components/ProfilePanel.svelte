@@ -31,10 +31,12 @@
   $: empty = !stats.genderTop && !stats.formationTop && stats.birthByRegion.length === 0;
 
   // ─── Geometria do donut SVG ────────────────────────────────────────────────
-  const DONUT_R = 26;
-  const DONUT_SW = 5;
-  const DONUT_SIZE = (DONUT_R + DONUT_SW) * 2 + 2;
-  const CIRCUMFERENCE = 2 * Math.PI * DONUT_R;
+  // Tamanhos responsivos: desktop 26px raio, mobile 20px raio
+  $: isMobileView = breakpoint === 'mobile';
+  $: DONUT_R = isMobileView ? 20 : 26;
+  $: DONUT_SW = isMobileView ? 4 : 5;
+  $: DONUT_SIZE = (DONUT_R + DONUT_SW) * 2 + 2;
+  $: CIRCUMFERENCE = 2 * Math.PI * DONUT_R;
 
   function arcDash(pct) {
     const filled = (pct / 100) * CIRCUMFERENCE;
@@ -418,5 +420,94 @@
     white-space: nowrap;
     min-width: 30px;
     text-align: right;
+  }
+
+  /* ─── Responsividade: Tablet ──────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .profile-panel {
+      width: 100%;
+      max-width: 100%;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .profile-panel__header {
+      padding: 12px 12.8px;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    .profile-panel__title {
+      font-size: 12px;
+    }
+
+    .profile-panel__chevron {
+      width: 15px;
+      height: 15px;
+    }
+
+    .profile-panel__content {
+      padding: 12px;
+      gap: 12px;
+      max-height: calc(100vh - 120px);
+    }
+
+    .profile-panel__donuts {
+      gap: 8px;
+    }
+
+    .profile-panel__donut-item {
+      gap: 3px;
+    }
+
+    :global(.donut-pct) {
+      font-size: 14px;
+    }
+
+    .profile-panel__donut-label {
+      font-size: 10px;
+    }
+
+    .profile-panel__donut-value {
+      font-size: 12px;
+      max-width: 70px;
+    }
+
+    .profile-panel__bars-section {
+      gap: 5px;
+    }
+
+    .profile-panel__bars-title {
+      font-size: 12px;
+      padding-top: 12px;
+    }
+
+    .profile-panel__bar-item {
+      gap: 4px;
+    }
+
+    .profile-panel__bar-label {
+      font-size: 11px;
+    }
+
+    .profile-panel__bar-row {
+      gap: 5px;
+    }
+
+    .profile-panel__bar-pct {
+      font-size: 12px;
+      min-width: 25px;
+    }
+
+    .profile-panel__bar-track {
+      height: 3px;
+    }
+  }
+
+  /* ─── Responsividade: Mobile ──────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .profile-panel {
+      display: none;
+    }
   }
 </style>

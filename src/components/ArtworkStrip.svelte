@@ -246,8 +246,9 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
     background: var(--bg);
     color: var(--txt);
     pointer-events: auto;
-    /* height: ARTWORK_STRIP_HEIGHT_EXPANDED (124px) */
-    height: 124px;
+    /* height: ARTWORK_STRIP_HEIGHT_EXPANDED (248px) */
+    height: auto;
+    max-height: 248px;
     display: flex;
     flex-direction: column;
     overflow: hidden;

@@ -513,7 +513,7 @@ export const ZOOM_MAX_3D = 5;
 // ─── Artwork Strip: dimensões e timing ────────────────────────────────────────
 
 /** Altura da faixa de obras quando expandida em tablet/desktop (px). */
-export const ARTWORK_STRIP_HEIGHT_EXPANDED = 124;
+export const ARTWORK_STRIP_HEIGHT_EXPANDED = 248;
 
 /** Altura da faixa de obras quando colapsada (só header) em tablet/desktop (px). */
 export const ARTWORK_STRIP_HEIGHT_COLLAPSED = 36;

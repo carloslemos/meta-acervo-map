@@ -652,7 +652,7 @@ import {
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
-    transform: translateY(32px); /* empurra pra baixo para não colidir com botão de perfil dos resultados */
+    transform: translateY(44px); /* empurra pra baixo para não colidir com botão de perfil dos resultados */
   }
 
   /* Toggle de tema (sol/lua) — centralizado verticalmente na área visível
