@@ -66,7 +66,7 @@
     border-radius: 0.375rem;
     border: 1.5px solid var(--pill-bg);
     color: var(--pill-bg);
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     letter-spacing: var(--letter-spacing-tighter);
     cursor: pointer;

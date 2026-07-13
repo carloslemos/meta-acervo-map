@@ -602,6 +602,16 @@ import {
 
   .mobile-filters__panel {
     padding: 0 20px 20px; /* MOBILE_PADDING_X */
+    /* Level 1: "Museus e Artistas" — scroll contido na área visível */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-hl) transparent;
+  }
+
+  /* Limite de altura para o painel level 1 (SidebarFilters) em mobile — 
+     deixa espaço para o painel level 2 quando aberto. */
+  .mobile-filters__panel:not(.mobile-filters__panel--header) {
+    max-height: calc(70vh - var(--menu-height));
   }
 
   .mobile-filters__panel--header {
@@ -613,12 +623,42 @@ import {
     flex-direction: column;
     align-items: stretch;
     gap: 20px;
+    flex: none;
+    width: 100%;
+  }
+
+  /* Seções do Header em mobile — ocupam 100% e podem quebrar se necessário. */
+  .mobile-filters__panel--header :global(.header-section) {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Pills quebram em múltiplas linhas se necessário. */
+  .mobile-filters__panel--header :global(.header-bar__pills) {
+    flex-wrap: wrap;
   }
 
   /* A seção de localidade usa flex-basis (345px) para largura no desktop;
      em coluna isso vira altura e cria um vão — neutralizar no mobile. */
   .mobile-filters__panel--header :global(.header-section--locality) {
     flex: none;
+    width: 100%;
+  }
+
+  /* Autocomplete ocupa 100% em mobile. */
+  .mobile-filters__panel--header :global(.header-bar__locality) {
+    width: 100%;
+  }
+
+  /* Trajectory group em mobile ocupa 100%. */
+  .mobile-filters__panel--header :global(.trajectory-group) {
+    flex-wrap: wrap;
+  }
+
+  /* Rótulos das seções podem quebrar linha em mobile. */
+  .mobile-filters__panel--header :global(.header-section__label) {
+    white-space: normal;
   }
 
   .content {

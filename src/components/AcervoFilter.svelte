@@ -56,7 +56,7 @@
   }
 
   .acervo-filter__title {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-2xs);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-hl);
