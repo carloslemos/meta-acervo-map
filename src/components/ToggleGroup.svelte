@@ -62,19 +62,20 @@
   .pill {
     all: unset;
     display: inline-block;
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.25rem;
-    border: 1px solid var(--bg-hl);
-    color: var(--txt-hl);
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--letter-spacing-tight);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1.5px solid var(--pill-bg);
+    color: var(--pill-bg);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tighter);
     cursor: pointer;
     box-sizing: border-box;
     transition: background 0.1s, color 0.1s, border-color 0.1s;
 
     &:hover {
-      border-color: var(--txt-l);
-      color: var(--txt);
+      border-color: var(--pill-bgh);
+      color: var(--pill-bgh);
     }
   }
 
@@ -84,13 +85,14 @@
   }
 
   .pill--active {
-    background: var(--txt);
-    border-color: var(--txt);
-    color: var(--bg);
+    background: var(--pill-bg);
+    border-color: var(--pill-bg);
+    color: var(--pill-txt);
 
     &:hover {
-      background: var(--txt-l);
-      border-color: var(--txt-l);
+      background: var(--pill-bgh);
+      border-color: var(--pill-bgh);
+      color: var(--pill-txt);
     }
   }
 </style>
