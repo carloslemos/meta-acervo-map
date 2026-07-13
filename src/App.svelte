@@ -472,13 +472,13 @@ import {
               {#if isMobile}
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].selection}</strong> {TUTORIAL_MAP_TEXT_MOBILE_SELECT[locale]}</p>
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].navigation}</strong> {TUTORIAL_MAP_TEXT_MOBILE_NAV[locale]}</p>
-                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-mobile.png" alt="" />
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-mobile.svg" alt="" />
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].zoom}</strong> {TUTORIAL_MAP_TEXT_MOBILE_ZOOM[locale]}</p>
-                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-mobile.png" alt="" />
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-mobile.svg" alt="" />
               {:else}
-                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-desktop.png" alt="" />
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-desktop.svg" alt="" />
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].navigation}</strong> {TUTORIAL_MAP_TEXT_NAV[locale]}</p>
-                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-desktop.png" alt="" />
+                <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-desktop.svg" alt="" />
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].zoom}</strong> {TUTORIAL_MAP_TEXT_ZOOM[locale]}</p>
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].mapMode}</strong> {TUTORIAL_MAP_TEXT_2D[locale]}</p>
               {/if}
