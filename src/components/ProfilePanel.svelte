@@ -117,7 +117,7 @@
                 fill="var(--txt)"
               >{stats.genderTop?.pct ?? 0}%</text>
             </svg>
-            <p class="profile-panel__donut-label">{FILTER_LABELS.gender}</p>
+            <p class="profile-panel__donut-label">{FILTER_LABELS[locale].gender}</p>
             <p class="profile-panel__donut-value">{stats.genderTop?.label ?? '—'}</p>
           </div>
 

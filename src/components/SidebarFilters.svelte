@@ -30,6 +30,7 @@
   <AcervoFilter
     {acervos}
     {activeAcervos}
+    {locale}
     on:change={e => dispatch('acervochange', e.detail)}
   />
 
@@ -63,6 +64,7 @@
   <GenderFilter
     genders={allGenders}
     {activeGenders}
+    {locale}
     on:change={e => dispatch('genderchange', e.detail)}
   />
 </div>

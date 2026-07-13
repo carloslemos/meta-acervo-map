@@ -85,7 +85,7 @@
   <!-- Intro desktop: descrição + ⓘ -->
   <div class="sidebar__intro">
     <p class="sidebar__description">
-      {SECTION_LABELS.sidebarDescription}
+      {SECTION_LABELS[locale].sidebarDescription}
     </p>
     <button class="sidebar__info-btn" class:sidebar__info-btn--active={tutorialActive} aria-label="Reabrir tutorial" on:click={() => dispatch('tutorialreopen')}>
       <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">

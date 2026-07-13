@@ -3,6 +3,7 @@
   import { FILTER_LABELS, BUTTON_LABELS } from '../lib/constants.js';
   import ToggleGroup from './ToggleGroup.svelte';
 
+  export let locale = 'pt';
   export let acervos = [];
   export let activeAcervos = new Set();
 
@@ -23,7 +24,7 @@
 
 <div class="acervo-filter">
   <div class="acervo-filter__header">
-    <span class="acervo-filter__title">{FILTER_LABELS.acervo}</span>
+    <span class="acervo-filter__title">{FILTER_LABELS[locale].acervo}</span>
   </div>
 
   <ToggleGroup
@@ -34,9 +35,9 @@
   />
 
   <div class="acervo-filter__shortcuts">
-    <button class="shortcut" on:click={selectAll}>{BUTTON_LABELS.selectAll}</button>
+    <button class="shortcut" on:click={selectAll}>{BUTTON_LABELS[locale].selectAll}</button>
     <span class="shortcut-sep">/</span>
-    <button class="shortcut" on:click={selectNone}>{BUTTON_LABELS.clearSelection}</button>
+    <button class="shortcut" on:click={selectNone}>{BUTTON_LABELS[locale].clearSelection}</button>
   </div>
 </div>
 

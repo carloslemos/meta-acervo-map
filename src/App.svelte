@@ -35,6 +35,7 @@ import {
   TUTORIAL_MAP_TEXT_MOBILE_NAV,
   TUTORIAL_MAP_TEXT_MOBILE_ZOOM,
   TUTORIAL_MAP_TEXT_2D,
+  TUTORIAL_NAV_LABELS,
   SECTION_LABELS,
   CSV_CREATORS_PATH_PT,
   CSV_CREATORS_PATH_EN,
@@ -468,19 +469,19 @@ import {
         />
         {#if !tutorialDismissed}
           <div class="tutorial-overlay tutorial-overlay--center">
-            <TutorialBox title={TUTORIAL_MAP_TITLE} on:dismiss={handleTutorialDismiss}>
+            <TutorialBox title={TUTORIAL_MAP_TITLE[locale]} on:dismiss={handleTutorialDismiss}>
               {#if isMobile}
-                <p><strong>Seleção:</strong> {TUTORIAL_MAP_TEXT_MOBILE_SELECT}</p>
-                <p><strong>Navegação:</strong> {TUTORIAL_MAP_TEXT_MOBILE_NAV}</p>
+                <p><strong>{TUTORIAL_NAV_LABELS[locale].selection}</strong> {TUTORIAL_MAP_TEXT_MOBILE_SELECT[locale]}</p>
+                <p><strong>{TUTORIAL_NAV_LABELS[locale].navigation}</strong> {TUTORIAL_MAP_TEXT_MOBILE_NAV[locale]}</p>
                 <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-mobile.png" alt="" />
-                <p><strong>Zoom:</strong> {TUTORIAL_MAP_TEXT_MOBILE_ZOOM}</p>
+                <p><strong>{TUTORIAL_NAV_LABELS[locale].zoom}</strong> {TUTORIAL_MAP_TEXT_MOBILE_ZOOM[locale]}</p>
                 <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-mobile.png" alt="" />
               {:else}
                 <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-desktop.png" alt="" />
-                <p><strong>Navegação:</strong> {TUTORIAL_MAP_TEXT_NAV}</p>
+                <p><strong>{TUTORIAL_NAV_LABELS[locale].navigation}</strong> {TUTORIAL_MAP_TEXT_NAV[locale]}</p>
                 <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-zoom-desktop.png" alt="" />
-                <p><strong>Zoom:</strong> {TUTORIAL_MAP_TEXT_ZOOM}</p>
-                <p><strong>Planisfério:</strong> {TUTORIAL_MAP_TEXT_2D}</p>
+                <p><strong>{TUTORIAL_NAV_LABELS[locale].zoom}</strong> {TUTORIAL_MAP_TEXT_ZOOM[locale]}</p>
+                <p><strong>{TUTORIAL_NAV_LABELS[locale].mapMode}</strong> {TUTORIAL_MAP_TEXT_2D[locale]}</p>
               {/if}
             </TutorialBox>
           </div>

@@ -3,13 +3,14 @@
   import { GENDER_LABEL, FILTER_LABELS } from '../lib/constants.js';
   import ToggleGroup from './ToggleGroup.svelte';
 
+  export let locale = 'pt';
   export let genders = [];
   export let activeGenders = new Set();
 
   const dispatch = createEventDispatcher();
 
   function labelFor(g) {
-    return GENDER_LABEL[g] ?? (g.charAt(0).toUpperCase() + g.slice(1));
+    return GENDER_LABEL[locale]?.[g] ?? (g.charAt(0).toUpperCase() + g.slice(1));
   }
 
   $: items = genders.map(g => ({ value: g, label: labelFor(g) }));
@@ -17,7 +18,7 @@
 
 <div class="gender-filter">
   <div class="section-header">
-    <span class="section-title">{FILTER_LABELS.gender}</span>
+    <span class="section-title">{FILTER_LABELS[locale].gender}</span>
   </div>
   <ToggleGroup
     {items}

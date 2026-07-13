@@ -620,7 +620,7 @@ export const CSV_CREATORS_PATH = 'atlas_ma_0610_v2.csv';
 export const CSV_CREATORS_PATH_PT = 'atlas_ma_0610_v2.csv';
 
 /** Caminho do CSV de criadores em inglês (futuro: atlas_ma_0610_v2_en.csv). */
-export const CSV_CREATORS_PATH_EN = 'atlas_ma_0610_v2_en.csv';
+export const CSV_CREATORS_PATH_EN = 'atlas_ma_0621_v1_eng_v3.csv';
 
 /**
  * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.
@@ -700,6 +700,12 @@ export const TUTORIAL_MAP_TEXT_MOBILE_ZOOM = {
 export const TUTORIAL_MAP_TEXT_2D = {
   pt: 'Para visualizar em modo planisfério (2D), clique no ícone do planisfério.',
   en: 'To view in map mode (2D), click the map icon.',
+};
+
+/** Labels dos títulos em bold dentro do tutorial de navegação (Box 2). */
+export const TUTORIAL_NAV_LABELS = {
+  pt: { selection: 'Seleção:', navigation: 'Navegação:', zoom: 'Zoom:', mapMode: 'Planisfério:' },
+  en: { selection: 'Selection:', navigation: 'Navigation:', zoom: 'Zoom:', mapMode: 'Map mode:' },
 };
 
 /** Instruções de filtros — Box 1 no tutorial. */

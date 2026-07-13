@@ -9,6 +9,8 @@
   import { createEventDispatcher } from 'svelte';
   import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH } from '../lib/constants.js';
 
+  /** Locale ativo: 'pt' | 'en'. */
+  export let locale = 'pt';
   /** Bubble clicada — usada apenas para obter o nome do criador. */
   export let artist = null;
   /** Todas as bubbles do dataset (já carregadas, sem filtros aplicados). */
@@ -42,7 +44,7 @@
 
   function confidenceLabel(value) {
     if (!value) return '';
-    return CONFIDENCE_LABEL[value] ?? '';
+    return CONFIDENCE_LABEL[locale]?.[value] ?? '';
   }
 </script>
 
