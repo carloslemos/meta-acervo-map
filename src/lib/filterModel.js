@@ -24,9 +24,10 @@
  *   selectedNationalities: Set<string>,
  *   selectedLocalidade:    string|null,
  * }} filters
+ * @param {Map<string, string>} localidadesReverseMap — mapa de nome traduzido → valor canônico
  * @returns {object[]}
  */
-export function applyFilters(bubbles, filters) {
+export function applyFilters(bubbles, filters, localidadesReverseMap) {
   const {
     activeAcervos,
     activeGenders,
@@ -35,13 +36,19 @@ export function applyFilters(bubbles, filters) {
     selectedNationalities,
     selectedLocalidade,
   } = filters;
+
+  // Converter a seleção traduzida de volta ao valor canônico
+  const canonicalLocalidade = selectedLocalidade
+    ? localidadesReverseMap?.get(selectedLocalidade) ?? selectedLocalidade
+    : null;
+
   return bubbles.filter(b =>
     (activeAcervos.size > 0 && b.acervos.some(a => activeAcervos.has(a))) &&
     (activeGenders.size > 0 && activeGenders.has(b.gender)) &&
     (selectedCreators.size === 0 || selectedCreators.has(b.creator)) &&
     (selectedSchools.size === 0 || b.educatedAt.some(s => selectedSchools.has(s))) &&
     (selectedNationalities.size === 0 || selectedNationalities.has(b.nationality)) &&
-    (!selectedLocalidade || b.country === selectedLocalidade || b.continent === selectedLocalidade)
+    (!canonicalLocalidade || b.country === canonicalLocalidade || b.continent === canonicalLocalidade)
   );
 }
 

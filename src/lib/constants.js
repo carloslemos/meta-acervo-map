@@ -614,13 +614,13 @@ export const TRANSITION_SLOW = '300ms';
  * Versão fixa (v4). Se mudar, atualizar apenas aqui.
  * Padrão: CSV em PT-BR (comportamento atual preservado).
  */
-export const CSV_CREATORS_PATH = 'atlas_ma_0610_v2.csv';
+export const CSV_CREATORS_PATH = 'atlas_ma_0713_v1.csv';
 
 /** Caminho do CSV de criadores em português brasileiro (mesmo que CSV_CREATORS_PATH). */
-export const CSV_CREATORS_PATH_PT = 'atlas_ma_0610_v2.csv';
+export const CSV_CREATORS_PATH_PT = 'atlas_ma_0713_v1.csv';
 
 /** Caminho do CSV de criadores em inglês (futuro: atlas_ma_0610_v2_en.csv). */
-export const CSV_CREATORS_PATH_EN = 'atlas_ma_0621_v1_eng_v3.csv';
+export const CSV_CREATORS_PATH_EN = 'atlas_ma_0713_v1_eng.csv';
 
 /**
  * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.
@@ -905,6 +905,37 @@ export function getLocalidadesList(bubbles, locale = 'pt') {
     }
   }
   return [...localidades].sort();
+}
+
+/**
+ * Cria mapa reverso: nome traduzido de localidade → valor canônico (inglês para países, PT para continentes).
+ * Usado pelo filtro para converter a seleção do usuário (exibida em tela) de volta aos valores nos bubbles.
+ *
+ * @param {'pt' | 'en'} locale
+ * @returns {Map<string, string>}
+ */
+export function getLocalidadesReverseMap(locale = 'pt') {
+  const map = new Map();
+
+  if (locale === 'pt') {
+    // Países: PT → EN (revertendo a tradução feita em getLocalidadesList)
+    for (const [en, pt] of COUNTRY_NAME_EN_TO_PT.entries()) {
+      map.set(pt, en);
+    }
+    // Continentes: PT → PT (identidade, pois ISO_CONTINENT já está em PT)
+    for (const pt of Object.values(ISO_CONTINENT)) {
+      map.set(pt, pt);
+    }
+  } else {
+    // Inglês: EN → EN (identidade, nenhuma tradução)
+    for (const en of COUNTRY_NAME_EN_TO_PT.keys()) {
+      map.set(en, en);
+    }
+    for (const en of Object.values(ISO_CONTINENT_EN)) {
+      map.set(en, en);
+    }
+  }
+  return map;
 }
 
 /** Rótulos e textos do modal "Sobre". */

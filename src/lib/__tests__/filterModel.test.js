@@ -30,6 +30,21 @@ function emptyFilters(overrides = {}) {
   };
 }
 
+/**
+ * Mock do mapa reverso de localidades para testes.
+ * Mapeia nomes canônicos de volta a si mesmos (EN → EN, PT → PT).
+ */
+const mockReverseMap = new Map([
+  // Países
+  ['Brazil', 'Brazil'],
+  ['Spain', 'Spain'],
+  ['Mexico', 'Mexico'],
+  // Continentes
+  ['América do Sul', 'América do Sul'],
+  ['Europa', 'Europa'],
+  ['América do Norte', 'América do Norte'],
+]);
+
 describe('applyFilters', () => {
   const tarsila = mkBubble({ id: 'b1', creator: 'Tarsila do Amaral', gender: 'female', nationality: 'Brazilian', country: 'Brazil', continent: 'América do Sul' });
   const picasso = mkBubble({ id: 'b2', creator: 'Pablo Picasso', gender: 'male', nationality: 'Spanish', country: 'Spain', continent: 'Europa', acervos: ['MASP'], educatedAt: ['Real Academia'] });
@@ -37,41 +52,41 @@ describe('applyFilters', () => {
   const all = [tarsila, picasso, kahlo];
 
   test('sem filtros ativos retorna nada (ambos filtros devem estar preenchidos)', () => {
-    expect(applyFilters(all, emptyFilters())).toHaveLength(0);
+    expect(applyFilters(all, emptyFilters(), mockReverseMap)).toHaveLength(0);
   });
 
   test('filtra por um criador selecionado (com ambos filtros preenchidos)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedCreators: new Set(['Tarsila do Amaral']) }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedCreators: new Set(['Tarsila do Amaral']) }), mockReverseMap);
     expect(out).toEqual([tarsila]);
   });
 
   test('filtra por múltiplos criadores (união, com ambos filtros preenchidos)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedCreators: new Set(['Tarsila do Amaral', 'Frida Kahlo']) }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedCreators: new Set(['Tarsila do Amaral', 'Frida Kahlo']) }), mockReverseMap);
     expect(out.map(b => b.id).sort()).toEqual(['b1', 'b3']);
   });
 
   test('filtra por escolas multi-select (qualquer match em educatedAt, com ambos filtros preenchidos)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedSchools: new Set(['ENP', 'Real Academia']) }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedSchools: new Set(['ENP', 'Real Academia']) }), mockReverseMap);
     expect(out.map(b => b.id).sort()).toEqual(['b2', 'b3']);
   });
 
   test('filtra por nacionalidades multi-select (com ambos filtros preenchidos)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedNationalities: new Set(['Spanish', 'Mexican']) }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedNationalities: new Set(['Spanish', 'Mexican']) }), mockReverseMap);
     expect(out.map(b => b.id).sort()).toEqual(['b2', 'b3']);
   });
 
   test('selectedLocalidade casa com country (com ambos filtros preenchidos)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedLocalidade: 'Brazil' }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedLocalidade: 'Brazil' }), mockReverseMap);
     expect(out).toEqual([tarsila]);
   });
 
   test('selectedLocalidade casa com continent (com ambos filtros preenchidos)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedLocalidade: 'Europa' }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedLocalidade: 'Europa' }), mockReverseMap);
     expect(out).toEqual([picasso]);
   });
 
   test('selectedLocalidade null não filtra localidade (mas ambos filtros devem estar preenchidos)', () => {
-    expect(applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedLocalidade: null }))).toHaveLength(3);
+    expect(applyFilters(all, emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female', 'male']), selectedLocalidade: null }), mockReverseMap)).toHaveLength(3);
   });
 
   test('combina acervo + gender + creators + localidade (interseção)', () => {
@@ -80,32 +95,32 @@ describe('applyFilters', () => {
       activeGenders: new Set(['female']),
       selectedCreators: new Set(['Tarsila do Amaral', 'Pablo Picasso']),
       selectedLocalidade: 'América do Sul',
-    }));
+    }), mockReverseMap);
     expect(out).toEqual([tarsila]);
   });
 
   test('activeGenders vazio filtra tudo', () => {
-    expect(applyFilters(all, emptyFilters({ activeGenders: new Set() }))).toHaveLength(0);
+    expect(applyFilters(all, emptyFilters({ activeGenders: new Set() }), mockReverseMap)).toHaveLength(0);
   });
 
   test('bubble sem acervos é sempre filtrada', () => {
     const semAcervo = mkBubble({ id: 'b9', acervos: [] });
-    const out = applyFilters([semAcervo], emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female']) }));
+    const out = applyFilters([semAcervo], emptyFilters({ activeAcervos: new Set(['MAC', 'MASP', 'MAM']), activeGenders: new Set(['female']) }), mockReverseMap);
     expect(out).toHaveLength(0);
   });
 
   test('activeAcervos vazio filtra tudo (mesmo que gênero selecionado)', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(), activeGenders: new Set(['female', 'male']) }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(), activeGenders: new Set(['female', 'male']) }), mockReverseMap);
     expect(out).toHaveLength(0);
   });
 
   test('se acervo vazio mas gênero selecionado → retorna vazio', () => {
-    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(), activeGenders: new Set(['female']) }));
+    const out = applyFilters(all, emptyFilters({ activeAcervos: new Set(), activeGenders: new Set(['female']) }), mockReverseMap);
     expect(out).toHaveLength(0);
   });
 
   test('se gênero vazio mas acervo selecionado → retorna vazio', () => {
-    const out = applyFilters(all, emptyFilters({ activeGenders: new Set(), activeAcervos: new Set(['MAC', 'MASP']) }));
+    const out = applyFilters(all, emptyFilters({ activeGenders: new Set(), activeAcervos: new Set(['MAC', 'MASP']) }), mockReverseMap);
     expect(out).toHaveLength(0);
   });
 });

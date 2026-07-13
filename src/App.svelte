@@ -40,6 +40,7 @@ import {
   CSV_CREATORS_PATH_PT,
   CSV_CREATORS_PATH_EN,
   getLocalidadesList,
+  getLocalidadesReverseMap,
 } from './lib/constants.js';
 
   /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
@@ -284,7 +285,7 @@ import {
     selectedSchools,
     selectedNationalities,
     selectedLocalidade: selectedLocalidade || null,
-  });
+  }, localidadesReverseMap);
   // Bubbles de acervo não passam pelos filtros de sidebar: visibilidade
   // depende somente da pill ACERVO em `activeTypes` (filtrada dentro do WorldMap).
   $: bubblesWithAcervos = [...bubblesForMap, ...acervoBubbles];
@@ -293,6 +294,8 @@ import {
   $: trajectoriesForMap = showTrajectories ? applyTrajectoryFilter(trajectories, visibleBubbleIds) : [];
   // Opções de localidade: países + continentes únicos das bubbles carregadas, traduzidos conforme locale.
   $: allLocalidades = getLocalidadesList(bubbles, locale);
+  // Mapa reverso: nome traduzido exibido em tela → valor canônico para comparação no filtro
+  $: localidadesReverseMap = getLocalidadesReverseMap(locale);
 
   // ── Obras para o ArtworkStrip: quando há artista selecionado, mostra só as
   // obras dele; caso contrário, flatmap dos criadores visíveis, dedup por id, ordenado.
