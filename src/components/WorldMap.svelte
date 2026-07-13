@@ -863,7 +863,7 @@
         if (hasDefault) {
           ctx.strokeStyle = baseColor;
           ctx.lineWidth = 0.6;
-          ctx.globalAlpha = isHovering ? 0.15 : 1;
+          ctx.globalAlpha = isHovering ? 0.05 : 0.3;
           ctx.stroke(defaultPath);
         }
         if (hasHighlight) {
