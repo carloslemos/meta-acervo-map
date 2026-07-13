@@ -51,8 +51,20 @@
     aria-expanded={!collapsed}
     aria-controls="profile-panel-content"
   >
-    <span class="profile-panel__title">{PROFILE_PANEL_LABELS[locale].title}</span>
-    <span class="profile-panel__chevron" aria-hidden="true">{collapsed ? '«' : '»'}</span>
+    <span class="profile-panel__title">PERFIL DOS RESULTADOS</span>
+    <svg
+      class="profile-panel__chevron"
+      class:profile-panel__chevron--open={!collapsed}
+      width="19"
+      height="17"
+      viewBox="0 0 19 17"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M3.75231 8.04069L9.91681 1.87619L8.04066 3.65173e-05L2.55584e-07 8.04069L8.04066 16.0814L9.91681 14.2052L3.75231 8.04069Z" fill="var(--neutral-50)"/>
+      <path d="M12.1195 8.04069L18.284 1.87619L16.4078 3.65173e-05L8.36719 8.04069L16.4078 16.0814L18.284 14.2052L12.1195 8.04069Z" fill="var(--neutral-50)"/>
+    </svg>
   </button>
 
   {#if !collapsed}
@@ -183,12 +195,14 @@
           <section class="profile-panel__bars-section">
             <h3 class="profile-panel__bars-title">{PROFILE_PANEL_LABELS[locale].birthLabel}</h3>
             {#each stats.birthByRegion as row}
-              <div class="profile-panel__bar-row">
+              <div class="profile-panel__bar-item">
                 <span class="profile-panel__bar-label">{row.label}</span>
-                <div class="profile-panel__bar-track">
-                  <div class="profile-panel__bar-fill" style="width: {row.pct}%"></div>
+                <div class="profile-panel__bar-row">
+                  <div class="profile-panel__bar-track">
+                    <div class="profile-panel__bar-fill" style="width: {row.pct}%"></div>
+                  </div>
+                  <span class="profile-panel__bar-pct">{row.pct}%</span>
                 </div>
-                <span class="profile-panel__bar-pct">{row.pct}%</span>
               </div>
             {/each}
           </section>
@@ -199,12 +213,14 @@
           <section class="profile-panel__bars-section">
             <h3 class="profile-panel__bars-title">{PROFILE_PANEL_LABELS[locale].formationLabel}</h3>
             {#each stats.formationByRegion as row}
-              <div class="profile-panel__bar-row">
+              <div class="profile-panel__bar-item">
                 <span class="profile-panel__bar-label">{row.label}</span>
-                <div class="profile-panel__bar-track">
-                  <div class="profile-panel__bar-fill" style="width: {row.pct}%"></div>
+                <div class="profile-panel__bar-row">
+                  <div class="profile-panel__bar-track">
+                    <div class="profile-panel__bar-fill" style="width: {row.pct}%"></div>
+                  </div>
+                  <span class="profile-panel__bar-pct">{row.pct}%</span>
                 </div>
-                <span class="profile-panel__bar-pct">{row.pct}%</span>
               </div>
             {/each}
           </section>
@@ -219,22 +235,23 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 220px;
-    background: var(--bg-c); /* rgba(18,18,18,0.8) */
+    width: 260px;
+    background: var(--bg-c);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-left: 1px solid var(--bg-hl);
-    border-bottom: 1px solid var(--bg-hl);
-    border-bottom-left-radius: 8px;
+    overflow: hidden;
     z-index: 10;
-    font-family: inherit;
+    font-family: var(--font-family-base);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-tight);
     pointer-events: auto;
   }
 
   .profile-panel--collapsed {
-    width: auto;
-    border: none;
-    background: transparent;
+    border-bottom-left-radius: 14px;
+    border-bottom: 1px solid var(--bg-hl);
+    border-left: 1px solid var(--bg-hl);
+    background: var(--bg-c);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -242,60 +259,69 @@
   .profile-panel__header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: end;
     width: 100%;
-    padding: 8px 12px;
+    padding: 14.4px 18px 14.4px 13px;
     background: var(--bg-c);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: none;
-    border-bottom: 1px solid var(--bg-hl);
-    border-bottom-left-radius: 8px;
     color: var(--txt);
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
     cursor: pointer;
     white-space: nowrap;
-    gap: 8px;
-
-    .profile-panel--collapsed & {
-      border: 1px solid var(--bg-hl);
-      border-radius: 4px;
-    }
+    gap: 14.4px;
 
     &:hover {
-      background: var(--bg-l);
+      background: var(--bg);
     }
   }
 
+  .profile-panel__title {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--txt);
+    letter-spacing: var(--letter-spacing-tight);
+    margin: 0;
+  }
+
   .profile-panel__chevron {
-    font-size: 12px;
-    color: var(--txt-l);
+    font-size: var(--font-size-xs);
     flex-shrink: 0;
+  }
+
+  .profile-panel__chevron--open {
+    transform: scaleX(-1);
   }
 
   .profile-panel__content {
     padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-hl) transparent;
   }
 
   .profile-panel__empty {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     color: var(--txt-hl);
     text-align: center;
-    padding: 12px 0;
+    padding: 10px 0;
   }
 
   /* ─── Donuts ──────────────────────────────────────────────────────────── */
   .profile-panel__donuts {
     display: flex;
-    gap: 12px;
-    justify-content: space-around;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: flex-start;
   }
 
   .profile-panel__donut-item {
@@ -307,24 +333,24 @@
   }
 
   :global(.donut-pct) {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
     font-family: inherit;
   }
 
   .profile-panel__donut-label {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
     color: var(--txt-hl);
     margin: 0;
   }
 
   .profile-panel__donut-value {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
     color: var(--txt);
     margin: 0;
@@ -342,34 +368,37 @@
   }
 
   .profile-panel__bars-title {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
-    color: var(--txt-l);
-    margin: 0 0 4px;
+    color: var(--txt);
+    padding-top: 44px;
   }
 
-  .profile-panel__bar-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
+  .profile-panel__bar-item {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
   }
 
   .profile-panel__bar-label {
-    font-size: 9px;
-    letter-spacing: 0.06em;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
     color: var(--txt);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  }
+
+  .profile-panel__bar-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .profile-panel__bar-track {
-    width: 60px;
-    height: 3px;
+    flex: 1;
+    height: 4px;
     background: var(--neutral-70);
     border-radius: 2px;
     overflow: hidden;
@@ -383,9 +412,11 @@
   }
 
   .profile-panel__bar-pct {
-    font-size: 9px;
-    color: var(--txt-l);
-    min-width: 26px;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--neutral-20);
+    white-space: nowrap;
+    min-width: 30px;
     text-align: right;
   }
 </style>
