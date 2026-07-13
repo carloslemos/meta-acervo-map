@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { APP_TITLE, SECTION_LABELS } from '../lib/constants.js';
+  import { APP_TITLE, BUTTON_LABELS, SECTION_LABELS } from '../lib/constants.js';
   import SidebarFilters from './SidebarFilters.svelte';
 
   export let acervos = [];
@@ -17,12 +17,24 @@
   export let onClose = null;
   export let onToggle = null;
   export let tutorialActive = false;
+  export let locale = 'pt';
 
   const dispatch = createEventDispatcher();
 
   /** Aciona o callback de fechamento da sidebar (mobile). */
   function handleClose() {
     if (onClose) onClose();
+  }
+
+  /** Navega para URL com ou sem ?lang=en */
+  function handleLanguageChange(targetLocale) {
+    const url = new URL(window.location);
+    if (targetLocale === 'en') {
+      url.searchParams.set('lang', 'en');
+    } else {
+      url.searchParams.delete('lang');
+    }
+    window.location.href = url.toString();
   }
 </script>
 
@@ -36,17 +48,29 @@
       <img
         class="sidebar__logo"
         src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
-        alt={APP_TITLE}
+        alt={APP_TITLE[locale]}
       />
     </a>
     <a href="https://www.acervosdigitais.fau.usp.br/" class="sidebar__brand-text">
-      <span class="sidebar__brand-title">{APP_TITLE}</span>
+      <span class="sidebar__brand-title">{APP_TITLE[locale]}</span>
     </a>
     <div class="sidebar__brand-actions">
-      <button class="sidebar__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
+      <button class="sidebar__action-btn" on:click={() => dispatch('aboutopen')}>{BUTTON_LABELS[locale].about}</button>
       <div class="sidebar__lang">
-        <button class="sidebar__lang-btn sidebar__lang-btn--active">PT</button>
-        <button class="sidebar__lang-btn">EN</button>
+        <button 
+          class="sidebar__lang-btn"
+          class:sidebar__lang-btn--active={locale === 'pt'}
+          on:click={() => handleLanguageChange('pt')}
+        >
+          PT
+        </button>
+        <button 
+          class="sidebar__lang-btn"
+          class:sidebar__lang-btn--active={locale === 'en'}
+          on:click={() => handleLanguageChange('en')}
+        >
+          EN
+        </button>
       </div>
     </div>
   </div>

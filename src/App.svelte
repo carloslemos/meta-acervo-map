@@ -387,7 +387,7 @@ import {
 
   <div class="main-area">
   {#if isMobile}
-    <MobileHeader on:aboutopen={handleAboutOpen} />
+    <MobileHeader {locale} on:aboutopen={handleAboutOpen} />
 
     <div class="mobile-filters" class:mobile-filters--open={accordionOpen}>
       <FilterAccordion items={ACCORDION_ITEMS} bind:expandedId={accordionExpandedId}>

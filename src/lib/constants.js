@@ -728,6 +728,12 @@ export const APP_TITLE = {
   en: 'Atlas of Artistic Trajectories',
 };
 
+/** Nomes de idiomas para seletor de idioma. */
+export const LANGUAGE_NAMES = {
+  pt: 'PT',
+  en: 'EN',
+};
+
 /** URL do site do projeto (para o link do logo). */
 export const APP_WEBSITE_URL = 'https://www.acervosdigitais.fau.usp.br/meta-acervos-navegador-para-museus-em-rede/';
 
@@ -765,15 +771,17 @@ export const AUTOCOMPLETE_PLACEHOLDERS = {
   },
 };
 
-/** Rótulos de botões em filtros. */
+/** Rótulos de botões em filtros e ações. */
 export const BUTTON_LABELS = {
   pt: {
     selectAll: 'Selecionar todos',
     clearSelection: 'Limpar seleção',
+    about: 'Sobre',
   },
   en: {
     selectAll: 'Select all',
     clearSelection: 'Clear selection',
+    about: 'About',
   },
 };
 

@@ -5,24 +5,49 @@
    * Os controles de filtro NÃO ficam aqui no mobile; vão para o FilterAccordion.
    */
   import { createEventDispatcher } from 'svelte';
-  import { APP_TITLE } from '../lib/constants.js';
+  import { APP_TITLE, BUTTON_LABELS } from '../lib/constants.js';
   const dispatch = createEventDispatcher();
+
+  export let locale = 'pt';
+
+  /** Navega para URL com ou sem ?lang=en */
+  function handleLanguageChange(targetLocale) {
+    const url = new URL(window.location);
+    if (targetLocale === 'en') {
+      url.searchParams.set('lang', 'en');
+    } else {
+      url.searchParams.delete('lang');
+    }
+    window.location.href = url.toString();
+  }
 </script>
 
 <header class="mobile-header">
   <img
     class="mobile-header__logo"
     src="{import.meta.env.BASE_URL}logo_acervos-digitais_pt.svg"
-    alt={APP_TITLE}
+    alt={APP_TITLE[locale]}
   />
   <div class="mobile-header__brand-text">
-    <span class="mobile-header__title">{APP_TITLE}</span>
+    <span class="mobile-header__title">{APP_TITLE[locale]}</span>
   </div>
   <div class="mobile-header__actions">
-    <button class="mobile-header__action-btn" on:click={() => dispatch('aboutopen')}>Sobre</button>
+    <button class="mobile-header__action-btn" on:click={() => dispatch('aboutopen')}>{BUTTON_LABELS[locale].about}</button>
     <div class="mobile-header__lang">
-      <button class="mobile-header__lang-btn mobile-header__lang-btn--active">PT</button>
-      <button class="mobile-header__lang-btn">EN</button>
+      <button 
+        class="mobile-header__lang-btn"
+        class:mobile-header__lang-btn--active={locale === 'pt'}
+        on:click={() => handleLanguageChange('pt')}
+      >
+        PT
+      </button>
+      <button 
+        class="mobile-header__lang-btn"
+        class:mobile-header__lang-btn--active={locale === 'en'}
+        on:click={() => handleLanguageChange('en')}
+      >
+        EN
+      </button>
     </div>
   </div>
 </header>
