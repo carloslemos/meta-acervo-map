@@ -222,7 +222,7 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
 {#if hoveredArt}
   <div
     class="artwork-tip"
-    style="left: {tipX + 14}px; top: {tipY - 10}px;"
+    style="left: {tipX + 14}px; top: {tipY - 100}px;"
     role="tooltip"
     aria-live="polite"
   >
