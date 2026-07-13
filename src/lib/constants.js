@@ -825,6 +825,42 @@ export const LOCALITY_FILTER_INSTRUCTION = {
   en: 'Filter by country or region',
 };
 
+// ─── Helpers para localidades bilíngues (países + continentes) ───────────────────────────────────
+
+/**
+ * Cria mapa inverso EN → PT de nomes de países para lookup rápido.
+ * Usado internamente por `getLocalidadesList` quando locale === 'pt'.
+ * @type {Map<string, string>} — EN country name → PT country name
+ */
+const COUNTRY_NAME_EN_TO_PT = new Map(Object.entries(COUNTRY_NAME_PTBR));
+
+/**
+ * Extrai e traduz a lista única de localidades (países + continentes) a partir de um array de bubbles.
+ * Nomes de países vêm do TopoJSON (sempre em inglês; traduzidos se locale=pt).
+ * Nomes de continentes usam ISO_CONTINENT (PT) ou ISO_CONTINENT_EN (EN).
+ *
+ * @param {object[]} bubbles — array de bubbles com campos .country e .continent
+ * @param {'pt' | 'en'} locale — idioma alvo (padrão: 'pt')
+ * @returns {string[]} lista única e ordenada de localidades traduzidas
+ */
+export function getLocalidadesList(bubbles, locale = 'pt') {
+  const localidades = new Set();
+  for (const b of bubbles) {
+    // Traduzir país (EN → PT se locale=pt; manter EN se locale=en)
+    if (b.country) {
+      const translated = locale === 'pt'
+        ? COUNTRY_NAME_EN_TO_PT.get(b.country) ?? b.country
+        : b.country;
+      localidades.add(translated);
+    }
+    // Continente (já vem em PT via ISO_CONTINENT ou EN via ISO_CONTINENT_EN)
+    if (b.continent) {
+      localidades.add(b.continent);
+    }
+  }
+  return [...localidades].sort();
+}
+
 // ─── Compatibilidade: aliases PT-BR das constantes bilíngues (para componentes legados) ──────────────
 
 /**

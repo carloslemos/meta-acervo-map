@@ -6,6 +6,7 @@ import {
   REF_W,
   REF_H,
   ISO_CONTINENT,
+  ISO_CONTINENT_EN,
   UNDATED_YEAR,
   CSV_CREATORS_PATH,
   CSV_CREATORS_DELIMITER,
@@ -105,10 +106,11 @@ function splitSemicolon(val) {
  * @param {string|number|null|undefined} isoId
  * @returns {string|null}
  */
-export function continentForIsoId(isoId) {
+export function continentForIsoId(isoId, locale = 'pt') {
   if (isoId === null || isoId === undefined) return null;
   const key = String(isoId);
-  return ISO_CONTINENT[key] ?? ISO_CONTINENT[String(parseInt(key, 10))] ?? null;
+  const continentMap = locale === 'en' ? ISO_CONTINENT_EN : ISO_CONTINENT;
+  return continentMap[key] ?? continentMap[String(parseInt(key, 10))] ?? null;
 }
 
 /**
@@ -227,7 +229,7 @@ async function loadArtworksByCreator() {
  * @param {string} [csvPath] — Caminho do CSV de criadores (opcional). Se omitido, usa CSV_CREATORS_PATH.
  * @returns {Promise<{ bubbles: Array<object>, trajectories: Array<object>, artworksByCreator: Map, acervoBubbles: Array<object> }>}
  */
-export async function loadData(csvPath) {
+export async function loadData(csvPath, locale = 'pt') {
   const actualCsvPath = csvPath ?? CSV_CREATORS_PATH;
   const [rows, artworksByCreator, acervoBubbles, topo] = await Promise.all([
     d3.dsv(CSV_CREATORS_DELIMITER, actualCsvPath),
@@ -396,7 +398,7 @@ export async function loadData(csvPath) {
 
   // Pré-anota country/continent para todas as bubbles (artistas + acervos).
   const countriesFeature = topojson.feature(topo, topo.objects.countries);
-  annotateGeo([...bubbles, ...acervoBubbles], countriesFeature);
+  annotateGeo([...bubbles, ...acervoBubbles], countriesFeature, locale);
 
   // Warning: reportar criadores sem dados de acervo
   const creatorsWithoutAcervo = new Set();
@@ -416,20 +418,21 @@ export async function loadData(csvPath) {
 
 /**
  * Para cada bubble, popula `country` (nome em inglês do TopoJSON) e
- * `continent` (PT-BR via `ISO_CONTINENT`). Os campos ficam `null` quando
+ * `continent` (PT-BR via `ISO_CONTINENT` ou EN via `ISO_CONTINENT_EN`). Os campos ficam `null` quando
  * nenhuma feature contém o ponto.
  *
  * @param {object[]} bubbles
  * @param {object} countriesFeature - FeatureCollection do TopoJSON
+ * @param {'pt' | 'en'} locale - idioma alvo para nomes de continentes
  */
-function annotateGeo(bubbles, countriesFeature) {
+function annotateGeo(bubbles, countriesFeature, locale = 'pt') {
   for (const b of bubbles) {
     b.country = null;
     b.continent = null;
   }
   for (const feature of countriesFeature.features) {
     const name = feature.properties?.name ?? null;
-    const continent = continentForIsoId(feature.id);
+    const continent = continentForIsoId(feature.id, locale);
     for (const b of bubbles) {
       if (b.country !== null) continue;
       if (d3.geoContains(feature, [b.lon, b.lat])) {

@@ -36,6 +36,9 @@ import {
   TUTORIAL_MAP_TEXT_MOBILE_ZOOM,
   TUTORIAL_MAP_TEXT_2D,
   SECTION_LABELS,
+  CSV_CREATORS_PATH_PT,
+  CSV_CREATORS_PATH_EN,
+  getLocalidadesList,
 } from './lib/constants.js';
 
   /** Níveis do FilterAccordion no mobile (ordem + rótulos). */
@@ -45,6 +48,17 @@ import {
   ];
 
   const LS_STRIP_KEY = 'meta-acervo:artwork-strip-collapsed';
+
+  /** Detecta o locale a partir do query string `?lang=en` (fallback: 'pt'). */
+  function readLocaleFromUrl() {
+    try {
+      const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+      const lang = params.get('lang');
+      return lang === 'en' ? 'en' : 'pt';
+    } catch {
+      return 'pt';
+    }
+  }
 
   /** Lê preferência de tema do localStorage (fallback 'dark'). */
   function readTheme() {
@@ -64,6 +78,12 @@ import {
   $: if (typeof document !== 'undefined') {
     document.documentElement.setAttribute('data-theme', theme);
   }
+
+  /** Locale detectado da URL (`?lang=en`) — padrão: 'pt'. */
+  let locale = readLocaleFromUrl();
+
+  /** Caminho do CSV derivado do locale. */
+  $: csvPath = locale === 'en' ? CSV_CREATORS_PATH_EN : CSV_CREATORS_PATH_PT;
 
   /** Lê estado collapsed do localStorage (fallback false). */
   function readCollapsed() {
@@ -142,7 +162,7 @@ import {
 
   onMount(async () => {
     try {
-      const data = await loadData();
+      const data = await loadData(csvPath, locale);
       bubbles = data.bubbles;
       trajectories = data.trajectories;
       acervoBubbles = data.acervoBubbles ?? [];
@@ -271,11 +291,8 @@ import {
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
   $: trajectoriesForMap = showTrajectories ? applyTrajectoryFilter(trajectories, visibleBubbleIds) : [];
-  // Opções de localidade: países + continentes únicos das bubbles carregadas.
-  $: allLocalidades = [...new Set([
-    ...bubbles.map(b => b.country),
-    ...bubbles.map(b => b.continent),
-  ].filter(Boolean))].sort();
+  // Opções de localidade: países + continentes únicos das bubbles carregadas, traduzidos conforme locale.
+  $: allLocalidades = getLocalidadesList(bubbles, locale);
 
   // ── Obras para o ArtworkStrip: quando há artista selecionado, mostra só as
   // obras dele; caso contrário, flatmap dos criadores visíveis, dedup por id, ordenado.
@@ -356,6 +373,7 @@ import {
       {selectedSchools}
       {allNationalities}
       {selectedNationalities}
+      {locale}
       on:acervochange={handleAcervoChange}
       on:genderchange={handleGenderChange}
       on:creatorschange={handleCreatorsChange}
@@ -385,6 +403,7 @@ import {
             {selectedSchools}
             {allNationalities}
             {selectedNationalities}
+            {locale}
             on:acervochange={handleAcervoChange}
             on:genderchange={handleGenderChange}
             on:creatorschange={handleCreatorsChange}
@@ -398,6 +417,7 @@ import {
             {selectedLocalidade}
             localidades={allLocalidades}
             {showTrajectories}
+            {locale}
             on:typeschange={handleFilterChange}
             on:localidadechange={handleLocalidadeChange}
             on:trajectorieschange={handleTrajectoriesChange}
@@ -415,6 +435,7 @@ import {
           {selectedLocalidade}
           localidades={allLocalidades}
           {showTrajectories}
+          {locale}
           on:typeschange={handleFilterChange}
           on:localidadechange={handleLocalidadeChange}
           on:trajectorieschange={handleTrajectoriesChange}
@@ -439,6 +460,7 @@ import {
           {activeTypes}
           {projectionType}
           {theme}
+          {locale}
           locked={false}
           pinnedCreator={selectedArtist?.creator ?? null}
           bottomInset={artworkStripInset}
@@ -467,6 +489,7 @@ import {
           artist={selectedArtist}
           allBubbles={bubbles}
           {artworksByCreator}
+          {locale}
           on:close={handleArtistClose}
         />
         <div class="map-overlay-zoom">
@@ -478,8 +501,8 @@ import {
         <div class="map-overlay-theme">
           <ThemeToggle {theme} on:themechange={handleThemeChange} />
         </div>
-        <MapStats stats={statsBlock} />
-        <ProfilePanel bubbles={bubblesForMap} {breakpoint} />
+        <MapStats stats={statsBlock} {locale} />
+        <ProfilePanel bubbles={bubblesForMap} {breakpoint} {locale} />
         {#if isMobile}
           <button
             class="tutorial-reopen-mobile"
@@ -497,6 +520,7 @@ import {
           artworks={artworksForStrip}
           selectedCreator={selectedArtist?.creator ?? null}
           mobile={isMobile}
+          {locale}
           bind:collapsed={artworkStripCollapsed}
           on:artistselect={handleArtistSelect}
         />
