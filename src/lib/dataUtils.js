@@ -13,6 +13,7 @@ import {
   CSV_ACERVOS_PATH,
   JSON_ARTWORKS_PATH,
   GEOJSON_COUNTRIES_PATH,
+  CURRENT_YEAR,
 } from './constants.js';
 
 // Aliases para unificar grafias diferentes do mesmo acervo.
@@ -205,7 +206,7 @@ async function loadArtworksByCreator() {
       creator,
       museum: ACERVO_ALIASES[entry.museum ?? ''] ?? entry.museum ?? '',
       title: entry.title ?? '',
-      year: typeof entry.year === 'number' ? entry.year : null,
+      year: typeof entry.year === 'number' && entry.year <= CURRENT_YEAR ? entry.year : null,
       image: entry.image?.image ?? '',
       url: entry.url ?? '',
     };

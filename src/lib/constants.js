@@ -432,6 +432,9 @@ export const ISO_CONTINENT_EN = {
   '10': 'Antarctica',
 };
 
+// ─── Ano atual (para exibição de tooltips e filtros) ─────────────────────────────
+export const CURRENT_YEAR = new Date().getFullYear();
+
 // ─── Parâmetros visuais do mapa ───────────────────────────────────────────────
 
 /** Raio visual das bubbles (px). Usado em WorldMap e no cálculo de colisão em dataUtils. */
