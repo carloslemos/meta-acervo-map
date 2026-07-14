@@ -617,13 +617,13 @@ export const TRANSITION_SLOW = '300ms';
  * Versão fixa (v4). Se mudar, atualizar apenas aqui.
  * Padrão: CSV em PT-BR (comportamento atual preservado).
  */
-export const CSV_CREATORS_PATH = 'atlas_ma_0713_v2.csv';
+export const CSV_CREATORS_PATH = 'atlas_ma_0713_v5.csv';
 
 /** Caminho do CSV de criadores em português brasileiro (mesmo que CSV_CREATORS_PATH). */
-export const CSV_CREATORS_PATH_PT = 'atlas_ma_0713_v2.csv';
+export const CSV_CREATORS_PATH_PT = 'atlas_ma_0713_v5.csv';
 
 /** Caminho do CSV de criadores em inglês (futuro: atlas_ma_0610_v2_en.csv). */
-export const CSV_CREATORS_PATH_EN = 'atlas_ma_0713_v2_eng.csv';
+export const CSV_CREATORS_PATH_EN = 'atlas_ma_0713_v5_eng.csv';
 
 /**
  * CSV de acervos geolocalizados. Mapeia cada acervo a suas coordenadas.
