@@ -81,6 +81,9 @@ export const CONFIDENCE_LABEL = {
   },
 };
 
+// ────────────────── Filtro de nacionalidades (desativado) ─────────────────────────────
+export const NATIONALITIES_FILTER_ENABLED = false;
+
 // ─── Mapeamento ISO 3166-1 numérico → continente (PT-BR) ─────────────────────
 
 /**

@@ -1,5 +1,5 @@
 <script>
-  import { FILTER_LABELS, AUTOCOMPLETE_PLACEHOLDERS } from '../lib/constants.js';
+  import { FILTER_LABELS, AUTOCOMPLETE_PLACEHOLDERS, NATIONALITIES_FILTER_ENABLED } from '../lib/constants.js';
   import AcervoFilter from './AcervoFilter.svelte';
   import AutocompleteSelect from './AutocompleteSelect.svelte';
   import GenderFilter from './GenderFilter.svelte';
@@ -54,14 +54,16 @@
     onChange={onSchoolsChange}
   />
 
-  <AutocompleteSelect
-    label={FILTER_LABELS[locale].nacionalidade}
-    placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].nacionalidade}
-    options={allNationalities}
-    value={selectedNationalities}
-    multiple={true}
-    onChange={onNationalitiesChange}
-  />
+  {#if NATIONALITIES_FILTER_ENABLED}
+    <AutocompleteSelect
+      label={FILTER_LABELS[locale].nacionalidade}
+      placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].nacionalidade}
+      options={allNationalities}
+      value={selectedNationalities}
+      multiple={true}
+      onChange={onNationalitiesChange}
+    />
+  {/if}
 
   <GenderFilter
     genders={allGenders}
