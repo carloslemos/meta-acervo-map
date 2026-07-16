@@ -382,7 +382,7 @@ import {
       }
     }
     return {
-      acervos: activeAcervos.size > 0 ? activeAcervos.size : acervos.size,
+      acervos: visibleMuseumNames.size,
       artistas: artists.size,
       escolas: schools.size,
       obras,
