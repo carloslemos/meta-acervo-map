@@ -1,4 +1,11 @@
-import { applyFilters, applyTrajectoryFilter } from '../filterModel.js';
+import {
+  applyFilters,
+  applyTrajectoryFilter,
+  FILTER_FIELDS,
+  FIELD_PREDICATES,
+  makeFilterContext,
+  bubbleMatchesFields,
+} from '../filterModel.js';
 
 /**
  * Cria uma bubble de teste com defaults razoáveis e override por param.
@@ -122,6 +129,59 @@ describe('applyFilters', () => {
   test('se gênero vazio mas acervo selecionado → retorna vazio', () => {
     const out = applyFilters(all, emptyFilters({ activeGenders: new Set(), activeAcervos: new Set(['MAC', 'MASP']) }), mockReverseMap);
     expect(out).toHaveLength(0);
+  });
+});
+
+describe('predicados por faceta (decomposição)', () => {
+  const tarsila = mkBubble({ id: 'b1', creator: 'Tarsila do Amaral', gender: 'female', nationality: 'Brazilian', country: 'Brazil', continent: 'América do Sul' });
+  const picasso = mkBubble({ id: 'b2', creator: 'Pablo Picasso', gender: 'male', nationality: 'Spanish', country: 'Spain', continent: 'Europa', acervos: ['MASP'], educatedAt: ['Real Academia'] });
+  const all = [tarsila, picasso];
+
+  test('FILTER_FIELDS cobre exatamente as chaves de FIELD_PREDICATES', () => {
+    expect([...FILTER_FIELDS].sort()).toEqual(Object.keys(FIELD_PREDICATES).sort());
+  });
+
+  test('makeFilterContext resolve a localidade traduzida ao valor canônico', () => {
+    const reverse = new Map([['Espanha', 'Spain']]);
+    const ctx = makeFilterContext(emptyFilters({ selectedLocalidade: 'Espanha' }), reverse);
+    expect(ctx.canonicalLocalidade).toBe('Spain');
+  });
+
+  test('makeFilterContext deixa canonicalLocalidade null quando não há seleção', () => {
+    const ctx = makeFilterContext(emptyFilters({ selectedLocalidade: null }), mockReverseMap);
+    expect(ctx.canonicalLocalidade).toBeNull();
+  });
+
+  test('cada predicado avalia apenas a sua própria faceta', () => {
+    const ctx = makeFilterContext(emptyFilters({ selectedCreators: new Set(['Tarsila do Amaral']) }), mockReverseMap);
+    expect(FIELD_PREDICATES.creators(tarsila, ctx)).toBe(true);
+    expect(FIELD_PREDICATES.creators(picasso, ctx)).toBe(false);
+    // A faceta de acervo, isolada, ignora a seleção de criador
+    expect(FIELD_PREDICATES.acervos(picasso, ctx)).toBe(true);
+  });
+
+  test('bubbleMatchesFields com subconjunto ignora o campo omitido (base do N-1)', () => {
+    const ctx = makeFilterContext(emptyFilters({
+      activeAcervos: new Set(['MAC', 'MASP', 'MAM']),
+      activeGenders: new Set(['female', 'male']),
+      selectedCreators: new Set(['Tarsila do Amaral']),
+    }), mockReverseMap);
+    const semCreators = FILTER_FIELDS.filter(f => f !== 'creators');
+    // Sem a faceta 'creators', Picasso volta a passar
+    expect(bubbleMatchesFields(picasso, ctx, semCreators)).toBe(true);
+    // Com todas as facetas, Picasso é excluído pela seleção de criador
+    expect(bubbleMatchesFields(picasso, ctx, FILTER_FIELDS)).toBe(false);
+  });
+
+  test('applyFilters equivale à conjunção de todos os predicados via bubbleMatchesFields', () => {
+    const filters = emptyFilters({
+      activeAcervos: new Set(['MAC', 'MASP', 'MAM']),
+      activeGenders: new Set(['female', 'male']),
+      selectedNationalities: new Set(['Spanish']),
+    });
+    const ctx = makeFilterContext(filters, mockReverseMap);
+    const manual = all.filter(b => bubbleMatchesFields(b, ctx, FILTER_FIELDS));
+    expect(applyFilters(all, filters, mockReverseMap)).toEqual(manual);
   });
 });
 
