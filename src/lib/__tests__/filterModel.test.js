@@ -254,6 +254,28 @@ describe('computeAvailableOptions', () => {
     const opts = computeAvailableOptions(all, defaultFilters(), mockReverseMap);
     expect(Object.keys(opts).sort()).toEqual([...FILTER_FIELDS].sort());
   });
+
+  test('antiorfão: toda opção de artista oferecida gera recorte não-vazio', () => {
+    // Recorte com um acervo selecionado → só criadores desse acervo são oferecidos
+    const filtros = defaultFilters({ activeAcervos: new Set(['MASP']) });
+    const opts = computeAvailableOptions(all, filtros, mockReverseMap);
+    // cada criador disponível, ao ser selecionado junto do recorte, deixa ≥1 bubble
+    for (const creator of opts.creators) {
+      const out = applyFilters(all, { ...filtros, selectedCreators: new Set([creator]) }, mockReverseMap);
+      expect(out.length).toBeGreaterThan(0);
+    }
+    // Picasso (MASP) é oferecido; Tarsila (MAC) e Kahlo (MAM) não
+    expect([...opts.creators]).toEqual(['Pablo Picasso']);
+  });
+
+  test('antiorfão: localidade incompatível com o acervo selecionado não é oferecida', () => {
+    const opts = computeAvailableOptions(all, defaultFilters({ activeAcervos: new Set(['MASP']) }), mockReverseMap);
+    // MASP só existe na bubble da Espanha/Europa
+    expect(opts.localidade.has('Spain')).toBe(true);
+    expect(opts.localidade.has('Europa')).toBe(true);
+    expect(opts.localidade.has('Brazil')).toBe(false);
+    expect(opts.localidade.has('Mexico')).toBe(false);
+  });
 });
 
 describe('applyTrajectoryFilter', () => {

@@ -10,10 +10,13 @@
   export let availableGenders = null;
   export let allCreators = [];
   export let selectedCreators = new Set();
+  export let availableCreators = null;
   export let allSchools = [];
   export let selectedSchools = new Set();
+  export let availableSchools = null;
   export let allNationalities = [];
   export let selectedNationalities = new Set();
+  export let availableNationalities = null;
   export let isOpen = false;
   export let onClose = null;
   export let onToggle = null;
@@ -110,10 +113,13 @@
       {availableGenders}
       {allCreators}
       {selectedCreators}
+      {availableCreators}
       {allSchools}
       {selectedSchools}
+      {availableSchools}
       {allNationalities}
       {selectedNationalities}
+      {availableNationalities}
       {locale}
       onAcervoChange={onAcervoChange}
       onGenderChange={onGenderChange}

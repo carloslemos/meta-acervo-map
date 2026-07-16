@@ -306,6 +306,11 @@ import {
   $: allLocalidades = getLocalidadesList(bubbles, locale);
   // Mapa reverso: nome traduzido exibido em tela → valor canônico para comparação no filtro
   $: localidadesReverseMap = getLocalidadesReverseMap(locale);
+  // Localidades disponíveis (nomes traduzidos) no recorte atual: converte o conjunto
+  // canônico de `availableOptions.localidade` de volta aos nomes exibidos no autocomplete.
+  $: availableLocalidades = new Set(
+    allLocalidades.filter(name => availableOptions.localidade.has(localidadesReverseMap.get(name) ?? name))
+  );
 
   // ── Obras para o ArtworkStrip: quando há artista selecionado, mostra só as
   // obras dele; caso contrário, flatmap dos criadores visíveis, dedup por id, ordenado.
@@ -384,10 +389,13 @@ import {
       availableGenders={availableOptions.genders}
       {allCreators}
       {selectedCreators}
+      availableCreators={availableOptions.creators}
       {allSchools}
       {selectedSchools}
+      availableSchools={availableOptions.schools}
       {allNationalities}
       {selectedNationalities}
+      availableNationalities={availableOptions.nationalities}
       {locale}
       onAcervoChange={handleAcervoChange}
       onGenderChange={handleGenderChange}
@@ -416,10 +424,13 @@ import {
             availableGenders={availableOptions.genders}
             {allCreators}
             {selectedCreators}
+            availableCreators={availableOptions.creators}
             {allSchools}
             {selectedSchools}
+            availableSchools={availableOptions.schools}
             {allNationalities}
             {selectedNationalities}
+            availableNationalities={availableOptions.nationalities}
             {locale}
             onAcervoChange={handleAcervoChange}
             onGenderChange={handleGenderChange}
@@ -433,6 +444,7 @@ import {
             {activeTypes}
             {selectedLocalidade}
             localidades={allLocalidades}
+            {availableLocalidades}
             {showTrajectories}
             {locale}
             onTypesChange={handleFilterChange}
@@ -451,6 +463,7 @@ import {
           {activeTypes}
           {selectedLocalidade}
           localidades={allLocalidades}
+          {availableLocalidades}
           {showTrajectories}
           {locale}
           onTypesChange={handleFilterChange}

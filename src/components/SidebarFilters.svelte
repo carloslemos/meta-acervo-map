@@ -15,10 +15,13 @@
   export let availableGenders = null;
   export let allCreators = [];
   export let selectedCreators = new Set();
+  export let availableCreators = null;
   export let allSchools = [];
   export let selectedSchools = new Set();
+  export let availableSchools = null;
   export let allNationalities = [];
   export let selectedNationalities = new Set();
+  export let availableNationalities = null;
   export let onAcervoChange = null;
   export let onCreatorsChange = null;
   export let onSchoolsChange = null;
@@ -44,6 +47,7 @@
     placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].artista}
     options={allCreators}
     value={selectedCreators}
+    available={availableCreators}
     multiple={true}
     onChange={onCreatorsChange}
   />
@@ -53,6 +57,7 @@
     placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].education}
     options={allSchools}
     value={selectedSchools}
+    available={availableSchools}
     multiple={true}
     onChange={onSchoolsChange}
   />
@@ -63,6 +68,7 @@
       placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].nacionalidade}
       options={allNationalities}
       value={selectedNationalities}
+      available={availableNationalities}
       multiple={true}
       onChange={onNationalitiesChange}
     />

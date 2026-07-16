@@ -14,6 +14,12 @@
   /** Opções para o autocomplete de localidade (países + continentes). */
   export let localidades = [];
 
+  /**
+   * Conjunto de localidades disponíveis no recorte atual (nomes traduzidos).
+   * `null` → sem restrição. Facetamento N-1: localidades sem bubble somem.
+   */
+  export let availableLocalidades = null;
+
   /** Trajetórias visíveis ou ocultas. */
   export let showTrajectories = true;
   export let onTypesChange = null;
@@ -72,6 +78,7 @@
         placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].nacionalidade}
         options={localidades}
         value={selectedLocalidade || null}
+        available={availableLocalidades}
         multiple={false}
         onSelect={handleLocalidadeSelect}
       />

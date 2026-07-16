@@ -5,6 +5,12 @@
   export let placeholder = 'Buscar…';
   /** Quando true, acumula seleções como Set e exibe chips removíveis. */
   export let multiple = false;
+  /**
+   * Conjunto de opções disponíveis no recorte atual (facetamento N-1).
+   * `null` → sem restrição: todas as opções aparecem (comportamento padrão).
+   * Opções fora do conjunto somem da lista e não podem ser adicionadas.
+   */
+  export let available = null;
   export let onChange = null;
   export let onSelect = null;
 
@@ -19,9 +25,11 @@
     const pool = multiple
       ? options.filter(o => !selectedSet.has(o))
       : options;
+    // Facetamento N-1: só opções ainda com bubble no recorte atual (D3).
+    const availablePool = available === null ? pool : pool.filter(o => available.has(o));
     return query.length === 0
-      ? pool
-      : pool.filter(o => o.toLowerCase().includes(query.toLowerCase()));
+      ? availablePool
+      : availablePool.filter(o => o.toLowerCase().includes(query.toLowerCase()));
   })();
 
   // ─── Modo múltiplo ────────────────────────────────────────────────────────
