@@ -5,6 +5,7 @@
   export let locale = 'pt';
   export let genders = [];
   export let activeGenders = new Set();
+  export let available = null;
   export let onChange = null;
 
   function labelFor(g) {
@@ -21,6 +22,7 @@
   <ToggleGroup
     {items}
     active={activeGenders}
+    {available}
     onChange={onChange}
   />
 </div>

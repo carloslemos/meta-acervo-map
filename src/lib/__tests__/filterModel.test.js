@@ -5,6 +5,7 @@ import {
   FIELD_PREDICATES,
   makeFilterContext,
   bubbleMatchesFields,
+  computeAvailableOptions,
 } from '../filterModel.js';
 
 /**
@@ -182,6 +183,76 @@ describe('predicados por faceta (decomposição)', () => {
     const ctx = makeFilterContext(filters, mockReverseMap);
     const manual = all.filter(b => bubbleMatchesFields(b, ctx, FILTER_FIELDS));
     expect(applyFilters(all, filters, mockReverseMap)).toEqual(manual);
+  });
+});
+
+describe('computeAvailableOptions', () => {
+  const tarsila = mkBubble({ id: 'b1', creator: 'Tarsila do Amaral', gender: 'female', nationality: 'Brazilian', country: 'Brazil', continent: 'América do Sul', acervos: ['MAC'], educatedAt: ['ELPA'] });
+  const picasso = mkBubble({ id: 'b2', creator: 'Pablo Picasso', gender: 'male', nationality: 'Spanish', country: 'Spain', continent: 'Europa', acervos: ['MASP'], educatedAt: ['Real Academia'] });
+  const kahlo   = mkBubble({ id: 'b3', creator: 'Frida Kahlo', gender: 'female', nationality: 'Mexican', country: 'Mexico', continent: 'América do Norte', acervos: ['MAM'], educatedAt: ['ENP'] });
+  const all = [tarsila, picasso, kahlo];
+
+  /** Estado default do app: acervo/gênero com tudo selecionado, demais vazios. */
+  function defaultFilters(overrides = {}) {
+    return emptyFilters({
+      activeAcervos: new Set(['MAC', 'MASP', 'MAM']),
+      activeGenders: new Set(['female', 'male']),
+      ...overrides,
+    });
+  }
+
+  test('facet vazio (estado default): cada campo oferece todos os seus valores', () => {
+    const opts = computeAvailableOptions(all, defaultFilters(), mockReverseMap);
+    expect([...opts.acervos].sort()).toEqual(['MAC', 'MAM', 'MASP']);
+    expect([...opts.genders].sort()).toEqual(['female', 'male']);
+    expect([...opts.creators].sort()).toEqual(['Frida Kahlo', 'Pablo Picasso', 'Tarsila do Amaral']);
+  });
+
+  test('auto-não-restrição: selecionar um gênero não remove os outros da lista de gêneros', () => {
+    const opts = computeAvailableOptions(all, defaultFilters({ activeGenders: new Set(['female']) }), mockReverseMap);
+    // a faceta de gênero ignora o próprio predicado → 'male' segue disponível
+    expect([...opts.genders].sort()).toEqual(['female', 'male']);
+  });
+
+  test('auto-não-restrição: selecionar um acervo não remove os outros acervos', () => {
+    const opts = computeAvailableOptions(all, defaultFilters({ activeAcervos: new Set(['MAC']) }), mockReverseMap);
+    expect([...opts.acervos].sort()).toEqual(['MAC', 'MAM', 'MASP']);
+  });
+
+  test('N-1: filtrar por localidade restringe os acervos disponíveis dos demais', () => {
+    const opts = computeAvailableOptions(all, defaultFilters({ selectedLocalidade: 'Brazil' }), mockReverseMap);
+    // só a bubble do Brasil (Tarsila/MAC) sobrevive ao aplicar os outros predicados
+    expect([...opts.acervos]).toEqual(['MAC']);
+    // e apenas a própria Tarsila entre os criadores
+    expect([...opts.creators]).toEqual(['Tarsila do Amaral']);
+  });
+
+  test('N-1 com dois campos ativos: só valores compatíveis com ambos', () => {
+    const opts = computeAvailableOptions(all, defaultFilters({
+      activeGenders: new Set(['female']),
+      selectedNationalities: new Set(['Mexican']),
+    }), mockReverseMap);
+    // female ∩ mexican → apenas Kahlo/MAM
+    expect([...opts.acervos]).toEqual(['MAM']);
+  });
+
+  test('localidade oferece país e continente das bubbles remanescentes', () => {
+    const opts = computeAvailableOptions(all, defaultFilters({ activeGenders: new Set(['female']) }), mockReverseMap);
+    expect(opts.localidade.has('Brazil')).toBe(true);
+    expect(opts.localidade.has('América do Sul')).toBe(true);
+    expect(opts.localidade.has('Spain')).toBe(false);
+  });
+
+  test('tipos de bubble não são faceta: não restringem os acervos disponíveis', () => {
+    const nasc = mkBubble({ id: 'x1', type: 'birth', acervos: ['MAC'] });
+    const morte = mkBubble({ id: 'x2', type: 'death', acervos: ['MASP'] });
+    const opts = computeAvailableOptions([nasc, morte], defaultFilters(), mockReverseMap);
+    expect([...opts.acervos].sort()).toEqual(['MAC', 'MASP']);
+  });
+
+  test('cobre exatamente as facetas de FILTER_FIELDS', () => {
+    const opts = computeAvailableOptions(all, defaultFilters(), mockReverseMap);
+    expect(Object.keys(opts).sort()).toEqual([...FILTER_FIELDS].sort());
   });
 });
 

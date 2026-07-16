@@ -4,8 +4,10 @@
 
   export let acervos = [];
   export let activeAcervos = new Set();
+  export let availableAcervos = null;
   export let allGenders = [];
   export let activeGenders = new Set();
+  export let availableGenders = null;
   export let allCreators = [];
   export let selectedCreators = new Set();
   export let allSchools = [];
@@ -102,8 +104,10 @@
     <SidebarFilters
       {acervos}
       {activeAcervos}
+      {availableAcervos}
       {allGenders}
       {activeGenders}
+      {availableGenders}
       {allCreators}
       {selectedCreators}
       {allSchools}

@@ -10,6 +10,12 @@
   export let active = new Set();
 
   /**
+   * Conjunto de valores disponíveis no recorte atual (facetamento N-1).
+   * `null` → sem restrição: todas as opções ficam habilitadas (comportamento padrão).
+   */
+  export let available = null;
+
+  /**
    * Layout das pills:
    * - 'wrap'  → flex-wrap horizontal (padrão)
    * - 'list'  → coluna vertical com overflow-y e pills de largura total
@@ -17,8 +23,22 @@
   export let layout = 'wrap';
   export let onChange = null;
 
+  /** Valor sem bubble no recorte atual (esmaecido). */
+  function isUnavailable(value) {
+    return available !== null && !available.has(value);
+  }
+
+  /**
+   * Clique bloqueado apenas quando o valor está indisponível E não selecionado.
+   * Um valor já selecionado permanece clicável para desmarcar (D6/Opção A).
+   */
+  function isDisabled(value) {
+    return isUnavailable(value) && !active.has(value);
+  }
+
   /** Alterna a presença de um valor no conjunto ativo e emite o novo Set. */
   function toggle(value) {
+    if (isDisabled(value)) return;
     const next = new Set(active);
     if (next.has(value)) next.delete(value);
     else next.add(value);
@@ -35,7 +55,9 @@
     <button
       class="pill"
       class:pill--active={active.has(item.value)}
+      class:pill--dim={isUnavailable(item.value)}
       aria-pressed={active.has(item.value)}
+      disabled={isDisabled(item.value)}
       on:click={() => toggle(item.value)}
     >
       {item.label}
@@ -76,6 +98,19 @@
     &:hover {
       border-color: var(--pill-bgh);
       color: var(--pill-bgh);
+    }
+  }
+
+  .pill--dim {
+    opacity: 0.32;
+  }
+
+  .pill:disabled {
+    cursor: not-allowed;
+
+    &:hover {
+      border-color: var(--pill-bg);
+      color: var(--pill-bg);
     }
   }
 

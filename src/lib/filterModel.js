@@ -108,6 +108,59 @@ export function applyFilters(bubbles, filters, localidadesReverseMap) {
 }
 
 /**
+ * Extrai de uma bubble os valores que ela contribui para cada faceta.
+ * Facetas multivaloradas (acervo, escola) devolvem o array; as demais, um único
+ * valor embrulhado. Localidade contribui com país E continente.
+ * @type {Readonly<Record<string, (b: object) => string[]>>}
+ */
+const FIELD_VALUES = Object.freeze({
+  acervos:       b => b.acervos ?? [],
+  genders:       b => (b.gender ? [b.gender] : []),
+  creators:      b => (b.creator ? [b.creator] : []),
+  schools:       b => b.educatedAt ?? [],
+  nationalities: b => (b.nationality ? [b.nationality] : []),
+  localidade:    b => [b.country, b.continent].filter(Boolean),
+});
+
+/**
+ * Calcula, para cada faceta, o conjunto de valores que ainda têm bubble no
+ * recorte atual — o facetamento cross-filter N-1.
+ *
+ * Para a faceta F, aplica todos os *outros* predicados ativos (exclui o próprio F,
+ * para que selecionar um valor num campo nunca desabilite os demais valores do
+ * mesmo campo) e coleta os valores de F presentes nas bubbles remanescentes.
+ * Tipos de bubble e visibilidade de trajetórias não são facetas e, portanto, não
+ * participam do cálculo.
+ *
+ * @param {object[]} bubbles
+ * @param {{
+ *   activeAcervos:         Set<string>,
+ *   activeGenders:         Set<string>,
+ *   selectedCreators:      Set<string>,
+ *   selectedSchools:       Set<string>,
+ *   selectedNationalities: Set<string>,
+ *   selectedLocalidade:    string|null,
+ * }} filters
+ * @param {Map<string, string>} localidadesReverseMap — mapa de nome traduzido → valor canônico
+ * @returns {Record<string, Set<string>>} um conjunto de valores disponíveis por faceta
+ */
+export function computeAvailableOptions(bubbles, filters, localidadesReverseMap) {
+  const ctx = makeFilterContext(filters, localidadesReverseMap);
+  const result = {};
+  for (const field of FILTER_FIELDS) {
+    const otherFields = FILTER_FIELDS.filter(f => f !== field);
+    const available = new Set();
+    for (const b of bubbles) {
+      if (bubbleMatchesFields(b, ctx, otherFields)) {
+        for (const value of FIELD_VALUES[field](b)) available.add(value);
+      }
+    }
+    result[field] = available;
+  }
+  return result;
+}
+
+/**
  * Filtra as trajetórias para incluir apenas segmentos onde ambas as bubbles
  * extremas estão no conjunto de IDs visíveis.
  *

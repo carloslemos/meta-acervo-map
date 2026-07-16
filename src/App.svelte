@@ -16,7 +16,7 @@
   import AboutModal from './components/AboutModal.svelte';
   import ThemeToggle from './components/ThemeToggle.svelte';
   import { loadData } from './lib/dataUtils.js';
-  import { applyFilters, applyTrajectoryFilter } from './lib/filterModel.js';
+  import { applyFilters, applyTrajectoryFilter, computeAvailableOptions } from './lib/filterModel.js';
 import {
   UNDATED_YEAR,
   ARTWORK_STRIP_HEIGHT_EXPANDED,
@@ -286,6 +286,16 @@ import {
     selectedNationalities,
     selectedLocalidade: selectedLocalidade || null,
   }, localidadesReverseMap);
+  // Disponibilidade por faceta (cross-filter N-1): para cada campo, considera todos
+  // os outros filtros ativos. Alimenta o estado esmaecido/desabilitado das pills.
+  $: availableOptions = computeAvailableOptions(bubbles, {
+    activeAcervos,
+    activeGenders,
+    selectedCreators,
+    selectedSchools,
+    selectedNationalities,
+    selectedLocalidade: selectedLocalidade || null,
+  }, localidadesReverseMap);
   // Bubbles de acervo não passam pelos filtros de sidebar: visibilidade
   // depende somente da pill ACERVO em `activeTypes` (filtrada dentro do WorldMap).
   $: bubblesWithAcervos = [...bubblesForMap, ...acervoBubbles];
@@ -368,8 +378,10 @@ import {
       onToggle={handleToggleSidebar}
       acervos={allAcervos}
       {activeAcervos}
+      availableAcervos={availableOptions.acervos}
       {allGenders}
       {activeGenders}
+      availableGenders={availableOptions.genders}
       {allCreators}
       {selectedCreators}
       {allSchools}
@@ -398,8 +410,10 @@ import {
           <SidebarFilters
             acervos={allAcervos}
             {activeAcervos}
+            availableAcervos={availableOptions.acervos}
             {allGenders}
             {activeGenders}
+            availableGenders={availableOptions.genders}
             {allCreators}
             {selectedCreators}
             {allSchools}

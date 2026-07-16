@@ -6,6 +6,7 @@
   export let locale = 'pt';
   export let acervos = [];
   export let activeAcervos = new Set();
+  export let available = null;
   export let onChange = null;
 
   $: items = acervos.map(a => ({ value: a, label: formatAcervoLabel(a) }));
@@ -29,6 +30,7 @@
   <ToggleGroup
     {items}
     active={activeAcervos}
+    {available}
     layout="wrap"
     onChange={onChange}
   />

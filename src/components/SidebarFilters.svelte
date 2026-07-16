@@ -9,8 +9,10 @@
 
   export let acervos = [];
   export let activeAcervos = new Set();
+  export let availableAcervos = null;
   export let allGenders = [];
   export let activeGenders = new Set();
+  export let availableGenders = null;
   export let allCreators = [];
   export let selectedCreators = new Set();
   export let allSchools = [];
@@ -32,6 +34,7 @@
   <AcervoFilter
     {acervos}
     {activeAcervos}
+    available={availableAcervos}
     {locale}
     onChange={onAcervoChange}
   />
@@ -68,6 +71,7 @@
   <GenderFilter
     genders={allGenders}
     {activeGenders}
+    available={availableGenders}
     {locale}
     onChange={onGenderChange}
   />
