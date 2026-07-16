@@ -296,9 +296,27 @@ import {
     selectedNationalities,
     selectedLocalidade: selectedLocalidade || null,
   }, localidadesReverseMap);
-  // Bubbles de acervo não passam pelos filtros de sidebar: visibilidade
-  // depende somente da pill ACERVO em `activeTypes` (filtrada dentro do WorldMap).
-  $: bubblesWithAcervos = [...bubblesForMap, ...acervoBubbles];
+  // Museus com obras de criadores visíveis no recorte atual (interseção com activeAcervos).
+  // Mesma lógica de statsBlock.acervos — garante consistência com o contador.
+  $: visibleMuseumNames = (() => {
+    const artists = new Set(bubblesForMap.map(b => b.creator).filter(Boolean));
+    const museums = new Set();
+    for (const creator of artists) {
+      const list = artworksByCreator.get(creator);
+      if (!list) continue;
+      for (const a of list) {
+        if (activeAcervos.size > 0 && !activeAcervos.has(a.museum)) continue;
+        if (a.museum) museums.add(a.museum);
+      }
+    }
+    return museums;
+  })();
+  // Bubbles de acervo filtradas: apenas museus com obras de criadores visíveis.
+  // Visibilidade da camada depende somente da pill ACERVO em `activeTypes` (filtrada no WorldMap).
+  $: filteredAcervoBubbles = acervoBubbles.filter(b =>
+    b.acervos.some(a => visibleMuseumNames.has(a))
+  );
+  $: bubblesWithAcervos = [...bubblesForMap, ...filteredAcervoBubbles];
   // Segmentos visíveis apenas quando ambos os extremos passam pelos filtros atuais (sidebar + header).
   $: visibleBubbleIds = new Set(bubblesForMap.filter(b => activeTypes.has(b.type)).map(b => b.id));
   $: trajectoriesForMap = showTrajectories ? applyTrajectoryFilter(trajectories, visibleBubbleIds) : [];

@@ -933,9 +933,11 @@
     }
 
     // Bubbles — agrupadas por cor (3 paths em vez de N).
+    // Bubbles de acervo são renderizadas separadamente como anéis (fill transparente + stroke colorido).
     // Quando há hover, separamos também as destacadas.
-    const fillByColor = new Map(); // color → Path2D
-    const highlightArcs = [];      // {x, y, color}
+    const fillByColor = new Map(); // color → Path2D (bubbles de trajetória)
+    const ringByColor = new Map(); // color → Path2D (bubbles de acervo — stroke only)
+    const highlightArcs = [];      // {x, y, color, isAcervo}
     const dimAlpha = isHovering ? 0.25 : 0.85;
     // Halo/traço das bubbles adaptáveis ao tema (contraste sobre fundo claro/escuro).
     const bubbleHaloColor = theme === 'light' ? '#121212' : '#ffffff';
@@ -947,9 +949,15 @@
         color = TYPE_COLOR_ACERVO_LIGHT;
       }
       if (!color) continue;
+      const isAcervo = bubble.type === 'acervo';
       const isHighlightBubble = highlightedBubbleIds && highlightedBubbleIds.has(bubble.id);
       if (isHovering && isHighlightBubble) {
-        highlightArcs.push({ x, y, color });
+        highlightArcs.push({ x, y, color, isAcervo });
+      } else if (isAcervo) {
+        let p = ringByColor.get(color);
+        if (!p) { p = new Path2D(); ringByColor.set(color, p); }
+        p.moveTo(x + BUBBLE_RADIUS, y);
+        p.arc(x, y, BUBBLE_RADIUS, 0, TAU);
       } else {
         let p = fillByColor.get(color);
         if (!p) { p = new Path2D(); fillByColor.set(color, p); }
@@ -958,7 +966,7 @@
       }
     }
 
-    // Fills agrupados
+    // Fills agrupados (bubbles de trajetória)
     ctx.globalAlpha = dimAlpha;
     ctx.strokeStyle = bubbleStrokeColor;
     ctx.lineWidth = 0.1;
@@ -968,21 +976,38 @@
       ctx.stroke(path);
     }
 
+    // Anéis de acervo — fill transparente + stroke na cor do acervo
+    ctx.globalAlpha = dimAlpha;
+    ctx.lineWidth = BUBBLE_HIGHLIGHT_RING_WIDTH;
+    for (const [color, path] of ringByColor) {
+      ctx.strokeStyle = color;
+      ctx.stroke(path);
+    }
+
     // Bubbles destacadas — desenhadas individualmente com halo externo
     if (highlightArcs.length) {
       ctx.globalAlpha = 1;
       for (const a of highlightArcs) {
-        // Anel externo (halo) — cor adaptável ao tema
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, BUBBLE_RADIUS + BUBBLE_HIGHLIGHT_RING_WIDTH, 0, TAU);
-        ctx.fillStyle = bubbleHaloColor;
-        ctx.fill();
-        
-        // Fill colorido interno
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, BUBBLE_RADIUS, 0, TAU);
-        ctx.fillStyle = a.color;
-        ctx.fill();
+        if (a.isAcervo) {
+          // Acervo destacado: anel mais espesso na cor do acervo
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, BUBBLE_RADIUS, 0, TAU);
+          ctx.strokeStyle = a.color;
+          ctx.lineWidth = BUBBLE_HIGHLIGHT_RING_WIDTH * 2;
+          ctx.stroke();
+        } else {
+          // Anel externo (halo) — cor adaptável ao tema
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, BUBBLE_RADIUS + BUBBLE_HIGHLIGHT_RING_WIDTH, 0, TAU);
+          ctx.fillStyle = bubbleHaloColor;
+          ctx.fill();
+
+          // Fill colorido interno
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, BUBBLE_RADIUS, 0, TAU);
+          ctx.fillStyle = a.color;
+          ctx.fill();
+        }
       }
     }
 
