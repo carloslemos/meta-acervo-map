@@ -45,6 +45,11 @@
   function handleLocalidadeSelect(value) {
     onLocalityChange?.(value ?? '');
   }
+
+  /** Limpa o filtro de localidade no mesmo fluxo usado pelo autocomplete. */
+  function clearLocalidade() {
+    onLocalityChange?.('');
+  }
 </script>
 
 <div class="header-bar" role="group" aria-label="Controles do mapa">
@@ -82,6 +87,16 @@
         multiple={false}
         onSelect={handleLocalidadeSelect}
       />
+      {#if selectedLocalidade}
+        <button
+          type="button"
+          class="locality-clear"
+          on:click={clearLocalidade}
+          aria-label="Limpar filtro de localidade"
+        >
+          ✕
+        </button>
+      {/if}
     </div>
   </div>
 
@@ -136,6 +151,7 @@
     flex: 0 1 345px;
     min-width: 150px;
     flex-shrink: 1;
+    width: 100%;
   }
 
   .header-section__label {
@@ -210,6 +226,10 @@
 
   /* ── Localidade (AutocompleteSelect inline) ──────────────────────────── */
   .header-bar__locality {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
     /* O AutocompleteSelect traz padding/border-top próprios pensados para
        a sidebar. Neutralizamos aqui para a barra horizontal. */
     :global(.autocomplete-section) {
@@ -222,6 +242,19 @@
     :global(.autocomplete__input) {
       font-size: var(--font-size-md);
       padding: 0.35rem 0.75rem;
+    }
+  }
+
+  .locality-clear {
+    all: unset;
+    cursor: pointer;
+    color: var(--chrome-txt-l);
+    font-size: var(--font-size-md);
+    line-height: 1;
+    flex-shrink: 0;
+
+    &:hover {
+      color: var(--chrome-txt);
     }
   }
 

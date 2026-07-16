@@ -181,3 +181,12 @@ body {
   height: 100%;
   width: 100%;
 }
+
+.header-bar__locality .autocomplete-section {
+  width: 315px;
+  max-width: 100%;
+
+  .autocomplete {
+    width: 100%;
+  }
+}
