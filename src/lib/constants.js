@@ -638,7 +638,7 @@ export const CSV_ACERVOS_PATH = 'acervos_geolocated.csv';
  * JSON de obras dos criadores. Estrutura: { wikidataId: { creator, museum, title, year, image, url } }.
  * Carregado via fetch com BASE_URL (para GitHub Pages).
  */
-export const JSON_ARTWORKS_PATH = '20250705_processed.json';
+export const JSON_ARTWORKS_PATH = 'artwork.json';
 
 /**
  * TopoJSON de fronteiras de países e continentes (Natural Earth 110m).
