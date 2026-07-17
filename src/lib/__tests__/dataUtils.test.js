@@ -1,4 +1,4 @@
-import { continentForIsoId, sortArtworks, normalizeConfidence, formatAcervoLabel } from '../dataUtils.js';
+import { continentForIsoId, sortArtworks, normalizeConfidence, formatAcervoLabel, parseArtworkDict } from '../dataUtils.js';
 
 describe('continentForIsoId', () => {
   test('mapeia código ISO existente para o continente correto (Brasil → América do Sul)', () => {
@@ -151,5 +151,73 @@ describe('normalizeConfidence', () => {
     expect(normalizeConfidence('ALTA')).toBe('alta');
     expect(normalizeConfidence('HIGH')).toBe('alta');
     expect(normalizeConfidence('Medium')).toBe('médio');
+  });
+});
+
+describe('parseArtworkDict', () => {
+  test('obra com creators[] aparece no mapa de todos os criadores', () => {
+    const map = parseArtworkDict({
+      'W1': { creators: ['Artista A', 'Artista B'], title: 'Obra Colaborativa', year: 2000 },
+    });
+    expect(map.has('Artista A')).toBe(true);
+    expect(map.has('Artista B')).toBe(true);
+    expect(map.get('Artista A')[0].id).toBe('W1');
+    expect(map.get('Artista B')[0].id).toBe('W1');
+  });
+
+  test('obra com creators[] tem a mesma instância em ambos os mapas', () => {
+    const map = parseArtworkDict({
+      'W1': { creators: ['Artista A', 'Artista B'], title: 'Obra Colaborativa', year: 2000 },
+    });
+    expect(map.get('Artista A')[0]).toBe(map.get('Artista B')[0]);
+  });
+
+  test('creators[0] é o criador primário', () => {
+    const map = parseArtworkDict({
+      'W1': { creators: ['Primário', 'Secundário'], title: 'Obra', year: 2000 },
+    });
+    expect(map.get('Primário')[0].creators[0]).toBe('Primário');
+    expect(map.get('Secundário')[0].creators[0]).toBe('Primário');
+  });
+
+  test('formato legado creator (string) continua funcionando', () => {
+    const map = parseArtworkDict({
+      'W2': { creator: 'Artista Legado', title: 'Obra Legada', year: 1990 },
+    });
+    expect(map.has('Artista Legado')).toBe(true);
+    expect(map.get('Artista Legado')[0].creators).toEqual(['Artista Legado']);
+  });
+
+  test('obra sem creators nem creator é ignorada', () => {
+    const map = parseArtworkDict({
+      'W3': { title: 'Obra Sem Autor', year: 2010 },
+    });
+    expect(map.size).toBe(0);
+  });
+
+  test('obra com creators vazio é ignorada', () => {
+    const map = parseArtworkDict({
+      'W4': { creators: [], title: 'Sem Autor', year: 2010 },
+    });
+    expect(map.size).toBe(0);
+  });
+
+  test('obra com creator vazio é ignorada', () => {
+    const map = parseArtworkDict({
+      'W5': { creator: '  ', title: 'Sem Autor', year: 2010 },
+    });
+    expect(map.size).toBe(0);
+  });
+
+  test('preserva os demais campos da obra', () => {
+    const map = parseArtworkDict({
+      'W6': { creator: 'Artista', title: 'Título', year: 2005, museum: 'MASP', url: 'https://ex.com' },
+    });
+    const obra = map.get('Artista')[0];
+    expect(obra.id).toBe('W6');
+    expect(obra.title).toBe('Título');
+    expect(obra.year).toBe(2005);
+    expect(obra.museum).toBe('MASP');
+    expect(obra.url).toBe('https://ex.com');
   });
 });

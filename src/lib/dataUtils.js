@@ -192,32 +192,59 @@ async function loadAcervoBubbles() {
  *
  * @returns {Promise<Map<string, object[]>>}
  */
-async function loadArtworksByCreator() {
-  const resp = await fetch(`${import.meta.env?.BASE_URL ?? '/'}${JSON_ARTWORKS_PATH}`);
-  if (!resp.ok) throw new Error(`Falha ao carregar JSON de obras: ${resp.status}`);
-  const dict = await resp.json();
+/**
+ * Converte o dicionário bruto do `artwork.json` num Map `creator → obras[]`.
+ *
+ * Aceita dois formatos de entrada por obra:
+ * - `creators: string[]` — formato atual; o primeiro elemento é o criador primário.
+ * - `creator: string`    — formato legado; envolvido em array para compat retroativa.
+ *
+ * Cada obra é registrada no mapa de **todos** os seus criadores.
+ *
+ * @param {Record<string, object>} dict — conteúdo bruto do JSON de obras
+ * @returns {Map<string, object[]>}
+ */
+export function parseArtworkDict(dict) {
   /** @type {Map<string, object[]>} */
   const byCreator = new Map();
   for (const [wikidataId, entry] of Object.entries(dict)) {
-    const creator = (entry?.creator ?? '').trim();
-    if (!creator) continue;
+    // Resolve lista de criadores: prefere `creators[]`, cai para `creator` legado.
+    let creators;
+    if (Array.isArray(entry?.creators) && entry.creators.length > 0) {
+      creators = entry.creators.map(c => c.trim()).filter(Boolean);
+    } else {
+      const legacy = (entry?.creator ?? '').trim();
+      creators = legacy ? [legacy] : [];
+    }
+    if (creators.length === 0) continue;
+
     const artwork = {
       id: wikidataId,
-      creator,
+      creators,
       museum: ACERVO_ALIASES[entry.museum ?? ''] ?? entry.museum ?? '',
       title: entry.title ?? '',
       year: typeof entry.year === 'number' && entry.year <= CURRENT_YEAR ? entry.year : null,
       image: entry.image?.image ?? '',
       url: entry.url ?? '',
     };
-    const list = byCreator.get(creator);
-    if (list) list.push(artwork);
-    else byCreator.set(creator, [artwork]);
+
+    for (const creator of creators) {
+      const list = byCreator.get(creator);
+      if (list) list.push(artwork);
+      else byCreator.set(creator, [artwork]);
+    }
   }
   for (const [creator, list] of byCreator) {
     byCreator.set(creator, sortArtworks(list));
   }
   return byCreator;
+}
+
+async function loadArtworksByCreator() {
+  const resp = await fetch(`${import.meta.env?.BASE_URL ?? '/'}${JSON_ARTWORKS_PATH}`);
+  if (!resp.ok) throw new Error(`Falha ao carregar JSON de obras: ${resp.status}`);
+  const dict = await resp.json();
+  return parseArtworkDict(dict);
 }
 
 /**

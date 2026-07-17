@@ -47,10 +47,11 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
     queueMicrotask(handleScroll);
   }
 
-  /** Click numa obra → emite o nome do criador para abrir o ArtistCard. */
+  /** Click numa obra → emite o criador primário (`creators[0]`) para abrir o ArtistCard. */
   function selectArtwork(artwork) {
-    if (artwork?.creator && typeof onArtistSelect === 'function') {
-      onArtistSelect(artwork.creator);
+    const primary = artwork?.creators?.[0];
+    if (primary && typeof onArtistSelect === 'function') {
+      onArtistSelect(primary);
     }
   }
 
@@ -230,7 +231,7 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
     {#if showYear(hoveredArt.year)}
       <p class="artwork-tip__year">{hoveredArt.year}</p>
     {/if}
-    <p class="artwork-tip__creator">{hoveredArt.creator}</p>
+    <p class="artwork-tip__creator">{hoveredArt.creators?.[0] ?? ''}</p>
     {#if hoveredArt.museum}
       <p class="artwork-tip__museum">{formatAcervoLabel(hoveredArt.museum)}</p>
     {/if}
