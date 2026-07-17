@@ -214,9 +214,10 @@ export function parseArtworkDict(dict) {
       creators = entry.creators.map(c => c.trim()).filter(Boolean);
     } else {
       const legacy = (entry?.creator ?? '').trim();
-      creators = legacy ? [legacy] : [];
+      creators = legacy ? [...legacy.split(' | ')] : [];
     }
     if (creators.length === 0) continue;
+    if (creators.length > 1) console.warn(`[Meta-Acervo] Obra ${wikidataId} tem múltiplos criadores: ${creators.join(', ')}`);
 
     const artwork = {
       id: wikidataId,

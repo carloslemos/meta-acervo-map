@@ -231,7 +231,7 @@ import { formatAcervoLabel } from '../lib/dataUtils.js';
     {#if showYear(hoveredArt.year)}
       <p class="artwork-tip__year">{hoveredArt.year}</p>
     {/if}
-    <p class="artwork-tip__creator">{hoveredArt.creators?.[0] ?? ''}</p>
+    <p class="artwork-tip__creator">{(hoveredArt.creators ?? []).join(' / ')}</p>
     {#if hoveredArt.museum}
       <p class="artwork-tip__museum">{formatAcervoLabel(hoveredArt.museum)}</p>
     {/if}
