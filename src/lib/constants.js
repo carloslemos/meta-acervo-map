@@ -814,6 +814,8 @@ export const SECTION_LABELS = {
     trajectoryToggle: 'Exibir / Ocultar',
     sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos dos museus',
     visualizationsAndFilters: 'Visualizações e Filtros',
+    loading: 'Carregando dados\u2026',
+    errorPrefix: 'Erro:',
   },
   en: {
     accordion: 'Museums and artists',
@@ -823,6 +825,8 @@ export const SECTION_LABELS = {
     trajectoryToggle: 'Show / Hide',
     sidebarDescription: 'Select filters and navigate through the artists\' journeys in the museum collections',
     visualizationsAndFilters: 'Visualizations and Filters',
+    loading: 'Loading data\u2026',
+    errorPrefix: 'Error:',
   },
 };
 

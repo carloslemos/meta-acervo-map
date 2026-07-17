@@ -119,7 +119,7 @@
       <dd>
         <a
           class="about-modal__link"
-          href="https://fapesp.br/"
+          href="https://www.acervosdigitais.fau.usp.br/"
           target="_blank"
           rel="noopener noreferrer"
         >Projeto Temático FAPESP – Acervos Digitais e Pesquisa</a>

@@ -497,9 +497,9 @@ import {
   <div class="content">
     <main class="map-container" style="--artwork-strip-inset: {artworkStripInset}px">
       {#if loading}
-        <div class="state-message">Carregando dados…</div>
+        <div class="state-message">{SECTION_LABELS[locale].loading}</div>
       {:else if error}
-        <div class="state-message state-message--error">Erro: {error}</div>
+        <div class="state-message state-message--error">{SECTION_LABELS[locale].errorPrefix} {error}</div>
       {:else}
         <WorldMap
           bind:this={worldMapRef}
