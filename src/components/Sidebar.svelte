@@ -321,7 +321,7 @@
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-relaxed);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-hl);
+    color: var(--txt-l);
     text-transform: uppercase;
     margin: 0;
     flex: 1;

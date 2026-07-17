@@ -58,10 +58,10 @@
   }
 
   .acervo-filter__title {
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-hl);
+    color: var(--txt-l);
   }
 
   .acervo-filter__shortcuts {
@@ -73,9 +73,9 @@
 
   .shortcut {
     all: unset;
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-md);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-hl);
+    color: var(--txt-l);
     cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 2px;

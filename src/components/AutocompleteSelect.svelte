@@ -173,10 +173,10 @@
   }
 
   .section-title {
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--txt-hl);
+    color: var(--txt-l);
   }
 
   .clear-btn {
@@ -204,10 +204,10 @@
     border: 1px solid var(--bg-hl);
     border-radius: 0.25rem;
     font-family: var(--font-family-base);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-md);
     letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
-    color: var(--txt-l);
+    color: var(--neutral-40);
     background: var(--bg-m);
     cursor: text;
 
