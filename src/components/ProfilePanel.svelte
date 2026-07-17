@@ -56,7 +56,7 @@
     aria-expanded={!collapsed}
     aria-controls="profile-panel-content"
   >
-    <span class="profile-panel__title">PERFIL DOS RESULTADOS</span>
+    <span class="profile-panel__title">{PROFILE_PANEL_LABELS[locale].title}</span>
     <svg
       class="profile-panel__chevron"
       class:profile-panel__chevron--open={!collapsed}
@@ -231,6 +231,9 @@
           </section>
         {/if}
       {/if}
+
+      <!-- Disclaimer sobre a fonte dos dados -->
+      <p class="profile-panel__disclaimer">{PROFILE_PANEL_LABELS[locale].disclaimer}</p>
     </div>
   {/if}
 </div>
@@ -265,7 +268,7 @@
   .profile-panel__header {
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: center;
     width: 100%;
     padding: 14.4px 18px 14.4px 13px;
     background: var(--bg-c);
@@ -424,6 +427,20 @@
     white-space: nowrap;
     min-width: 30px;
     text-align: right;
+  }
+
+  /* ─── Disclaimer ─────────────────────────────────────────────────────── */
+  .profile-panel__disclaimer {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-base);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-normal);
+    text-transform: uppercase;
+    color: var(--neutral-40);
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--bg-hl);
   }
 
   /* ─── Responsividade: Tablet ──────────────────────────────────────────── */

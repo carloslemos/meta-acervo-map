@@ -1034,12 +1034,14 @@ export const PROFILE_PANEL_LABELS = {
     emptyMessage: 'Nenhum criador no conjunto filtrado.',
     formationLabel: 'Formação',
     birthLabel: 'Nascimento',
+    disclaimer: 'Os dados do Atlas dos Percursos Artísticos foram extraídos do Wikidata e representam uma amostra dos acervos das instituições mapeadas, não correspondendo necessariamente à totalidade de suas coleções.',
   },
   en: {
     title: 'Results Profile',
     emptyMessage: 'No creators in the filtered set.',
     formationLabel: 'Education',
     birthLabel: 'Birth',
+    disclaimer: 'The Atlas of Artistic Trajectories data was extracted from Wikidata and represents a sample of the collections held by the mapped institutions, not necessarily reflecting the entirety of their holdings.',
   },
 };
 
