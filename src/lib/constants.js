@@ -78,6 +78,13 @@ export const CONFIDENCE_LABEL = {
     high:   'High',
     medium: 'Medium',
     low:    'Low',
+    // chaves canônicas PT (saída de normalizeConfidence) — necessárias porque
+    // normalizeConfidence sempre retorna valores PT independentemente do locale.
+    alta:  'High',
+    médio: 'Medium',
+    medio: 'Medium',
+    baixa: 'Low',
+    baixo: 'Low',
   },
 };
 

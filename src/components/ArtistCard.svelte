@@ -32,6 +32,12 @@
   $: death = creatorBubbles.find(b => b.type === 'death') ?? null;
   $: educations = creatorBubbles.filter(b => b.type === 'education');
 
+  // ID da primeira seção que possui dado de confiança — para exibir o label
+  // "Precisão da Informação" apenas uma vez no card.
+  $: precisionLabelFor = birth?.confidence
+    ? 'birth'
+    : (educations.find(e => e.confidence)?.id ?? (death?.confidence ? 'death' : null));
+
   // Obras agrupadas por acervo (museum).
   $: artworks = (creatorName && artworksByCreator.get(creatorName)) || [];
   $: artworksByMuseum = artworks.reduce((acc, a) => {
@@ -86,7 +92,9 @@
             </div>
             {#if birth.confidence}
               <div class="section__right">
-                <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                {#if precisionLabelFor === 'birth'}
+                  <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                {/if}
                 <span class="badge" style="color: {confidenceBadgeColor(birth.confidence)}; border-color: {confidenceBadgeColor(birth.confidence)}">{confidenceLabel(birth.confidence)}</span>
               </div>
             {/if}
@@ -108,7 +116,9 @@
               </div>
               {#if e.confidence}
                 <div class="section__right">
-                  <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                  {#if precisionLabelFor === e.id}
+                    <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                  {/if}
                   <span class="badge" style="color: {confidenceBadgeColor(e.confidence)}; border-color: {confidenceBadgeColor(e.confidence)}">{confidenceLabel(e.confidence)}</span>
                 </div>
               {/if}
@@ -130,7 +140,9 @@
             </div>
             {#if death.confidence}
               <div class="section__right">
-                <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                {#if precisionLabelFor === 'death'}
+                  <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                {/if}
                 <span class="badge" style="color: {confidenceBadgeColor(death.confidence)}; border-color: {confidenceBadgeColor(death.confidence)}">{confidenceLabel(death.confidence)}</span>
               </div>
             {/if}
