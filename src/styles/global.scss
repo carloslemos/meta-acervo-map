@@ -54,6 +54,11 @@
   --pill-neutral:       var(--neutral-10);   /* #e8e8e8 */
   --pill-neutral-hover: var(--neutral-30);   /* #bbbbbb */
 
+  /* ─── Chips de precisão — Alta/Média/Baixa (Figma nó 1:9536) ─── */
+  --confidence-alta:  var(--neutral-10);   /* #e8e8e8 — mais proeminente em dark */
+  --confidence-media: var(--neutral-40);   /* #a5a5a5 */
+  --confidence-baixa: var(--neutral-60);   /* #787878 — mais mudo em dark */
+
   /* Gradiente de fundo do chrome da UI (sidebar + header) — escuro em ambos os temas.
      Mantido por compatibilidade; redireciona para --chrome-bg. */
   --chrome-bg: var(--color-black);  /* #272727 */
@@ -143,6 +148,11 @@
 
   --pill-bg: var(--neutral-70);
   --pill-bgh: var(--neutral-90);
+
+  /* Chips de precisão — hierarquia invertida: Alta = mais escura sobre fundo claro */
+  --confidence-alta:  var(--neutral-100);  /* #272727 — mais proeminente em light */
+  --confidence-media: var(--neutral-70);   /* #616161 */
+  --confidence-baixa: var(--neutral-40);   /* #a5a5a5 — mais mudo em light */
   --pill-txt: var(--color-white);
 }
 

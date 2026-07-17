@@ -69,8 +69,8 @@ export const CONFIDENCE_LABEL = {
   pt: {
     alto:  'Alta',
     alta:  'Alta',
-    médio: 'Médio',
-    medio: 'Médio',
+    médio: 'Média',
+    medio: 'Média',
     baixa: 'Baixa',
     baixo: 'Baixa',
   },
@@ -854,22 +854,40 @@ export const ARTIST_CARD_LABELS = {
   pt: {
     worksAndCollections: 'Obras e Acervos',
     birth: 'Nascimento',
-    studyLocation: 'Local de Estudo',
+    studyLocation: 'Formação',
     death: 'Morte',
     untitled: '(sem título)',
     close: 'Fechar',
-    confidenceInfo: 'Informações sobre confiança',
+    precisionLabel: 'Precisão da Informação',
+    confidenceDisclaimer: 'O grau de precisão da informação foi determinado pelo Agente de IA que criamos e define à autoridade das fontes consultadas.',
   },
   en: {
     worksAndCollections: 'Works and Collections',
     birth: 'Birth',
-    studyLocation: 'Study Location',
+    studyLocation: 'Education',
     death: 'Death',
     untitled: '(untitled)',
     close: 'Close',
-    confidenceInfo: 'Confidence information',
+    precisionLabel: 'Information Precision',
+    confidenceDisclaimer: 'The degree of information precision was determined by the AI Agent we created and reflects the authority of the sources consulted.',
   },
 };
+
+/**
+ * Retorna o CSS var de cor do chip de precisão dado um valor de confiança.
+ * Aceita tanto valores normalizados (saída de normalizeConfidence) quanto
+ * valores brutos do CSV em PT e EN.
+ *
+ * @param {string|null|undefined} rawValue
+ * @returns {string} CSS var (ex: 'var(--confidence-alta)')
+ */
+export function confidenceBadgeColor(rawValue) {
+  const v = rawValue?.toLowerCase?.() ?? '';
+  if (v === 'alta' || v === 'alto' || v === 'high') return 'var(--confidence-alta)';
+  if (v === 'médio' || v === 'medio' || v === 'medium') return 'var(--confidence-media)';
+  if (v === 'baixo' || v === 'baixa' || v === 'low') return 'var(--confidence-baixa)';
+  return 'var(--confidence-media)';
+}
 
 /** Texto de instrução do filtro de localidade/país na sidebar. */
 export const LOCALITY_FILTER_INSTRUCTION = {

@@ -6,7 +6,7 @@
    * controlado por `App.svelte` via evento `close`. Enquanto aberto, o mapa
    * é bloqueado (responsabilidade de `App.svelte`).
    */
-  import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH, ARTIST_CARD_LABELS } from '../lib/constants.js';
+  import { CONFIDENCE_LABEL, UNDATED_YEAR, ARTIST_CARD_WIDTH, ARTIST_CARD_LABELS, confidenceBadgeColor } from '../lib/constants.js';
   import { formatAcervoLabel } from '../lib/dataUtils.js';
 
   /** Locale ativo: 'pt' | 'en'. */
@@ -86,12 +86,8 @@
             </div>
             {#if birth.confidence}
               <div class="section__right">
-                <span class="badge">{confidenceLabel(birth.confidence)}</span>
-                <button class="info-btn" aria-label={ARTIST_CARD_LABELS[locale].confidenceInfo}>
-                  <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
-                  </svg>
-                </button>
+                <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                <span class="badge" style="color: {confidenceBadgeColor(birth.confidence)}; border-color: {confidenceBadgeColor(birth.confidence)}">{confidenceLabel(birth.confidence)}</span>
               </div>
             {/if}
           </div>
@@ -112,12 +108,8 @@
               </div>
               {#if e.confidence}
                 <div class="section__right">
-                  <span class="badge">{confidenceLabel(e.confidence)}</span>
-                  <button class="info-btn" aria-label={ARTIST_CARD_LABELS[locale].confidenceInfo}>
-                    <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
-                    </svg>
-                  </button>
+                  <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                  <span class="badge" style="color: {confidenceBadgeColor(e.confidence)}; border-color: {confidenceBadgeColor(e.confidence)}">{confidenceLabel(e.confidence)}</span>
                 </div>
               {/if}
             </div>
@@ -138,18 +130,15 @@
             </div>
             {#if death.confidence}
               <div class="section__right">
-                <span class="badge">{confidenceLabel(death.confidence)}</span>
-                <button class="info-btn" aria-label={ARTIST_CARD_LABELS[locale].confidenceInfo}>
-                  <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10.098 20.196C4.52087 20.196 0 15.6751 0 10.098C0 4.52087 4.52087 0 10.098 0C15.6751 0 20.196 4.52087 20.196 10.098C20.196 15.6751 15.6751 20.196 10.098 20.196ZM9.0882 9.0882V15.147H11.1078V9.0882H9.0882ZM9.0882 5.049V7.0686H11.1078V5.049H9.0882Z" fill="#BBBBBB"/>
-                  </svg>
-                </button>
+                <span class="section__precision-label">{ARTIST_CARD_LABELS[locale].precisionLabel}</span>
+                <span class="badge" style="color: {confidenceBadgeColor(death.confidence)}; border-color: {confidenceBadgeColor(death.confidence)}">{confidenceLabel(death.confidence)}</span>
               </div>
             {/if}
           </div>
         </section>
       {/if}
 
+      <p class="confidence-disclaimer">{ARTIST_CARD_LABELS[locale].confidenceDisclaimer}</p>
     </div>
   </div>
 {/if}
@@ -170,7 +159,7 @@
     border: 1px solid var(--bg-hl);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px); 
-    border-radius: 4px;
+    border-radius: 16px;
     overflow: hidden;
   }
 
@@ -218,7 +207,7 @@
 
   .section__label {
     margin: 0 0 5px;
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
@@ -249,7 +238,7 @@
 
   .section__text {
     margin: 0;
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-regular);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--txt);
@@ -258,35 +247,40 @@
 
   .section__right {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
     gap: 4px;
     flex-shrink: 0;
-    padding-top: 14px; /* alinha com o texto */
+    padding-top: 2px;
   }
 
-  /* ─── Badge de confiança ────────────────────────────────────────────── */
-
-  .badge {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-regular);
+  .section__precision-label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
     letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 2px;
-    border: 1px solid var(--bg-hl);
-    color: var(--txt-l);
+    color: var(--confidence-alta);
     white-space: nowrap;
     line-height: var(--line-height-normal);
+    text-align: right;
   }
 
-  .info-btn {
-    all: unset;
-    font-size: var(--font-size-md);
-    color: var(--txt-hl);
-    cursor: pointer;
-    line-height: var(--line-height-none);
+  /* ─── Badge de precisão (pílula com cor por nível) ────────────────────────── */
 
-    &:hover { color: var(--txt); }
+  .badge {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    text-transform: uppercase;
+    padding: 3px 12px;
+    height: 18.7px;
+    border-radius: 68px;
+    border: 1px solid;
+    white-space: nowrap;
+    line-height: var(--line-height-normal);
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
   }
 
   /* ─── Obras ─────────────────────────────────────────────────────────── */
@@ -321,5 +315,17 @@
 
   .artwork__museum {
     color: var(--txt-hl);
+  }
+
+  /* ─── Disclaimer de precisão ─────────────────────────────────────────────── */
+
+  .confidence-disclaimer {
+    margin: 8px 0 0;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    text-transform: uppercase;
+    color: var(--txt-hl);
+    line-height: var(--line-height-normal);
   }
 </style>
