@@ -50,6 +50,10 @@
   // Dimensões do canvas — atualizadas dinamicamente via ResizeObserver
   let width = 960;
   let height = 500;
+  // Offset do canvas em relação à viewport — cacheado para evitar
+  // getBoundingClientRect() no hot path de mouse/click (forced reflow).
+  let canvasLeft = 0;
+  let canvasTop = 0;
   let containerEl;
   let canvasEl;        // camada dinâmica (bubbles + trajetórias)
   let bgCanvasEl;      // camada estática (sphere + países)
@@ -261,6 +265,19 @@
 
   // TYPE_COLOR importado de constants.js
 
+  /**
+   * Atualiza o offset do canvas em relação à viewport.
+   * Deve ser chamado após qualquer mudança de layout (resize, sidebar, scroll).
+   * Seguro em ResizeObserver (pós-layout) e em onMount — não causa forced reflow
+   * no hot path de interação.
+   */
+  function updateCanvasOffset() {
+    if (!canvasEl) return;
+    const rect = canvasEl.getBoundingClientRect();
+    canvasLeft = rect.left;
+    canvasTop = rect.top;
+  }
+
   /** Ajusta as dimensões internas dos canvases (foreground e background) ao DPR atual. */
   function applyCanvasDims() {
     if (canvasEl) {
@@ -294,6 +311,8 @@
     applyCanvasDims();
     ctx = canvasEl.getContext('2d');
     bgCtx = bgCanvasEl.getContext('2d');
+    // Captura offset inicial do canvas (pós-layout, seguro aqui).
+    updateCanvasOffset();
 
     // Observa redimensionamento do container
     resizeObserver = new ResizeObserver((entries) => {
@@ -308,6 +327,9 @@
           markStaticDirty();
           markDynamicDirty();
         }
+        // Atualiza offset mesmo que só a posição tenha mudado (ex.: sidebar
+        // abrindo/fechando pode deslocar o canvas sem alterar seu tamanho).
+        updateCanvasOffset();
       }
     });
     resizeObserver.observe(containerEl);
@@ -1082,11 +1104,11 @@
       if (!pendingMouse) return;
       const { clientX, clientY } = pendingMouse;
       pendingMouse = null;
-      const rect = canvasEl.getBoundingClientRect();
-      const scaleX = width / rect.width;
-      const scaleY = height / rect.height;
-      const mx = (clientX - rect.left) * scaleX;
-      const my = (clientY - rect.top) * scaleY;
+      // Usa offset cacheado (atualizado no ResizeObserver) em vez de
+      // getBoundingClientRect() para não forçar reflow no hot path.
+      // scaleX/scaleY são sempre 1.0 pois width/height refletem as dimensões CSS.
+      const mx = clientX - canvasLeft;
+      const my = clientY - canvasTop;
 
       const found = bubbleQuadtree
         ? bubbleQuadtree.find(mx, my, BUBBLE_RADIUS + 4)
@@ -1121,11 +1143,9 @@
   /** Click no canvas: hit-test e dispatch de `artistclick` se acertou uma bubble. */
   function onClick(e) {
     if (!canvasEl || !bubbleQuadtree) return;
-    const rect = canvasEl.getBoundingClientRect();
-    const scaleX = width / rect.width;
-    const scaleY = height / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
+    // Usa offset cacheado — mesma razão de onMouseMove.
+    const mx = e.clientX - canvasLeft;
+    const my = e.clientY - canvasTop;
     const found = bubbleQuadtree.find(mx, my, BUBBLE_RADIUS + 4);
     // Bubbles de acervo não disparam interação de artista.
     if (found && found.bubble.type !== 'acervo') {
