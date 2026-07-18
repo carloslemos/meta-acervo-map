@@ -436,7 +436,7 @@
       sel.on('.zoom', null);
 
       if (morphing) {
-        sel.style('cursor', 'progress');
+        // cursor gerenciado via class:is-morphing no elemento canvas
       } else if (projectionType === '3d') {
         const zoom = d3.zoom()
           .scaleExtent([0.5, 5])
@@ -458,16 +458,16 @@
         zoomBehavior3d = zoom;  // Guardar referência para zoom programático
         const drag = d3.drag()
           .filter(() => !locked)
-          .on('start', () => sel.style('cursor', 'grabbing'))
+          .on('start', () => { isDragging = true; })
           .on('drag', (e) => {
             const k = 75 / (BASE_3D.scale * state3d.k);
             const [λ, φ, γ] = state3d.rotate;
             state3d.rotate = [λ + e.dx * k, Math.max(-90, Math.min(90, φ - e.dy * k)), γ];
             dragTick++;
           })
-          .on('end', () => sel.style('cursor', 'grab'));
+          .on('end', () => { isDragging = false; });
 
-        sel.call(zoom).call(drag).style('cursor', 'grab');
+        sel.call(zoom).call(drag);
         sel.call(zoom.transform, d3.zoomIdentity.scale(state3d.k));
       } else {
         // Pan clamping: translateExtent baseado nos bounds reais do mapa,
@@ -486,7 +486,7 @@
           });
 
         zoomBehavior2d = zoom;  // Guardar referência para zoom programático
-        sel.call(zoom).style('cursor', 'grab');
+        sel.call(zoom);
         // Reaplica transform corrente (ou identity se vinha de outro modo / resize forçou clamp)
         const clampedK = Math.max(1, Math.min(8, state2d.k));
         sel.call(
@@ -629,6 +629,8 @@
   })();
 
   let hoveredBubbleId = null;
+  // Controla cursor via CSS class (evita DOM write no flush do Svelte).
+  let isDragging = false;
   // Quando pinnedCreator (artista com card aberto), resolve o ID de uma bubble do criador
   // para reutilizar a lógica de highlight. Caso contrário, usa o hover.
   // Nota: não depende mais de `locked`, assim a trajetória destaca mesmo com mapa interativo.
@@ -1077,18 +1079,6 @@
        if (bgCtx) markStaticDirty();
        if (ctx) markDynamicDirty(); }
 
-  // Atualiza cursor quando entra/sai do hover de uma bubble
-  $: if (canvasEl) {
-    const sel = d3.select(canvasEl);
-    if (morphing) {
-      sel.style('cursor', 'progress');
-    } else if (hoveredBubbleId) {
-      sel.style('cursor', 'pointer');
-    } else {
-      sel.style('cursor', 'grab');
-    }
-  }
-
   // ─── Interação do mouse (hit-test) ───────────────────────────────
   // Throttled via rAF: no máximo uma checagem por frame.
   let pendingMouse = null;
@@ -1254,6 +1244,9 @@
     class="world-map world-map--fg"
     class:world-map--globe={projectionType === '3d'}
     class:world-map--locked={locked}
+    class:is-hovering={!morphing && !isDragging && !!hoveredBubbleId}
+    class:is-dragging={isDragging}
+    class:is-morphing={morphing}
     aria-label="Mapa interativo de criadores"
     on:mousemove={onMouseMove}
     on:mouseleave={onMouseLeave}
@@ -1302,6 +1295,11 @@
        click permanece ativo para permitir troca de artista no card. */
     cursor: default;
   }
+
+  /* Cursor declarativo via classes — evita sel.style() no flush do Svelte */
+  .world-map--fg.is-hovering  { cursor: pointer; }
+  .world-map--fg.is-dragging  { cursor: grabbing; }
+  .world-map--fg.is-morphing  { cursor: progress; }
 
   /* ── Gradientes de profundidade ────────────────────────────────────── */
   .map-vignette,
