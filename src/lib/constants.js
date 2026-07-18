@@ -870,7 +870,7 @@ export const ARTIST_CARD_LABELS = {
     untitled: '(sem título)',
     close: 'Fechar',
     precisionLabel: 'Precisão da Informação',
-    confidenceDisclaimer: 'O grau de precisão da informação foi determinado pelo Agente de IA que criamos e define à autoridade das fontes consultadas.',
+    confidenceDisclaimer: 'O grau de precisão da informação foi determinado pelo Agente de IA que criamos e define a autoridade das fontes consultadas.',
   },
   en: {
     worksAndCollections: 'Works and Collections',
