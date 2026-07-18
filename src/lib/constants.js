@@ -759,14 +759,14 @@ export const APP_WEBSITE_URL = 'https://www.acervosdigitais.fau.usp.br/meta-acer
 /** Rótulos de filtros na sidebar. */
 export const FILTER_LABELS = {
   pt: {
-    acervo: 'Museus',
+    acervo: 'Museus e Arquivos',
     artista: 'Artistas',
     education: 'Formação',
     nacionalidade: 'Nacionalidade',
     gender: 'Gênero',
   },
   en: {
-    acervo: 'Museums',
+    acervo: 'Museums and Archives',
     artista: 'Artists',
     education: 'Education',
     nacionalidade: 'Nationality',
@@ -812,7 +812,7 @@ export const SECTION_LABELS = {
     trajectoryVisualization: 'Visualizar percursos',
     trajectories: 'Trajetos',
     trajectoryToggle: 'Exibir / Ocultar',
-    sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos dos museus',
+    sidebarDescription: 'Selecione os filtros e navegue pelos percursos dos artistas nos acervos',
     visualizationsAndFilters: 'Visualizações e Filtros',
     loading: 'Carregando dados\u2026',
     errorPrefix: 'Erro:',
@@ -834,14 +834,14 @@ export const SECTION_LABELS = {
 export const STATS_LABELS = {
   pt: {
     title: 'Resultados',
-    acervosSelected: 'Museus Selecionados',
+    acervosSelected: 'Museus e/ou Arquivos',
     artistas: 'Artistas',
     escolas: 'Instituições educacionais',
     obras: 'Obras em museus',
   },
   en: {
     title: 'Results',
-    acervosSelected: 'Selected Museums',
+    acervosSelected: 'Museums and Archives',
     artistas: 'Artists',
     escolas: 'Educational institutions',
     obras: 'Works in museums',
@@ -851,11 +851,11 @@ export const STATS_LABELS = {
 /** Mensagem padrão da faixa de obras (quando nenhuma obra está selecionada). */
 export const ARTWORK_STRIP_DEFAULT_MESSAGE = {
   pt: {
-    empty: 'Conheça as obras dos artistas nos museus selecionados',
+    empty: 'Conheça as obras dos artistas nos museus e arquivos selecionados',
     worksBy: 'Obras de',
   },
   en: {
-    empty: 'Learn about the works of artists in the selected museums',
+    empty: 'Learn about the works of artists in the selected museums and archives',
     worksBy: 'Works by',
   },
 };
