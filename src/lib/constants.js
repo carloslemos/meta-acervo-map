@@ -760,15 +760,21 @@ export const APP_WEBSITE_URL = 'https://www.acervosdigitais.fau.usp.br/meta-acer
 export const FILTER_LABELS = {
   pt: {
     acervo: 'Museus e Arquivos',
+    acervo_sub: '(Selecione um ou mais museus para buscar)',
     artista: 'Artistas',
+    artista_sub: '(Selecione um ou mais artistas para buscar)',
     education: 'Formação',
+    education_sub: '(Selecione uma ou mais instituições para buscar)',
     nacionalidade: 'Nacionalidade',
     gender: 'Gênero',
   },
   en: {
     acervo: 'Museums and Archives',
+    acervo_sub: '(Select one or more museums to search)',
     artista: 'Artists',
+    artista_sub: '(Select one or more artists to search)',
     education: 'Education',
+    education_sub: '(Select one or more institutions to search)',
     nacionalidade: 'Nationality',
     gender: 'Gender',
   },
@@ -777,16 +783,16 @@ export const FILTER_LABELS = {
 /** Placeholders para campos de autocomplete. */
 export const AUTOCOMPLETE_PLACEHOLDERS = {
   pt: {
-    artista: 'Selecionar artistas',
-    education: 'Locais de estudo',
+    artista: 'Digite o nome ou parte do nome',
+    education: 'Digite o nome ou parte do nome',
     nacionalidade: 'Selecionar',
-    acervo: 'Selecionar museus',
+    acervo: 'Selecione um ou mais museus para buscar',
   },
   en: {
-    artista: 'Select artists',
-    education: 'Study locations',
+    artista: 'Type the name or part of the name',
+    education: 'Type the name or part of the name',
     nacionalidade: 'Select',
-    acervo: 'Select museums',
+    acervo: 'Select one or more museums',
   },
 };
 
@@ -989,6 +995,7 @@ export const ABOUT_MODAL_LABELS = {
     creditsCreativeCode: 'Programação criativa',
     creditsDesign: 'Design de interface e interação',
     creditsData: 'Dados',
+    contact: 'Contato',
   },
   en: {
     title: 'About',
@@ -1004,6 +1011,7 @@ export const ABOUT_MODAL_LABELS = {
     creditsCreativeCode: 'Creative development',
     creditsDesign: 'Interface and interaction design',
     creditsData: 'Data',
+    contact: 'Contact',
   },
 };
 

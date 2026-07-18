@@ -44,6 +44,7 @@
 
   <AutocompleteSelect
     label={FILTER_LABELS[locale].artista}
+    sub={FILTER_LABELS[locale].artista_sub}
     placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].artista}
     options={allCreators}
     value={selectedCreators}
@@ -54,6 +55,7 @@
 
   <AutocompleteSelect
     label={FILTER_LABELS[locale].education}
+    sub={FILTER_LABELS[locale].education_sub}
     placeholder={AUTOCOMPLETE_PLACEHOLDERS[locale].education}
     options={allSchools}
     value={selectedSchools}

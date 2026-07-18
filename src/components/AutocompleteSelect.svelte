@@ -1,5 +1,6 @@
 <script>
   export let label = '';
+  export let sub = '';
   export let options = [];
   export let value = null;
   export let placeholder = 'Buscar…';
@@ -100,7 +101,11 @@
 
 <div class="autocomplete-section">
   <div class="section-header">
-    <span class="section-title">{label}</span>
+    <div>
+      <span class="section-title">{label}</span>
+      <br>
+      <span class="section-subtitle">{sub}</span>
+    </div>
     {#if multiple && selectedSet.size > 0}
       <button class="clear-btn" on:click={clearAll} aria-label="Limpar todos">✕</button>
     {:else if !multiple && value}
@@ -177,6 +182,12 @@
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-l);
+  }
+  .section-subtitle {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-md);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--txt-hl);
   }
 
   .clear-btn {

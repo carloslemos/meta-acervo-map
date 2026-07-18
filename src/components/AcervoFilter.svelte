@@ -25,6 +25,8 @@
 <div class="acervo-filter">
   <div class="acervo-filter__header">
     <span class="acervo-filter__title">{FILTER_LABELS[locale].acervo}</span>
+    <br>
+    <span class="acervo-filter__subtitle">{FILTER_LABELS[locale].acervo_sub}</span>
   </div>
 
   <ToggleGroup
@@ -62,6 +64,13 @@
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--txt-l);
+  }
+
+  .acervo-filter__subtitle {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-md);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--txt-hl);
   }
 
   .acervo-filter__shortcuts {

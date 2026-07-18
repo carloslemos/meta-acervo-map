@@ -117,21 +117,13 @@
     <div class="about-modal__credits-row">
       <dt>{ABOUT_MODAL_LABELS[locale].creditsRealization}</dt>
       <dd>
-        <a
+        Projeto Temático FAPESP – <a
           class="about-modal__link"
           href="https://www.acervosdigitais.fau.usp.br/"
           target="_blank"
           rel="noopener noreferrer"
-        >Projeto Temático FAPESP – Acervos Digitais e Pesquisa</a>
+        >Acervos Digitais e Pesquisa</a>
       </dd>
-    </div>
-    <div class="about-modal__credits-row">
-      <dt>{ABOUT_MODAL_LABELS[locale].creditsCoordination}</dt>
-      <dd>Giselle Beiguelman</dd>
-    </div>
-    <div class="about-modal__credits-row">
-      <dt>{ABOUT_MODAL_LABELS[locale].creditsExecutiveCoordination}</dt>
-      <dd>Gilberto Paschoal</dd>
     </div>
     <div class="about-modal__credits-row">
       <dt>{ABOUT_MODAL_LABELS[locale].creditsCreativeCode}</dt>
@@ -145,15 +137,44 @@
       <dt>{ABOUT_MODAL_LABELS[locale].creditsData}</dt>
       <dd>Gilberto Paschoal e Giselle Beiguelman</dd>
     </div>
+    <div class="about-modal__credits-row">
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsCoordination}</dt>
+      <dd>Giselle Beiguelman</dd>
+    </div>
+    <div class="about-modal__credits-row">
+      <dt>{ABOUT_MODAL_LABELS[locale].creditsExecutiveCoordination}</dt>
+      <dd>Gilberto Paschoal</dd>
+    </div>
+  </dl>
+  <dl class="about-modal__credits">
+    <div class="about-modal__credits-row">
+      <dt>{ABOUT_MODAL_LABELS[locale].contact}</dt>
+      <dd>
+        <a
+          class="about-modal__link"
+          href="mailto:acervosdigitais@usp.br"
+          target="_blank"
+          rel="noopener noreferrer"
+        >acervosdigitais@usp.br</a>
+      </dd>
+    </div>
   </dl>
 
   <!-- Logo FAPESP -->
-  <img
-    class="about-modal__fapesp"
-    src="{import.meta.env.BASE_URL}fapesp-logo.svg"
-    alt="FAPESP"
-    loading="lazy"
-  />
+  <div class="about-modal__logo-group">
+    <img
+      class="about-modal__logo"
+      src="{import.meta.env.BASE_URL}fapesp-logo.svg"
+      alt="FAPESP"
+      loading="lazy"
+    />
+    <img
+      class="about-modal__logo"
+      src="{import.meta.env.BASE_URL}logo-fau-horizontal-full.svg"
+      alt="FAU-USP"
+      loading="lazy"
+    />
+  </div>
 </div>
 
 <style lang="scss">
@@ -193,7 +214,7 @@
     right: 20px;
     background: none;
     border: none;
-    color: var(--txt-l);
+    color: var(--neutral-10);
     font-size: 24px;
     line-height: 1;
     cursor: pointer;
@@ -202,7 +223,7 @@
     transition: color 0.12s;
 
     &:hover {
-      color: var(--txt);
+      color: var(--neutral-10);
     }
   }
 
@@ -220,16 +241,16 @@
     line-height: 1.7;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--txt);
+    color: var(--neutral-10);
     margin: 0;
   }
 
   .about-modal__link {
-    color: var(--txt);
+    color: var(--neutral-10);
     text-underline-offset: 3px;
 
     &:hover {
-      color: var(--txt-l);
+      color: var(--neutral-30);
     }
   }
 
@@ -238,7 +259,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 4px;
-    border-top: 1px solid var(--bg-hl);
+    border-top: 1px solid var(--neutral-60);
     padding-top: 16px;
   }
 
@@ -254,7 +275,7 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--txt-l);
+    color: var(--neutral-10);
     white-space: nowrap;
   }
 
@@ -262,12 +283,19 @@
     font-size: 9px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--txt);
+    color: var(--neutral-10);
     margin: 0;
   }
 
-  /* ─── Logo FAPESP ──────────────────────────────────────────── */
-  .about-modal__fapesp {
+  /* ─── Logos FAPESP e FAU-USP ──────────────────────────────────────────── */
+  .about-modal__logo-group {
+    padding-top: 24px;
+    display: flex;
+    gap: 16px;
+  }
+
+  .about-modal__logo {
+    color: var(--color-white);
     height: 32px;
     width: auto;
     opacity: 0.9;
