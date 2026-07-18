@@ -85,7 +85,6 @@
   let morphTo = '3d';
   let morphStartTime = 0;
   let morphRaf = 0;
-  let morphTick = 0;          // força reatividade no $: projection
   let currentProjection = projectionType;
   let prefersReducedMotion = false;
   // Estado do clipping da projeção-morph corrente — usado também no
@@ -118,10 +117,9 @@
     return d3.geoPath().projection(baseProj).bounds(SPHERE);
   })();
 
-  // Projeção reativa: reconstruída quando projectionType (ou seu estado, ou as dimensões) muda.
+  // Projeção — reconstruída dentro do rAF de draw (buildProjection), não mais reativa.
   let projection;
   let projectionUnclipped;
-  let dragTick = 0;
 
   /**
    * Constrói a projeção-morph para um t∈[0,1] entre `morphFrom` e `morphTo`.
@@ -190,9 +188,11 @@
       .clipAngle(clipAngDeg);
   }
 
-  $: {
-    dragTick; morphTick;
-    void width; void height;
+  /**
+   * Reconstrói os objetos de projeção com o estado atual de pan/zoom/morph.
+   * Chamado dentro do rAF de draw — sem passar pelo flush() do Svelte.
+   */
+  function buildProjection() {
     if (morphing) {
       projection = makeMorphProjection(morphT);
       projectionUnclipped = projection;
@@ -240,7 +240,6 @@
     const elapsed = performance.now() - morphStartTime;
     const u = Math.min(1, elapsed / PROJECTION_MORPH_DURATION);
     morphT = d3.easeCubicInOut(u);
-    morphTick++;
     markStaticDirty();
     markDynamicDirty();
     if (u < 1) {
@@ -248,7 +247,7 @@
     } else {
       morphRaf = 0;
       morphing = false;
-      morphTick++; // garante reatividade do $: projection no estado final
+      // buildProjection() lê morphing=false no próximo rAF — sem morphTick necessário.
       markStaticDirty();
       markDynamicDirty();
     }
@@ -258,7 +257,12 @@
   $: if (projectionType !== currentProjection) {
     const from = currentProjection;
     currentProjection = projectionType;
-    if (canvasEl && ctx) startMorph(from, projectionType);
+    if (canvasEl && ctx) {
+      startMorph(from, projectionType);
+      // Se morph não iniciou (prefersReducedMotion ou MORPH_ENABLED=false),
+      // garante redraw imediato com a nova projeção.
+      if (!morphing) markStaticDirty();
+    }
   }
 
   const SPHERE = { type: 'Sphere' };
@@ -410,6 +414,11 @@
     if (rafHandle) return;
     rafHandle = requestAnimationFrame(() => {
       rafHandle = 0;
+      // Reconstrói projeção, posições e highlights com estado atual —
+      // sem passar pelo flush() do Svelte no hot path de drag/zoom.
+      buildProjection();
+      buildPositions();
+      buildHighlights();
       if (staticDirty) {
         staticDirty = false;
         redrawStatic();
@@ -452,7 +461,7 @@
           })
           .on('zoom', (e) => {
             state3d.k = e.transform.k;
-            dragTick++;
+            markStaticDirty();
           });
 
         zoomBehavior3d = zoom;  // Guardar referência para zoom programático
@@ -463,7 +472,7 @@
             const k = 75 / (BASE_3D.scale * state3d.k);
             const [λ, φ, γ] = state3d.rotate;
             state3d.rotate = [λ + e.dx * k, Math.max(-90, Math.min(90, φ - e.dy * k)), γ];
-            dragTick++;
+            markStaticDirty();
           })
           .on('end', () => { isDragging = false; });
 
@@ -482,7 +491,7 @@
             state2d.k = e.transform.k;
             state2d.x = e.transform.x;
             state2d.y = e.transform.y;
-            dragTick++;
+            markStaticDirty();
           });
 
         zoomBehavior2d = zoom;  // Guardar referência para zoom programático
@@ -516,19 +525,25 @@
     return d3.geoDistance(center, [lon, lat]) < Math.PI / 2;
   }
 
-  $: visibleBubbles = bubbles.filter(b => activeTypes.has(b.type));
+  // Posições, quadtree e trajetórias calculados dentro do rAF de draw (buildPositions).
+  let visibleBubbles = [];
+  let positionedBubbles = [];
+  let bubbleQuadtree = d3.quadtree().x(d => d.x).y(d => d.y);
+  let positionedTrajectories = [];
 
-  // Posições finais das bubbles. Usa offsets de descolisão pré-computados
-  // em loadData() — sem rodar forceCollide a cada pan/zoom.
-  // Em 2D o offset é dividido por k (zoom) para preservar a aparência visual.
-  $: positionedBubbles = (() => {
-    void projection; void dragTick; void morphTick;
+  /**
+   * Reconstrói visibleBubbles, positionedBubbles, bubbleQuadtree e
+   * positionedTrajectories com a projeção atual (já atualizada por buildProjection).
+   * Chamado dentro do rAF de draw — sem passar pelo flush() do Svelte.
+   */
+  function buildPositions() {
+    if (!projection) return;
+    visibleBubbles = bubbles.filter(b => activeTypes.has(b.type));
+
     const isGlobe = projectionType === '3d';
     const k2d = state2d.k || 1;
-    const out = [];
+    const pb = [];
     for (const b of visibleBubbles) {
-      // Durante o morph o culling usa o clipAngle interpolado;
-      // em 3D fixo, usa o hemisfério padrão.
       if (morphing) {
         if (!isVisibleOnGlobe(b.lon, b.lat)) continue;
       } else if (isGlobe && !isVisibleOnGlobe(b.lon, b.lat)) continue;
@@ -540,29 +555,21 @@
       // projeção interpolada). Voltam no estado final.
       const x = morphing ? pt[0] : (isGlobe ? pt[0] + dx : pt[0] + dx / k2d);
       const y = morphing ? pt[1] : (isGlobe ? pt[1] + dy : pt[1] + dy / k2d);
-      out.push({ bubble: b, x, y });
+      pb.push({ bubble: b, x, y });
     }
-    return out;
-  })();
+    positionedBubbles = pb;
 
-  // Quadtree para hit-test em O(log n) em vez de O(n).
-  $: bubbleQuadtree = (() => {
-    const qt = d3.quadtree()
-      .x(d => d.x)
-      .y(d => d.y);
+    const qt = d3.quadtree().x(d => d.x).y(d => d.y);
     qt.addAll(positionedBubbles);
-    return qt;
-  })();
+    bubbleQuadtree = qt;
 
-  $: positionedTrajectories = (() => {
-    void projection; void dragTick; void morphTick;
-    const isGlobe = morphing || projectionType === '3d';
+    const isGlobeT = morphing || projectionType === '3d';
     const proj = projectionUnclipped;
-    const out = [];
+    const pt2 = [];
     for (const t of trajectories) {
       for (const seg of t.segments) {
         const id = `${seg.from.id}__${seg.to.id}`;
-        if (isGlobe) {
+        if (isGlobeT) {
           // Em 3D não pré-calculamos pontos de tela: deixamos a projeção
           // ortográfica (clipada) cortar o arco geodésico na linha do horizonte.
           // Pulamos apenas se ambos os extremos estão na face oculta.
@@ -577,7 +584,7 @@
           const length = (apU && bpU)
             ? Math.hypot(bpU[0] - apU[0], bpU[1] - apU[1])
             : 0;
-          out.push({
+          pt2.push({
             id,
             kind: seg.kind,
             fromId: seg.from.id,
@@ -612,7 +619,7 @@
           const my = (ay + by) / 2;
           const cpx = mx + (-dy / dist) * offset;
           const cpy = my + (dx / dist) * offset;
-          out.push({
+          pt2.push({
             id,
             kind: seg.kind,
             fromId: seg.from.id,
@@ -625,24 +632,35 @@
         }
       }
     }
-    return out;
-  })();
+    positionedTrajectories = pt2;
+  }
 
   let hoveredBubbleId = null;
   // Controla cursor via CSS class (evita DOM write no flush do Svelte).
   let isDragging = false;
-  // Quando pinnedCreator (artista com card aberto), resolve o ID de uma bubble do criador
-  // para reutilizar a lógica de highlight. Caso contrário, usa o hover.
-  // Nota: não depende mais de `locked`, assim a trajetória destaca mesmo com mapa interativo.
-  $: effectiveBubbleId = (() => {
+  // Highlights calculados no rAF de draw (via buildHighlights).
+  let effectiveBubbleId = null;
+  let highlightedBubbleIds = null;
+  let highlightedSegmentIds = null;
+
+  /**
+   * Reconstrói effectiveBubbleId, highlightedBubbleIds e highlightedSegmentIds.
+   * Chamado dentro do rAF de draw, após buildPositions().
+   */
+  function buildHighlights() {
     if (pinnedCreator) {
       const found = bubbles.find(b => b.creator === pinnedCreator && b.type !== 'acervo');
-      return found?.id ?? null;
+      effectiveBubbleId = found?.id ?? null;
+    } else {
+      effectiveBubbleId = hoveredBubbleId;
     }
-    return hoveredBubbleId;
-  })();
-  $: highlightedBubbleIds = (() => {
-    if (!effectiveBubbleId) return null;
+
+    if (!effectiveBubbleId) {
+      highlightedBubbleIds = null;
+      highlightedSegmentIds = null;
+      return;
+    }
+
     const ids = new Set();
     for (const t of trajectories) {
       const touches = t.segments.some(s => s.from.id === effectiveBubbleId || s.to.id === effectiveBubbleId);
@@ -654,20 +672,19 @@
       }
     }
     ids.add(effectiveBubbleId);
-    return ids;
-  })();
-  $: highlightedSegmentIds = (() => {
-    if (!effectiveBubbleId) return null;
-    const ids = new Set();
+    highlightedBubbleIds = ids;
+
+    const segIds = new Set();
     for (const seg of positionedTrajectories) {
       if (seg.fromId === effectiveBubbleId || seg.toId === effectiveBubbleId) {
-        ids.add(seg.id);
-      } else if (highlightedBubbleIds && highlightedBubbleIds.has(seg.fromId) && highlightedBubbleIds.has(seg.toId)) {
-        ids.add(seg.id);
+        segIds.add(seg.id);
+      } else if (highlightedBubbleIds.has(seg.fromId) && highlightedBubbleIds.has(seg.toId)) {
+        segIds.add(seg.id);
       }
     }
-    return ids;
-  })();
+    highlightedSegmentIds = segIds;
+  }
+
 
   // ─── Canvas redraw — camada estática (basemap) ────────────────────────
   /** Repinta o basemap (sphere + países + bordas). */
@@ -1067,17 +1084,18 @@
     }
   }
 
-  // Reatividade: qualquer mudança de projeção/dimensão/dados marca ambas
-  // as camadas como sujas; hover só marca a dinâmica.
-  $: { void projection; void width; void height; void countriesFeature; void countriesMesh;
-       if (bgCtx) markStaticDirty();
-       if (ctx) markDynamicDirty(); }
-  $: { void positionedBubbles; void positionedTrajectories; void hoveredBubbleId; void effectiveBubbleId;
-       if (ctx) markDynamicDirty(); }
-  // Mudança de tema: repinta ambas as camadas (paleta do canvas muda).
-  $: { void theme;
-       if (bgCtx) markStaticDirty();
-       if (ctx) markDynamicDirty(); }
+  // Triggers reativos mínimos — acionados apenas por mudanças de props externas
+  // ou hover (não por drag/zoom, que chamam markStaticDirty() diretamente).
+  // Dados ou filtros externos mudaram: recalcula tudo no próximo rAF.
+  $: { void bubbles; void trajectories; void activeTypes; void bottomInset; void pinnedCreator;
+       if (ctx) markStaticDirty(); }
+  // Hover muda apenas a camada dinâmica.
+  $: { void hoveredBubbleId; if (ctx) markDynamicDirty(); }
+  // Tema muda ambas as camadas (paleta do canvas).
+  $: { void theme; if (bgCtx) markStaticDirty(); }
+  // TopoJSON carregado em onMount — já chama markStaticDirty() explicitamente.
+  // Mantido como safety-net para HMR em desenvolvimento.
+  $: { void countriesFeature; void countriesMesh; if (bgCtx) markStaticDirty(); }
 
   // ─── Interação do mouse (hit-test) ───────────────────────────────
   // Throttled via rAF: no máximo uma checagem por frame.
