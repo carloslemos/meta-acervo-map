@@ -217,7 +217,6 @@ export function parseArtworkDict(dict) {
       creators = legacy ? [...legacy.split(' | ')] : [];
     }
     if (creators.length === 0) continue;
-    if (creators.length > 1) console.warn(`[Meta-Acervo] Obra ${wikidataId} tem múltiplos criadores: ${creators.join(', ')}`);
 
     const artwork = {
       id: wikidataId,
@@ -434,18 +433,18 @@ export async function loadData(csvPath, locale = 'pt') {
   const countriesFeature = topojson.feature(topo, topo.objects.countries);
   annotateGeo([...bubbles, ...acervoBubbles], countriesFeature, locale);
 
-  // Warning: reportar criadores sem dados de acervo
-  const creatorsWithoutAcervo = new Set();
-  for (const b of bubbles) {
-    if (b.acervos.length === 0) {
-      creatorsWithoutAcervo.add(b.creator);
-    }
-  }
-  if (creatorsWithoutAcervo.size > 0) {
-    console.warn(
-      `[Meta-Acervo] ${creatorsWithoutAcervo.size} criadores sem dados de acervo (sempre filtrados): ${Array.from(creatorsWithoutAcervo).slice(0, 5).join(', ')}${creatorsWithoutAcervo.size > 5 ? '...' : ''}`
-    );
-  }
+  // // Warning: reportar criadores sem dados de acervo - DESATIVADO POR ENQUANTO
+  // const creatorsWithoutAcervo = new Set();
+  // for (const b of bubbles) {
+  //   if (b.acervos.length === 0) {
+  //     creatorsWithoutAcervo.add(b.creator);
+  //   }
+  // }
+  // if (creatorsWithoutAcervo.size > 0) {
+  //   console.warn(
+  //     `[Meta-Acervo] ${creatorsWithoutAcervo.size} criadores sem dados de acervo (sempre filtrados): ${Array.from(creatorsWithoutAcervo).slice(0, 5).join(', ')}${creatorsWithoutAcervo.size > 5 ? '...' : ''}`
+  //   );
+  // }
 
   return { bubbles, trajectories, artworksByCreator, acervoBubbles };
 }
