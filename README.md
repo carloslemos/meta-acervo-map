@@ -45,7 +45,92 @@ npm run build
 npm run preview   # pré-visualização do build de produção
 ```
 
+## Testes e Performance
+
+### Executar testes
+
+```bash
+# Todos os testes
+npm test
+
+# Apenas testes de filtro e dados
+npm run test:unit
+
+# Apenas testes de layout e acessibilidade
+npm run test:layout
+
+# Apenas testes de performance
+npm test -- src/lib/__tests__/performance.test.js
+```
+
+### Performance
+
+O projeto é otimizado para **60 FPS** e segue padrões rigorosos de evitar **forced reflows** (alternância leitura/escrita no DOM que força recálculo de layout).
+
+#### Padrões de performance implementados
+
+- **`updateCanvasOffset()`** — Chamado apenas em contextos layout-safe:
+  - `onMount` (pós-layout)
+  - ResizeObserver callback (pós-layout)
+  - **Nunca** em hot path (mousemove, click, wheel)
+  
+- **`applyCanvasDims()`** — Batch de escritas sem leitura intermediária:
+  - Escreve `canvasEl.width`, `canvasEl.height`, `bgCanvasEl.width`, `bgCanvasEl.height`
+  - Sem `getBoundingClientRect()` entre elas
+
+- **Hot path (mouse handlers)** — Usa cache:
+  - `canvasLeft`, `canvasTop` são lidos uma vez e cacheados
+  - Mouse move handlers usam cache em vez de chamar `getBoundingClientRect()`
+
+- **Constantes centralizadas** — `src/lib/constants.js`:
+  - Cores, durações de animação, dimensões de bubbles
+  - Uma mudança global sem varrer múltiplos arquivos
+
+#### Medir performance com Chrome DevTools
+
+1. Abra DevTools (`F12`)
+2. **Performance** tab → clique em **Record** (círculo vermelho)
+3. Interaja com o mapa:
+   - Hover sobre bubbles
+   - Zoom, pan, rotação
+   - Toggle entre 2D/3D
+   - Ative/desative filtros
+4. Clique em **Stop** e analise:
+   - 🔴 **Red triangles** = forced reflows (indesejável)
+   - **Frame rate** debe ser **≥ 60 fps**
+   - Procure por `getBoundingClientRect()` fora de pós-layout
+
+Para diagnosticar repaints em tempo real:
+- **DevTools** → **More tools** → **Rendering**
+- ☑ **Paint flashing** (pisca em verde cada repaint)
+- ☑ **Rendering stats** (mostra FPS em tempo real)
+
+#### Utilitários de teste
+
+Em `src/lib/performanceUtils.js`, funções para detectar regressões:
+
+```javascript
+import { detectForcedReflow, comparePerformance } from '../lib/performanceUtils.js';
+
+// Comparar baseline vs refatoração
+const result = comparePerformance(
+  () => oldFunction(),
+  () => newFunction(),
+  'Function refactor'
+);
+
+if (result.regressionDetected) {
+  console.warn('⚠️ Regressão detectada:', result.improvement);
+}
+```
+
+Disponível também em testes (`src/lib/__tests__/performance.test.js`):
+- `detectForcedReflow(fn, label)` — Detecta reflows ao executar função
+- `analyzeLayoutThrashing(fn)` — Detecta ciclos write-then-read
+- `comparePerformance(beforeFn, afterFn, label)` — Compara baseline vs refatoração
+
 ## Deploy
+
 
 O projeto é publicado em GitHub Pages sob o caminho `/atlas-acervos-digitais/` (configurado em `vite.config.js` via `base`). Para hospedar em outro caminho, ajuste essa propriedade antes do build.
 
