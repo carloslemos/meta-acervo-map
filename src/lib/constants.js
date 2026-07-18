@@ -785,13 +785,13 @@ export const AUTOCOMPLETE_PLACEHOLDERS = {
   pt: {
     artista: 'Digite o nome ou parte do nome',
     education: 'Digite o nome ou parte do nome',
-    nacionalidade: 'Selecionar',
+    nacionalidade: 'Digite o nome ou parte do nome',
     acervo: 'Selecione um ou mais museus para buscar',
   },
   en: {
     artista: 'Type the name or part of the name',
     education: 'Type the name or part of the name',
-    nacionalidade: 'Select',
+    nacionalidade: 'Type the name or part of the name',
     acervo: 'Select one or more museums',
   },
 };
