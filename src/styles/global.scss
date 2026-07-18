@@ -48,6 +48,7 @@
   --accent:      var(--color-yellow); /* destaque (fallback; pills sobrescrevem via TYPE_COLOR) */
   --bg-vignette-top:    var(--neutral-100);
   --bg-vignette-left:    var(rgba(18, 18, 18, 0.8));
+  --disclaimer: var(--color-white);
 
   /* Cor neutra das pills de acervo/museu e da bolinha neutra — adaptável ao tema.
      Escuro: pill clara (cinza-claro); Claro: pill escura (ver [data-theme=light]). */
@@ -154,6 +155,7 @@
   --confidence-media: var(--neutral-70);   /* #616161 */
   --confidence-baixa: var(--neutral-40);   /* #a5a5a5 — mais mudo em light */
   --pill-txt: var(--color-white);
+  --disclaimer: var(--color-black);
 }
 
 /* Tablet: 760–1379px — sidebar mais estreita (302px), header completo */

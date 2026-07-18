@@ -99,7 +99,7 @@
     {ABOUT_MODAL_LABELS[locale].learnMore}{' '}
     <a
       class="about-modal__link"
-      href="https://www.acervosdigitais.fau.usp.br/meta-acervos-navegador-para-museus-em-rede/"
+      href="https://www.acervosdigitais.fau.usp.br/"
       target="_blank"
       rel="noopener noreferrer"
     >{ABOUT_MODAL_LABELS[locale].siteLabel}</a>

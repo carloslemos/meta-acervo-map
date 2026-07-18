@@ -84,9 +84,10 @@
     line-height: var(--line-height-snug);
     letter-spacing: var(--letter-spacing-tight);
     color: var(--chrome-txt);
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 180px;
   }
 
   .mobile-header__actions {

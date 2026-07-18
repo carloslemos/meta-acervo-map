@@ -337,7 +337,7 @@
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-tight);
     text-transform: uppercase;
-    color: var(--txt-hl);
+    color: var(--disclaimer);
     line-height: var(--line-height-normal);
   }
 </style>

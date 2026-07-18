@@ -743,8 +743,8 @@ export const TUTORIAL_STRIP_TEXT = {
 
 /** Título da aplicação (PT-BR ↔ EN). */
 export const APP_TITLE = {
-  pt: 'Atlas dos Percursos Artísticos',
-  en: 'Atlas of Artistic Trajectories',
+  pt: 'Atlas dos Percursos de Artistas em Museus',
+  en: 'Atlas of Artistic Trajectories in Museums',
 };
 
 /** Nomes de idiomas para seletor de idioma. */
