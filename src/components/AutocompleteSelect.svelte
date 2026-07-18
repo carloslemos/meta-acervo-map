@@ -186,7 +186,7 @@
   .section-subtitle {
     font-size: var(--font-size-2xs);
     font-weight: var(--font-weight-md);
-    letter-spacing: var(--letter-spacing-tight);
+    letter-spacing: var(--letter-spacing-narrow);
     color: var(--txt-hl);
   }
 
