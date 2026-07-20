@@ -4,6 +4,14 @@
  * WorldMap.svelte, Tooltip.svelte, FilterControls.svelte e dataUtils.js.
  */
 
+// ─── Versão da plataforma ─────────────────────────────────────────────────────
+
+/** Versão da plataforma, injetada pelo Vite a partir de package.json.
+ * Para atualizar a versão exibida na UI, altere somente o campo
+ * "version" em package.json. */
+// eslint-disable-next-line no-undef
+export const APP_VERSION = __APP_VERSION__;
+
 // ─── Cores e rótulos por tipo de bubble ──────────────────────────────────────
 
 // Paleta canônica do tema escuro (referência Figma 65VY0RJh4omVZFM7FCBbAL, nó 1:7358).
@@ -996,6 +1004,7 @@ export const ABOUT_MODAL_LABELS = {
     creditsDesign: 'Design de interface e interação',
     creditsData: 'Dados',
     contact: 'Contato',
+    versionLabel: 'Versão',
   },
   en: {
     title: 'About',
@@ -1012,6 +1021,7 @@ export const ABOUT_MODAL_LABELS = {
     creditsDesign: 'Interface and interaction design',
     creditsData: 'Data',
     contact: 'Contact',
+    versionLabel: 'Version',
   },
 };
 

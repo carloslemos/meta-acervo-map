@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { ABOUT_MODAL_LABELS } from '../lib/constants.js';
+  import { ABOUT_MODAL_LABELS, APP_VERSION } from '../lib/constants.js';
 
   /** Locale ativo: 'pt' | 'en'. */
   export let locale = 'pt';
@@ -159,6 +159,9 @@
       </dd>
     </div>
   </dl>
+
+  <!-- Versão -->
+  <p class="about-modal__version">{ABOUT_MODAL_LABELS[locale].versionLabel} {APP_VERSION}</p>
 
   <!-- Logo FAPESP -->
   <div class="about-modal__logo-group">
