@@ -38,7 +38,7 @@ export function normalizeConfidence(value) {
   // PT-BR
   if (val === 'alta') return 'alta';
   if (val === 'alto') return 'alta';
-  if (val === 'médio' || val === 'medio') return 'médio';
+  if (val === 'médio' || val === 'medio' || val === 'média' || val === 'media') return 'médio';
   if (val === 'baixa' || val === 'baixo') return 'baixo';
   // EN
   if (val === 'high') return 'alta';
