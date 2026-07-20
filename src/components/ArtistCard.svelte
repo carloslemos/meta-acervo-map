@@ -32,11 +32,40 @@
   $: death = creatorBubbles.find(b => b.type === 'death') ?? null;
   $: educations = creatorBubbles.filter(b => b.type === 'education');
 
+  // Deduplicação de educações: remove duplicatas por schoolName + lat + lon.
+  // Quando o mesmo criador aparece múltiplas vezes no CSV com educações
+  // sobrepostas, cada cópia cria bubbles identicamente localizadas.
+  // Mantém a primeira ocorrência (preferindo maior confiança em caso de empate).
+  $: uniqueEducations = (() => {
+    const seen = new Set();
+    const deduped = [];
+    for (const e of educations) {
+      const key = `${e.schoolName || e.place}|${e.lat}|${e.lon}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduped.push(e);
+      } else {
+        // Se já vimos este ponto, compara confiança: prefere a entrada com maior confiança
+        const existingIdx = deduped.findIndex(de => `${de.schoolName || de.place}|${de.lat}|${de.lon}` === key);
+        if (existingIdx >= 0) {
+          const confOrder = { 'alta': 3, 'médio': 2, 'baixa': 1, null: 0 };
+          const existingConf = confOrder[deduped[existingIdx].confidence] ?? 0;
+          const newConf = confOrder[e.confidence] ?? 0;
+          if (newConf > existingConf) {
+            deduped[existingIdx] = e; // Substitui por entrada com maior confiança
+          }
+        }
+      }
+    }
+    return deduped;
+  })();
+
   // ID da primeira seção que possui dado de confiança — para exibir o label
-  // "Precisão da Informação" apenas uma vez no card.
+  // "Precisão da Informação". Mostra na primeira seção com confiança em ordem:
+  // nascimento → primeira educação → morte.
   $: precisionLabelFor = birth?.confidence
     ? 'birth'
-    : (educations.find(e => e.confidence)?.id ?? (death?.confidence ? 'death' : null));
+    : (uniqueEducations.find(e => e.confidence)?.id ?? (death?.confidence ? 'death' : null));
 
   // Obras agrupadas por acervo (museum).
   $: artworks = (creatorName && artworksByCreator.get(creatorName)) || [];
@@ -103,8 +132,8 @@
       {/if}
 
       <!-- Local de Estudo -->
-      {#if educations.length > 0}
-        {#each educations as e (e.id)}
+      {#if uniqueEducations.length > 0}
+        {#each uniqueEducations as e (e.id)}
           <section class="section">
             <div class="section__row">
               <div class="section__left">
