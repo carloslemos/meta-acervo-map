@@ -158,10 +158,11 @@
         >acervosdigitais@usp.br</a>
       </dd>
     </div>
+    <div class="about-modal__credits-row">
+      <dt>{ABOUT_MODAL_LABELS[locale].versionLabel}</dt>
+      <dd>{APP_VERSION}</dd>
+    </div>
   </dl>
-
-  <!-- Versão -->
-  <p class="about-modal__version">{ABOUT_MODAL_LABELS[locale].versionLabel} {APP_VERSION}</p>
 
   <!-- Logo FAPESP -->
   <div class="about-modal__logo-group">
