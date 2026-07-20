@@ -334,7 +334,7 @@ import {
   // obras dele; caso contrário, flatmap dos criadores visíveis, dedup por id, ordenado.
   $: artworksForStrip = (() => {
     const isUndated = (y) => y === null || y === undefined || y === UNDATED_YEAR || typeof y !== 'number' || Number.isNaN(y);
-    const sortWorks = (arr) => [...arr].sort((a, b) => {
+    const sortWorks = (arr) => [...arr].sort((b, a) => {
       const au = isUndated(a.year); const bu = isUndated(b.year);
       if (au && bu) return 0; if (au) return 1; if (bu) return -1;
       return b.year - a.year;
