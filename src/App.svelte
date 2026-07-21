@@ -518,6 +518,7 @@ import {
           <div class="tutorial-overlay tutorial-overlay--center">
             <TutorialBox title={TUTORIAL_MAP_TITLE[locale]} onDismiss={handleTutorialDismiss}>
               {#if isMobile}
+                <div class="tutorial-warning">{SECTION_LABELS[locale].tutorialMobileWarning}</div>
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].selection}</strong> {TUTORIAL_MAP_TEXT_MOBILE_SELECT[locale]}</p>
                 <p><strong>{TUTORIAL_NAV_LABELS[locale].navigation}</strong> {TUTORIAL_MAP_TEXT_MOBILE_NAV[locale]}</p>
                 <img class="tutorial-illo" src="{import.meta.env.BASE_URL}tutorial-nav-mobile.svg" alt="" />
@@ -799,6 +800,7 @@ import {
     cursor: pointer;
     line-height: 0;
     transition: filter 0.12s;
+    transform: translateY(-12px);
   }
 
   .tutorial-reopen-mobile--active :global(svg) {
@@ -816,5 +818,14 @@ import {
 
   .state-message--error {
     color: #e44;
+  }
+
+  .tutorial-warning {
+    background: var(--bg-warning);
+    color: var(--txt-warning);
+    padding: 12px;
+    border-radius: 4px;
+    font-size: var(--font-size-md);
+    margin: 12px 0 24px;
   }
 </style>

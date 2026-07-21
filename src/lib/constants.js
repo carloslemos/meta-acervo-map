@@ -830,6 +830,7 @@ export const SECTION_LABELS = {
     visualizationsAndFilters: 'Visualizações e Filtros',
     loading: 'Carregando dados\u2026',
     errorPrefix: 'Erro:',
+    tutorialMobileWarning: 'Para uma melhor experiência, acesse esta plataforma pelo computador',
   },
   en: {
     accordion: 'Museums and artists',
@@ -841,6 +842,7 @@ export const SECTION_LABELS = {
     visualizationsAndFilters: 'Visualizations and Filters',
     loading: 'Loading data\u2026',
     errorPrefix: 'Error:',
+    tutorialMobileWarning: 'For a better experience, access this platform from a computer',
   },
 };
 

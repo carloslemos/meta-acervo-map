@@ -8,6 +8,13 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.0.2] — 2026-07-21
+
+### Adicionado
+- Aviso de melhor experiência no desktop
+
+---
+
 ## [1.0.1] — 2026-07-20
 
 ### Adicionado
